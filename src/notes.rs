@@ -1,19 +1,20 @@
 use crate::core::*;
 use crate::note::*;
+
 use serde::{Deserialize, Serialize};
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct Notes {
     pub items: Vec<Note>,
-    pub val: u32,
+    pub value: u32,
 }
 
 impl Notes {
     pub fn new(items: Vec<Note>) -> Self {
-        let val = &items.iter().fold(0, |sum, item| item.val as i32 + sum);
+        let value = &items.iter().fold(0, |sum, item| item.value as i32 + sum);
 
         Self {
             items,
-            val: *val as u32,
+            value: *value as u32,
         }
     }
 
@@ -46,35 +47,80 @@ impl<'a> IntoIterator for &'a mut Notes {
     }
 }
 
+//===============================================================
+
 struct NotesPositions<'a> {
-    items: &'a Vec<&'a Note>,
-    count: usize,
+    notes: &'a Notes,
+    idx: usize,
     pos: usize,
 }
 
 impl<'a> NotesPositions<'a> {
-    fn new(items: &'a Vec<&'a Note>) -> Self {
+    fn new(notes: &'a Notes) -> Self {
         Self {
-            items,
-            count: 0,
+            notes,
+            idx: 0,
             pos: 0,
         }
     }
 }
 
 impl<'a> Iterator for NotesPositions<'a> {
-    type Item = (usize, usize, &'a Note);
+    type Item = (usize, usize, usize, &'a Note);
     fn next(&mut self) -> Option<Self::Item> {
-        if self.count < self.items.len() {
-            let item = self.items[self.count];
-            self.count += 1;
-            let current_pos = self.pos;
-            self.pos += item.val as usize;
-            return Some((self.count, current_pos, item));
+        // if self.idx < self.values.len() {
+        if self.idx < self.notes.items.len() {
+            let n = &self.notes.items[self.idx];
+            let cur_idx = self.idx;
+            let cur_pos = self.pos;
+            let end_pos = cur_pos + r.value as usize;
+            self.idx += 1;
+            self.pos += r.value as usize;
+            return Some((cur_idx, cur_pos, end_pos, n));
         }
         None
     }
 }
+
+//===============================================================
+struct NotesPairs<'a> {
+    notes: &'a Notes,
+    idx: usize,
+}
+
+impl<'a> NotesPairs<'a> {
+    fn new(notes: &'a Notes) -> Self {
+        Self { notes, idx: 0 }
+    }
+}
+
+impl<'a> Iterator for NotesPairs<'a> {
+    type Item = (usize, Option<&'a Note>, Option<&'a Note>);
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.notes.items.len() {
+            0 => None,
+            1 => {
+                if (self.idx == 0) {
+                    self.idx += 1;
+                    return Some((0, Some(&self.notes.items[0]), None));
+                }
+                None
+            }
+            _ => {
+                if self.idx < self.notes.items.len() - 1 {
+                    let n1 = &self.notes.items[self.idx];
+                    let n2 = &self.notes.items[self.idx + 1];
+                    let cur_idx = self.idx;
+                    self.idx += 1;
+                    return Some((cur_idx, Some(n1), Some(n2)));
+                }
+                None
+            }
+        }
+    }
+}
+
+//===============================================================
 
 #[allow(unused_imports)]
 #[cfg(test)]
@@ -82,6 +128,7 @@ mod tests {
     use super::Note;
     use super::NoteAttributes;
     use super::Notes;
+    use super::NotesPairs;
     use super::NotesPositions;
     use crate::quick::QCode;
     #[test]
@@ -96,9 +143,18 @@ mod tests {
 
     #[test]
     fn notes_positions() {
-        let notes = QCode::notes("0 0 0 0");
-        let items: Vec<&Note> = notes.items.iter().map(|i| i).collect();
-        // let items2: Vec<&Note> = notes.into();
-        // NotesPositions::new(&items);
+        let notes = QCode::notes("0 1 2 3");
+        let notes_positions = NotesPositions::new(&notes);
+        for n in notes_positions {
+            println!("v:{:?}", n);
+        }
+    }
+    #[test]
+    fn notes_pairs() {
+        let notes = QCode::notes("0");
+        let pairs = NotesPairs::new(&notes);
+        for n in pairs {
+            println!("n:{:?}", n);
+        }
     }
 }

@@ -35,11 +35,12 @@ impl BeamingItemsGenerator {
                 }
                 BeamingItems(items)
             }
+            
             BeamingPattern::NValues(values) => {
-                println!("val:{:?}", notes.val);
+                println!("val:{:?}", notes.value);
                 let mut valueCycle: Vec<NValue> = vec![];
                 let mut valueCycleLength: u32 = 0;
-                while valueCycleLength <= notes.val {
+                while valueCycleLength <= notes.value {
                     let idx: usize = 0;
                     let valueToPush = values[(idx % values.len()) as usize];
                     valueCycle.push(valueToPush);

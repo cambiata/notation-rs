@@ -41,6 +41,8 @@ impl<'a> IntoIterator for &'a mut Heads {
     }
 }
 
+//--------------------------------------------------------------------
+
 #[cfg(test)]
 mod tests {
     use super::*;

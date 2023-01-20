@@ -1,83 +1,75 @@
 #[derive(Debug)]
-struct Test {
-    v: u32,
+struct VItem {
+    value: u32,
 }
 
-impl Test {
-    fn new(v: u32) -> Self {
-        Self { v }
+//--------------------------------------------
+
+struct VItems {
+    items: Vec<VItem>,
+}
+
+impl VItems {
+    fn new(items: Vec<VItem>) -> Self {
+        Self { items }
     }
-}
-
-struct Tests {
-    items:Vec<Test>,
-}
-
-impl Tests {
-    fn new(items: Vec<Test>) -> Self { Self { items } }
-    pub fn iter(&self) -> std::slice::Iter<'_, Test> {
+    pub fn iter(&self) -> std::slice::Iter<'_, VItem> {
         self.into_iter()
     }
 }
 
-impl<'a> IntoIterator for &'a Tests {
-    type Item = &'a Test;
+impl<'a> IntoIterator for &'a VItems {
+    type Item = &'a VItem;
 
-    type IntoIter = std::slice::Iter<'a, Test>;
+    type IntoIter = std::slice::Iter<'a, VItem>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.items.iter()
     }
 }
 
+//--------------------------------------------
 
+// struct ValueSumIterator<'a> {
+//     items: &'a Vec<VItem>,
+//     count: usize,
+//     pos: usize,
+// }
 
-
-
-struct Etest<'a> {
-    items: &'a Vec<&'a Test>,
+// impl<'a> Iterator for ValueSumIterator<'a> {
+//     type Item = (usize, usize, &'a VItem);
+//     fn next(&mut self) -> Option<Self::Item> {
+//         if self.count < self.items.len() {
+//             let item = self.items[self.count];
+//             self.count += 1;
+//             let current_pos = self.pos;
+//             self.pos += item.value as usize;
+//             return Some((self.count, current_pos, item));
+//         }
+//         None
+//     }
+// }
+struct ValueSumIterator<'a> {
+    items: &'a Vec<&'a VItem>,
     count: usize,
     pos: usize,
 }
 
-impl<'a> Iterator for Etest<'a> {
-    type Item = (usize, usize, &'a Test);
+impl<'a> Iterator for ValueSumIterator<'a> {
+    type Item = (usize, usize, &'a VItem);
     fn next(&mut self) -> Option<Self::Item> {
         if self.count < self.items.len() {
             let item = self.items[self.count];
             self.count += 1;
             let current_pos = self.pos;
-            self.pos += item.v as usize;
+            self.pos += item.value as usize;
             return Some((self.count, current_pos, item));
         }
         None
     }
 }
 
-#[derive(Debug)]
-struct EnumerateX<I> {
-    iter: I,
-    count: usize,
-}
-
-impl<I> Iterator for EnumerateX<I>
-where
-    I: Iterator,
-{
-    // type Item = (usize, I::Item);
-    type Item =  I::Item;
-
-    #[inline]
-    // fn next(&mut self) -> Option<(usize, I::Item)> {
-    fn next(&mut self) -> Option<I::Item> {
-        self.iter.next().map(|a| {
-            // let ret = (self.count, a);
-            let ret = a;
-            self.count += 1;
-            ret
-        })
-    }
-}
+//--------------------------------------------------
 
 #[cfg(test)]
 mod tests {
@@ -86,27 +78,26 @@ mod tests {
 
     #[test]
     fn tests() {
-        let items = &Tests::new(vec![Test { v: 111 }, Test { v: 222 }]);
-        for item in items {
-            println!("item:{:?}", item);
+        let v_items = &VItems::new(vec![VItem { value: 111 }, VItem { value: 222 }]);
+        for borrowed_v_item in v_items {
+            println!("v_item:{:?}", borrowed_v_item);
         }
     }
 
     #[test]
     fn example() {
+        let items = &vec![&VItem { value: 111 }, &VItem { value: 222 }];
+        // let tests = &VItems::new(vec![VItem { value: 111 }, VItem { value: 222 }]);
+        // let items = &tests.items;
 
-        let items = &vec![&Test { v: 111 }, &Test { v: 222 }];
-        let tests = &Tests::new(vec![Test { v: 111 }, Test { v: 222 }]);
-        let test_items = &tests.items;
-
-        let etest = Etest {
+        let custom_iterator = ValueSumIterator {
             items: items,
             count: 0,
             pos: 0,
         };
 
-        for item in etest {
-            println!("item:{:?}", item);
+        for borrowed_v_item in custom_iterator {
+            println!("v_item:{:?}", borrowed_v_item);
         }
     }
 }

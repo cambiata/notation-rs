@@ -6,14 +6,14 @@ use crate::heads::Heads;
 
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub struct Note {
-    pub val: NValue,
+    pub value: NValue,
     pub ntype: NoteType,
     pub attr: NoteAttributes,
 }
 
 impl Note {
-    pub fn new(val: NValue, ntype: NoteType, attr: NoteAttributes) -> Note {
-        Note { val, ntype, attr }
+    pub fn new(value: NValue, ntype: NoteType, attr: NoteAttributes) -> Note {
+        Note { value, ntype, attr }
     }
 }
 

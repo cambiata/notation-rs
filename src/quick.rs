@@ -14,7 +14,7 @@ impl QCode {
                 "p" => {
                     println!("pause:{}", segment);
                     let n = Note {
-                        val: cur_val.clone(),
+                        value: cur_val.clone(),
                         ntype: NoteType::Pause,
                         attr: NoteAttributes { color: None },
                     };
