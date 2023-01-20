@@ -1,6 +1,5 @@
 use crate::head::*;
 use serde::{Deserialize, Serialize};
-use serde_json;
 
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub struct Heads {
