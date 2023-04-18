@@ -15,6 +15,14 @@ impl Note {
     pub fn new(value: NValue, ntype: NoteType, attr: NoteAttributes) -> Note {
         Note { value, ntype, attr }
     }
+
+    pub fn is_beamable(self: &Note) -> bool {
+        match self.ntype {
+            NoteType::Pause | NoteType::Slash => return false,
+            NoteType::Heads(_) => self.value.is_beamable(),
+        };
+        return true;
+    }
 }
 
 // impl NValueItem for Note {

@@ -58,6 +58,13 @@ impl NValue {
             }
         }
     }
+
+    pub fn is_beamable(self: NValue) -> bool {
+        return match self {
+            Self::Nv8 | Self::Nv8dot | Self::Nv8tri | Self::Nv16 | Self::Nv16dot | Self::Nv32 => true,
+            _ => false,
+        };
+    }
 }
 
 pub trait NValueItem {

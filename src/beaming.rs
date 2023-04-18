@@ -1,7 +1,8 @@
 use crate::core::*;
+use crate::note;
 use crate::note::*;
 use crate::notes::*;
-use crate::tools::pair_iterator::*;
+// use crate::tools::pair_iterator::*;
 
 #[derive(Debug)]
 pub enum BeamingItem<'a> {
@@ -38,15 +39,41 @@ impl BeamingItemsGenerator {
             
             BeamingPattern::NValues(values) => {
                 println!("val:{:?}", notes.value);
-                let mut valueCycle: Vec<NValue> = vec![];
-                let mut valueCycleLength: u32 = 0;
-                while valueCycleLength <= notes.value {
-                    let idx: usize = 0;
-                    let valueToPush = values[(idx % values.len()) as usize];
-                    valueCycle.push(valueToPush);
-                    valueCycleLength += valueToPush as u32;
-                    println!("valueCycleLength:{}", valueCycleLength);
+                let mut value_cycle: Vec<(usize,usize)> = vec![];
+                let mut vpos_start: usize = 0;
+                let mut vpos_end: usize = 0;
+                let mut idx: usize = 0;
+                while vpos_end <= notes.value as usize  {
+                    vpos_start = vpos_end;
+                    let value = values[idx  % values.len()] as usize;
+                    // let value_to_push = values[(idx % values.len()) as usize];
+                    vpos_end = vpos_start + value as usize;
+                    value_cycle.push((vpos_start, vpos_end));
+                    idx += 1;
                 }
+
+                println!("value_cycle:{:?}", value_cycle);
+                let note_positions = NotesPositions::new(notes);
+                let mut cycle_idx = 0;
+                let mut cycle_start = value_cycle[cycle_idx].0;
+                let mut cycle_end = value_cycle[cycle_idx].1;
+                let mut note_groups:Vec<Vec<&Note>> = vec![];
+                let mut note_group:Vec<&Note> = vec![];
+                for note_pos in note_positions {
+                    // println!("note_pos:{:?}", note_pos);
+                    
+                    let (note_idx, note_start, note_end, note) = note_pos;
+                    while note_start >= cycle_end {
+                        println!("hoho:");
+                        cycle_idx += 1;
+                        cycle_start = value_cycle[cycle_idx].0;
+                        cycle_end = value_cycle[cycle_idx].1;
+                        note_group = vec![];
+                    }
+                    note_group.push(note);
+                    println!(":{} {} {} {} {} {} {} {}", note_idx, note_start, note_end, note.is_beamable(), cycle_idx, cycle_start, cycle_end, note_group.len());
+                }
+
 
                 BeamingItems(vec![])
             }
@@ -63,8 +90,8 @@ mod tests {
 
     #[test]
     fn beaming1() {
-        // let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
-        let notes = QCode::notes("nv8 p 0");
+        let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
+        // let notes = QCode::notes("nv8 p 0");
         let beams = BeamingItemsGenerator::generate(&notes, super::BeamingPattern::NoBeams);
         for beam in beams.0.iter() {
             println!("beam:{:?}", beam);
@@ -73,7 +100,20 @@ mod tests {
     #[test]
     fn beaming2() {
         // let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
-        let notes = QCode::notes("nv8 0 0 0 0 0 0 0 0 0");
+        let notes = QCode::notes("nv8 0 0 0 0 0 0");
+        let beams = BeamingItemsGenerator::generate(
+            &notes,
+            super::BeamingPattern::NValues(vec![Nv4, Nv4dot]),
+        );
+        for beam in beams.0.iter() {
+            println!("beam:{:?}", beam);
+        }
+    }
+
+    #[test]
+    fn beaming3() {
+        // let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
+        let notes = QCode::notes("nv4 0 0 0 0 ");
         let beams = BeamingItemsGenerator::generate(
             &notes,
             super::BeamingPattern::NValues(vec![Nv4, Nv4dot]),

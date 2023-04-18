@@ -49,14 +49,14 @@ impl<'a> IntoIterator for &'a mut Notes {
 
 //===============================================================
 
-struct NotesPositions<'a> {
+pub struct NotesPositions<'a> {
     notes: &'a Notes,
     idx: usize,
     pos: usize,
 }
 
 impl<'a> NotesPositions<'a> {
-    fn new(notes: &'a Notes) -> Self {
+    pub fn new(notes: &'a Notes) -> Self {
         Self {
             notes,
             idx: 0,
@@ -73,9 +73,9 @@ impl<'a> Iterator for NotesPositions<'a> {
             let n = &self.notes.items[self.idx];
             let cur_idx = self.idx;
             let cur_pos = self.pos;
-            let end_pos = cur_pos + r.value as usize;
+            let end_pos = cur_pos + n.value as usize;
             self.idx += 1;
-            self.pos += r.value as usize;
+            self.pos += n.value as usize;
             return Some((cur_idx, cur_pos, end_pos, n));
         }
         None
