@@ -8,7 +8,7 @@ use crate::notes::*;
 pub enum BeamingItem<'a> {
     Unbeamed(&'a Note),
     Single(&'a Note),
-    Group(&'a Notes),
+    Group(Vec<&'a Note>),
 }
 
 #[derive(Debug)]
@@ -52,30 +52,39 @@ impl BeamingItemsGenerator {
                     idx += 1;
                 }
 
-                println!("value_cycle:{:?}", value_cycle);
+                println!("value_cycle:{:?}", v alue_cycle);
                 let note_positions = NotesPositions::new(notes);
                 let mut cycle_idx = 0;
                 let mut cycle_start = value_cycle[cycle_idx].0;
                 let mut cycle_end = value_cycle[cycle_idx].1;
-                let mut note_groups:Vec<Vec<&Note>> = vec![];
+                // let mut note_groups:Vec<Vec<&Note>> = vec![];
                 let mut note_group:Vec<&Note> = vec![];
+
                 for note_pos in note_positions {
-                    // println!("note_pos:{:?}", note_pos);
-                    
                     let (note_idx, note_start, note_end, note) = note_pos;
-                    while note_start >= cycle_end {
-                        println!("hoho:");
-                        cycle_idx += 1;
-                        cycle_start = value_cycle[cycle_idx].0;
-                        cycle_end = value_cycle[cycle_idx].1;
+                    
+                    if !note.is_beamable() {
+                        note_group.push(note);
+                        println!(":{} {} {} {} {} {} {} {}", note_idx, note_start, note_end, note.is_beamable(), cycle_idx, cycle_start, cycle_end, note_group.len());
                         note_group = vec![];
+                        continue;
                     }
+
+                    if note_end <= cycle_end {
+                        note_group.push(note);
+                        println!(":{} {} {} {} {} {} {} {}", note_idx, note_start, note_end, note.is_beamable(), cycle_idx, cycle_start, cycle_end, note_group.len());
+                        continue;
+                    }
+                    note_group = vec![];
+                    cycle_idx += 1;
+                    cycle_start = value_cycle[cycle_idx].0;
+                    cycle_end = value_cycle[cycle_idx].1;
                     note_group.push(note);
+
                     println!(":{} {} {} {} {} {} {} {}", note_idx, note_start, note_end, note.is_beamable(), cycle_idx, cycle_start, cycle_end, note_group.len());
                 }
-
-
                 BeamingItems(vec![])
+                
             }
         }
     }
@@ -113,13 +122,15 @@ mod tests {
     #[test]
     fn beaming3() {
         // let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
-        let notes = QCode::notes("nv4 0 0 0 0 ");
+        let notes = QCode::notes("nv8 0 nv16 p 0");
+        // let notes = QCode::notes("nv4 0 0 0 0 0 ");
         let beams = BeamingItemsGenerator::generate(
             &notes,
-            super::BeamingPattern::NValues(vec![Nv4, Nv4dot]),
+            super::BeamingPattern::NValues(vec![Nv4]),
         );
         for beam in beams.0.iter() {
             println!("beam:{:?}", beam);
+            println!("");    
         }
     }
 }
