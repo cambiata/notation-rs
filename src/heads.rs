@@ -62,18 +62,5 @@ mod tests {
         println!("heads.items[0];:{:?}", &heads);
     }
 
-    // #[test]
-    // fn test_Heads_sort_order() {
-    //     let heads = Heads::new(vec![
-    //         Head::new(1, HeadAttributes { accidental: None }),
-    //         Head::new(0, HeadAttributes { accidental: None }),
-    //         Head::new(-2, HeadAttributes { accidental: None }),
-    //         Head::new(4, HeadAttributes { accidental: None }),
-    //     ]);
-    //     let mut head_levels = heads.items.iter().map(|item| -> i8 { item.level });
-    //     assert_eq!(head_levels.next().unwrap(), -2);
-    //     assert_eq!(head_levels.next().unwrap(), 0);
-    //     assert_eq!(head_levels.next().unwrap(), 1);
-    //     assert_eq!(head_levels.next().unwrap(), 4);
-    // }
+
 }
