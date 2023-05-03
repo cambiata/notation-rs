@@ -5,34 +5,38 @@ use crate::note::*;
 use crate::notes::*;
 
 #[derive(Debug)]
-pub struct Voice<'a> {
-    pub val: u32,
-    pub vtype: VoiceType<'a>,
+pub struct Voice {
+    pub val: usize,
+    pub vtype: VoiceType,
     pub attr: VoiceAttributes,
-    pub beaming_items: BeamingItems<'a>,
 }
 
-impl<'a> Voice<'a> {
-    pub fn new(vtype: VoiceType<'a>, attr: VoiceAttributes) -> Self {
+impl Voice {
+    pub fn new(vtype: VoiceType, attr: VoiceAttributes) -> Self {
+        let val = match vtype {
+            VoiceType::VBarpause(val) => val,
+            VoiceType::VNotes(ref notes) => notes.value,
+        };
+
         Self {
-            val: 0,
+            val,
             vtype,
             attr,
-            beaming_items: BeamingItems(vec![]),
+            // beaming_items: vec![],
         }
     }
 
-    pub fn create_beams(&mut self, pattern: BeamingPattern) {
-        if let VoiceType::VNotes(notes) = self.vtype {
-            self.beaming_items = BeamingItemsGenerator::generate(notes, pattern);
-        }
-    }
+    // pub fn create_beams(&mut self, pattern: BeamingPattern) {
+    //     if let VoiceType::VNotes(notes) = self.vtype {
+    //         self.beaming_items = BeamingItemsGenerator::generate(notes, pattern);
+    //     }
+    // }
 }
 
 #[derive(Debug)]
-pub enum VoiceType<'a> {
-    VBarpause(u32), // val
-    VNotes(&'a Notes),
+pub enum VoiceType {
+    VBarpause(usize), // val
+    VNotes(Notes),
 }
 
 #[derive(Debug)]
@@ -43,11 +47,18 @@ mod tests {
     use super::VoiceType::{VBarpause, VNotes};
     use super::*;
     use crate::quick::QCode;
+    use std::convert::From;
 
     #[test]
     fn voice() {
         let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
-        let voice = Voice::new(VNotes(&notes), VoiceAttributes {});
+        let voice = Voice::new(VNotes(notes), VoiceAttributes {});
+        println!("voice:{:?}", voice);
+    }
+
+    #[test]
+    fn voice2() {
+        let voice = Voice::new(VBarpause(NValue::Nv1.into()), VoiceAttributes {});
         println!("voice:{:?}", voice);
     }
 }

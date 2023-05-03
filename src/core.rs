@@ -59,11 +59,86 @@ impl NValue {
         }
     }
 
+    pub fn from_str_option(s: &str) -> Option<NValue> {
+        match s.to_lowercase().as_str() {
+            "nv1dot" => Some(Self::Nv1dot),
+            "nv1." => Some(Self::Nv1dot),
+            "nv1" => Some(Self::Nv1),
+            "nv2dot" => Some(Self::Nv2dot),
+            "nv2." => Some(Self::Nv2dot),
+            "nv2" => Some(Self::Nv2),
+            "nv2tri" => Some(Self::Nv2tri),
+            "nv4dot" => Some(Self::Nv4dot),
+            "nv4." => Some(Self::Nv4dot),
+            "nv4" => Some(Self::Nv4),
+            "nv8dot" => Some(Self::Nv8dot),
+            "nv8." => Some(Self::Nv8dot),
+            "nv4tri" => Some(Self::Nv4tri),
+            "nv8" => Some(Self::Nv8),
+            "nv16dot" => Some(Self::Nv16dot),
+            "nv16." => Some(Self::Nv16dot),
+            "nv8tri" => Some(Self::Nv8tri),
+            "nv16" => Some(Self::Nv16),
+            "nv32" => Some(Self::Nv32),
+            _ => {
+                println!("Unimplemented note value:{}", s);
+                None
+            }
+        }
+    }
+
     pub fn is_beamable(self: NValue) -> bool {
         return match self {
-            Self::Nv8 | Self::Nv8dot | Self::Nv8tri | Self::Nv16 | Self::Nv16dot | Self::Nv32 => true,
+            Self::Nv8 | Self::Nv8dot | Self::Nv8tri | Self::Nv16 | Self::Nv16dot | Self::Nv32 => {
+                true
+            }
             _ => false,
         };
+    }
+}
+
+impl From<usize> for NValue {
+    fn from(val: usize) -> Self {
+        match val {
+            144 => Self::Nv1dot,
+            96 => Self::Nv1,
+            72 => Self::Nv2dot,
+            48 => Self::Nv2,
+            36 => Self::Nv4dot,
+            32 => Self::Nv2tri,
+            24 => Self::Nv4,
+            18 => Self::Nv8dot,
+            16 => Self::Nv4tri,
+            12 => Self::Nv8,
+            9 => Self::Nv16dot,
+            6 => Self::Nv16,
+            8 => Self::Nv8tri,
+            3 => Self::Nv32,
+            _ => {
+                panic!("Unimplemented note value:{}", val);
+            }
+        }
+    }
+}
+
+impl From<NValue> for usize {
+    fn from(val: NValue) -> Self {
+        match val {
+            NValue::Nv1dot => 144,
+            NValue::Nv1 => 96,
+            NValue::Nv2dot => 72,
+            NValue::Nv2 => 48,
+            NValue::Nv4dot => 36,
+            NValue::Nv2tri => 32,
+            NValue::Nv4 => 24,
+            NValue::Nv8dot => 18,
+            NValue::Nv4tri => 16,
+            NValue::Nv8 => 12,
+            NValue::Nv16dot => 9,
+            NValue::Nv8tri => 8,
+            NValue::Nv16 => 6,
+            NValue::Nv32 => 3,
+        }
     }
 }
 
@@ -108,11 +183,22 @@ pub enum DirUAD {
 
 #[cfg(test)]
 mod tests {
+    use crate::core::NValue;
     use crate::core::*;
     use crate::quick::QCode;
 
     #[test]
     fn example() {
         let notes = QCode::notes("nv4 0 nv8 1 nv2 2");
+    }
+
+    #[test]
+    fn nvalues() {
+        assert_eq!(NValue::Nv4 as usize, 24);
+    }
+
+    #[test]
+    fn nvalues2() {
+        let v = NValue::from(333);
     }
 }

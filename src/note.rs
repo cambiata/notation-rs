@@ -18,18 +18,11 @@ impl Note {
 
     pub fn is_beamable(self: &Note) -> bool {
         match self.ntype {
-            NoteType::Pause | NoteType::Slash => return false,
+            NoteType::Pause | NoteType::Slash => false,
             NoteType::Heads(_) => self.value.is_beamable(),
-        };
-        return true;
+        }
     }
 }
-
-// impl NValueItem for Note {
-//     fn val(&self) -> u32 {
-//         self.val as u32
-//     }
-// }
 
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub enum NoteType {

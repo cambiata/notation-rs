@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct Notes {
     pub items: Vec<Note>,
-    pub value: u32,
+    pub value: usize,
 }
 
 impl Notes {
@@ -14,7 +14,7 @@ impl Notes {
 
         Self {
             items,
-            value: *value as u32,
+            value: *value as usize,
         }
     }
 
