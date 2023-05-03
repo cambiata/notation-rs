@@ -87,9 +87,7 @@ impl QCode {
 #[cfg(test)]
 mod tests {
     use super::QCode;
-    
-    
-    
+
     use crate::notes::*;
 
     #[test]
