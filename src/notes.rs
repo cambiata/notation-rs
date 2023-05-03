@@ -1,4 +1,4 @@
-use crate::core::*;
+
 use crate::note::*;
 
 use serde::{Deserialize, Serialize};
@@ -100,7 +100,7 @@ impl<'a> Iterator for NotesPairs<'a> {
         match self.notes.items.len() {
             0 => None,
             1 => {
-                if (self.idx == 0) {
+                if self.idx == 0 {
                     self.idx += 1;
                     return Some((0, Some(&self.notes.items[0]), None));
                 }

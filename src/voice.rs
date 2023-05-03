@@ -1,7 +1,7 @@
-use crate::beaming::*;
+
 use crate::core::*;
-use crate::heads::*;
-use crate::note::*;
+
+
 use crate::notes::*;
 
 #[derive(Debug)]
@@ -47,7 +47,7 @@ mod tests {
     use super::VoiceType::{VBarpause, VNotes};
     use super::*;
     use crate::quick::QCode;
-    use std::convert::From;
+    
 
     #[test]
     fn voice() {

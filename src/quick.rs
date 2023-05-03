@@ -22,7 +22,7 @@ impl QCode {
                 "p" => {
                     println!("pause:{}", segment);
                     let n = Note {
-                        value: cur_val.clone(),
+                        value: cur_val,
                         ntype: NoteType::Pause,
                         attr: NoteAttributes { color: None },
                     };
@@ -40,7 +40,7 @@ impl QCode {
                         .collect();
                     let heads = Heads::new(items);
                     let n = Note::new(
-                        cur_val.clone(),
+                        cur_val,
                         NoteType::Heads(heads),
                         NoteAttributes { color: None },
                     );
@@ -71,9 +71,9 @@ impl QCode {
     }
 
     pub fn voices(code: &str) -> Voices {
-        let segments: Vec<&str> = code.trim().split("/").collect();
+        let segments: Vec<&str> = code.trim().split('/').collect();
         let mut voices: Vec<Voice> = vec![];
-        if (segments.len() > 2) {
+        if segments.len() > 2 {
             panic!("too many voices: {}", voices.len());
         }
         for segment in segments {
@@ -87,9 +87,9 @@ impl QCode {
 #[cfg(test)]
 mod tests {
     use super::QCode;
-    use crate::core::*;
-    use crate::head::*;
-    use crate::note::*;
+    
+    
+    
     use crate::notes::*;
 
     #[test]

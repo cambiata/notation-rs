@@ -15,8 +15,8 @@ impl Voices {
 
 #[cfg(test)]
 mod tests {
-    use crate::core::*;
-    use crate::quick::QCode;
+    
+    
 
     #[test]
     fn voices() {}

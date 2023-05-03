@@ -1,5 +1,5 @@
 use crate::core::*;
-use crate::note;
+
 use crate::note::*;
 use crate::notes::*;
 // use crate::tools::pair_iterator::*;
@@ -62,11 +62,11 @@ impl BeamingItemsGenerator {
                 let mut note_group: Vec<&Note> = vec![];
 
                 for note_pos in note_positions {
-                    let (note_idx, note_start, note_end, note) = note_pos;
+                    let (_note_idx, note_start, note_end, note) = note_pos;
 
                     if note_end <= cycle_end {
                         // println!("note fits in cycle");
-                        if (note.is_beamable()) {
+                        if note.is_beamable() {
                             // println!("note is beamable");
                             note_group.push(note);
                         } else {
@@ -108,7 +108,7 @@ impl BeamingItemsGenerator {
                         }
                         note_group = vec![];
                         //------------------------------------------------
-                        if (note.is_beamable()) {
+                        if note.is_beamable() {
                             // println!("note is beamable");
                             note_group.push(note);
                         } else {
@@ -157,10 +157,10 @@ mod tests {
             &notes,
             super::BeamingPattern::NValues(vec![Nv4, Nv4dot]),
         );
-        println!("");
+        println!();
         for beam in beams.iter() {
             println!("beam:{:?}", beam);
-            println!("");
+            println!();
         }
     }
 
@@ -171,10 +171,10 @@ mod tests {
         // let notes = QCode::notes("nv4 0 0 0 0 0 ");
         let beams =
             BeamingItemsGenerator::generate(&notes, super::BeamingPattern::NValues(vec![Nv4]));
-        println!("");
+        println!();
         for beam in beams.iter() {
             println!("beam:{:?}", beam);
-            println!("");
+            println!();
         }
     }
 
@@ -183,7 +183,7 @@ mod tests {
         let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
         // let notes = QCode::notes("nv8 p 0");
         let beams = BeamingItemsGenerator::generate(&notes, super::BeamingPattern::NoBeams);
-        println!("");
+        println!();
         for beam in beams.iter() {
             println!("beam:{:?}", beam);
         }

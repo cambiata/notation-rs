@@ -18,7 +18,7 @@ impl<'a, T> PairIterator<'a, T> {
 impl<'a, T> Iterator for PairIterator<'a, T> {
     type Item = (Option<&'a T>, Option<&'a T>);
     fn next(&mut self) -> Option<Self::Item> {
-        if (self.idx == 0 && self.items.len() < 2) {
+        if self.idx == 0 && self.items.len() < 2 {
             self.idx += 1;
             return Some((Some(self.items[0]), None));
         }

@@ -91,7 +91,7 @@ mod tests {
         // let items = &tests.items;
 
         let custom_iterator = ValueSumIterator {
-            items: items,
+            items,
             count: 0,
             pos: 0,
         };

@@ -51,7 +51,7 @@ mod tests {
 
     #[test]
     fn test_Heads() {
-        let head0 = Head::new(1, HeadAttributes { accidental: None });
+        let _head0 = Head::new(1, HeadAttributes { accidental: None });
         let head1 = Head::new(-2, HeadAttributes { accidental: None });
         let vec = vec![Head::new(1, HeadAttributes { accidental: None }), head1];
         let heads = Heads::new(vec);

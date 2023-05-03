@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use serde_json;
+
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Hash)]
@@ -88,12 +88,12 @@ impl NValue {
     }
 
     pub fn is_beamable(self: NValue) -> bool {
-        return match self {
+        match self {
             Self::Nv8 | Self::Nv8dot | Self::Nv8tri | Self::Nv16 | Self::Nv16dot | Self::Nv32 => {
                 true
             }
             _ => false,
-        };
+        }
     }
 }
 
@@ -174,7 +174,7 @@ impl<'a> Iterator for NValueIterator<'a> {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub enum DirUAD {
     Up,
     Auto,
@@ -184,12 +184,12 @@ pub enum DirUAD {
 #[cfg(test)]
 mod tests {
     use crate::core::NValue;
-    use crate::core::*;
+    
     use crate::quick::QCode;
 
     #[test]
     fn example() {
-        let notes = QCode::notes("nv4 0 nv8 1 nv2 2");
+        let _notes = QCode::notes("nv4 0 nv8 1 nv2 2");
     }
 
     #[test]
@@ -199,6 +199,6 @@ mod tests {
 
     #[test]
     fn nvalues2() {
-        let v = NValue::from(333);
+        let _v = NValue::from(333);
     }
 }
