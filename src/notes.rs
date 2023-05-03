@@ -1,4 +1,3 @@
-
 use crate::note::*;
 
 use serde::{Deserialize, Serialize};
