@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-
 #[allow(dead_code)]
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Hash)]
 pub enum Accidental {
@@ -31,35 +30,35 @@ pub enum NValue {
 }
 
 impl NValue {
-    pub fn from_str(s: &str) -> NValue {
-        match s.to_lowercase().as_str() {
-            "nv1dot" => Self::Nv1dot,
-            "nv1." => Self::Nv1dot,
-            "nv1" => Self::Nv1,
-            "nv2dot" => Self::Nv2dot,
-            "nv2." => Self::Nv2dot,
-            "nv2" => Self::Nv2,
-            "nv2tri" => Self::Nv2tri,
-            "nv4dot" => Self::Nv4dot,
-            "nv4." => Self::Nv4dot,
-            "nv4" => Self::Nv4,
-            "nv8dot" => Self::Nv8dot,
-            "nv8." => Self::Nv8dot,
-            "nv4tri" => Self::Nv4tri,
-            "nv8" => Self::Nv8,
-            "nv16dot" => Self::Nv16dot,
-            "nv16." => Self::Nv16dot,
-            "nv8tri" => Self::Nv8tri,
-            "nv16" => Self::Nv16,
-            "nv32" => Self::Nv32,
-            _ => {
-                println!("Unimplemented note value:{}", s);
-                Self::Nv4
-            }
-        }
-    }
+    // pub fn from_str(s: &str) -> NValue {
+    //     match s.to_lowercase().as_str() {
+    //         "nv1dot" => Self::Nv1dot,
+    //         "nv1." => Self::Nv1dot,
+    //         "nv1" => Self::Nv1,
+    //         "nv2dot" => Self::Nv2dot,
+    //         "nv2." => Self::Nv2dot,
+    //         "nv2" => Self::Nv2,
+    //         "nv2tri" => Self::Nv2tri,
+    //         "nv4dot" => Self::Nv4dot,
+    //         "nv4." => Self::Nv4dot,
+    //         "nv4" => Self::Nv4,
+    //         "nv8dot" => Self::Nv8dot,
+    //         "nv8." => Self::Nv8dot,
+    //         "nv4tri" => Self::Nv4tri,
+    //         "nv8" => Self::Nv8,
+    //         "nv16dot" => Self::Nv16dot,
+    //         "nv16." => Self::Nv16dot,
+    //         "nv8tri" => Self::Nv8tri,
+    //         "nv16" => Self::Nv16,
+    //         "nv32" => Self::Nv32,
+    //         _ => {
+    //             println!("Unimplemented note value:{}", s);
+    //             Self::Nv4
+    //         }
+    //     }
+    // }
 
-    pub fn from_str_option(s: &str) -> Option<NValue> {
+    pub fn from_str(s: &str) -> Option<NValue> {
         match s.to_lowercase().as_str() {
             "nv1dot" => Some(Self::Nv1dot),
             "nv1." => Some(Self::Nv1dot),
@@ -184,7 +183,7 @@ pub enum DirUAD {
 #[cfg(test)]
 mod tests {
     use crate::core::NValue;
-    
+
     use crate::quick::QCode;
 
     #[test]

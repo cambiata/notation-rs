@@ -67,5 +67,8 @@ mod tests {
     fn test_code() {
         let notes: Notes = QCode::notes("0 1,2 nv2 -4 p ");
         println!("notes:{:?}", notes);
+        let notes_json = serde_json::to_string(&notes).unwrap();
+        println!("notes_json:{:?}", notes_json);
+        std::fs::write("test_notes.json", &notes_json).unwrap();
     }
 }

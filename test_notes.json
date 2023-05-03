@@ -1,0 +1,72 @@
+{
+    "items": [
+        {
+            "value": "Nv4",
+            "ntype": {
+                "Heads": {
+                    "items": [
+                        {
+                            "level": 0,
+                            "attr": {
+                                "accidental": null
+                            }
+                        }
+                    ]
+                }
+            },
+            "attr": {
+                "color": null
+            }
+        },
+        {
+            "value": "Nv4",
+            "ntype": {
+                "Heads": {
+                    "items": [
+                        {
+                            "level": 1,
+                            "attr": {
+                                "accidental": null
+                            }
+                        },
+                        {
+                            "level": 2,
+                            "attr": {
+                                "accidental": null
+                            }
+                        }
+                    ]
+                }
+            },
+            "attr": {
+                "color": null
+            }
+        },
+        {
+            "value": "Nv2",
+            "ntype": {
+                "Heads": {
+                    "items": [
+                        {
+                            "level": -4,
+                            "attr": {
+                                "accidental": null
+                            }
+                        }
+                    ]
+                }
+            },
+            "attr": {
+                "color": null
+            }
+        },
+        {
+            "value": "Nv2",
+            "ntype": "Pause",
+            "attr": {
+                "color": null
+            }
+        }
+    ],
+    "value": 144
+}

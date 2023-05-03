@@ -12,7 +12,7 @@ pub struct QCode;
 impl QCode {
     pub fn notes(code: &str) -> Notes {
         let segments: Vec<&str> = code.trim().split(' ').collect();
-        let mut cur_val: NValue = NValue::Nv4;
+        let mut cur_val: Option<NValue> = None;
         let mut notes: Vec<Note> = vec![];
         for segment in segments {
             match segment {
@@ -21,8 +21,9 @@ impl QCode {
                 }
                 "p" => {
                     println!("pause:{}", segment);
+                    let value: NValue = cur_val.unwrap_or(NValue::Nv4);
                     let n = Note {
-                        value: cur_val,
+                        value,
                         ntype: NoteType::Pause,
                         attr: NoteAttributes { color: None },
                     };
@@ -40,7 +41,7 @@ impl QCode {
                         .collect();
                     let heads = Heads::new(items);
                     let n = Note::new(
-                        cur_val,
+                        cur_val.unwrap_or(NValue::Nv4),
                         NoteType::Heads(heads),
                         NoteAttributes { color: None },
                     );
@@ -58,7 +59,7 @@ impl QCode {
             let segments = c2.split(' ').collect::<Vec<&str>>();
             let mut barpause_value: usize = 0;
             for segment in segments {
-                if let Some(v) = NValue::from_str_option(segment) {
+                if let Some(v) = NValue::from_str(segment) {
                     barpause_value += v as usize;
                 }
             }
