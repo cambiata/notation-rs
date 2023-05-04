@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use std::fmt;
 
 use crate::core::*;
 use crate::note::Note;
@@ -18,8 +19,22 @@ pub enum ComplexType<'a> {
     OneBarpause(&'a BarPause),
     OneNote(&'a Note, DirUAD),
     TwoNotes(&'a Note, &'a Note),
-    BarpauseNote(Note),
-    NoteBarpause(Note),
+    BarpauseNote(&'a BarPause, &'a Note),
+    NoteBarpause(&'a Note, &'a BarPause),
+    TwoBarpauses(&'a BarPause, &'a BarPause),
+}
+
+impl<'a> ComplexType<'a> {
+    fn debug_str(&self) -> String {
+        match self {
+            ComplexType::OneBarpause(bp) => format!("OneBarpause({:?})", bp),
+            ComplexType::OneNote(note, dir) => format!("OneNote({:?})", dir),
+            ComplexType::TwoNotes(note1, note2) => format!("TwoNotes()"),
+            ComplexType::BarpauseNote(bp, note) => format!("BarpauseNote({:?} note)", bp),
+            ComplexType::NoteBarpause(note, bp) => format!("NoteBarpause(note/{:?})", bp),
+            ComplexType::TwoBarpauses(bp1, bp2) => format!("TwoBarpauses({:?}/{:?})", bp1, bp2),
+        }
+    }
 }
 
 impl<'a> Complex<'a> {
@@ -27,6 +42,7 @@ impl<'a> Complex<'a> {
         let mut complexes: Vec<Complex> = vec![];
 
         match voices.len() {
+            0 => panic!("Complex: no voices"),
             1 => {
                 println!("one voice");
 
@@ -58,11 +74,39 @@ impl<'a> Complex<'a> {
             2 => {
                 println!("two voices");
                 match [&voices[0].vtype, &voices[1].vtype] {
-                    [&VoiceType::VBarpause(_), &VoiceType::VNotes(ref notes)] => {
+                    [&VoiceType::VBarpause(ref bp), &VoiceType::VNotes(ref notes)] => {
                         println!("barpause/notes");
+                        let mut position = 0;
+                        for (idx, note) in notes.iter().enumerate() {
+                            let duration = note.duration;
+                            complexes.push(Complex {
+                                position,
+                                duration,
+                                ctype: if idx == 0 {
+                                    ComplexType::BarpauseNote(bp, note)
+                                } else {
+                                    ComplexType::OneNote(note, DirUAD::Down)
+                                },
+                            });
+                            position += duration;
+                        }
                     }
-                    [&VoiceType::VNotes(_), &VoiceType::VBarpause(_)] => {
+                    [&VoiceType::VNotes(ref notes), &VoiceType::VBarpause(ref bp)] => {
                         println!("notes/barpause");
+                        let mut position = 0;
+                        for (idx, note) in notes.iter().enumerate() {
+                            let duration = note.duration;
+                            complexes.push(Complex {
+                                position,
+                                duration,
+                                ctype: if idx == 0 {
+                                    ComplexType::NoteBarpause(note, bp)
+                                } else {
+                                    ComplexType::OneNote(note, DirUAD::Up)
+                                },
+                            });
+                            position += duration;
+                        }
                     }
                     [&VoiceType::VNotes(ref notes1), &VoiceType::VNotes(ref notes2)] => {
                         println!("notes/notes");
@@ -78,15 +122,15 @@ impl<'a> Complex<'a> {
                             map2.insert(np.1, np.0);
                         }
 
-                        let mut positionsHash: HashSet<usize> = HashSet::new();
+                        let mut positions_hash: HashSet<usize> = HashSet::new();
                         map1.keys().for_each(|f| {
-                            positionsHash.insert(*f);
+                            positions_hash.insert(*f);
                         });
                         map2.keys().for_each(|f| {
-                            positionsHash.insert(*f);
+                            positions_hash.insert(*f);
                         });
 
-                        let mut positions: Vec<usize> = positionsHash.into_iter().collect();
+                        let mut positions: Vec<usize> = positions_hash.into_iter().collect();
                         positions.sort();
 
                         let mut durations: Vec<usize> =
@@ -136,18 +180,22 @@ impl<'a> Complex<'a> {
                             }
                         }
                     }
-                    [&VoiceType::VBarpause(_), &VoiceType::VBarpause(_)] => {
+                    [&VoiceType::VBarpause(ref bp1), &VoiceType::VBarpause(ref bp2)] => {
                         println!("barpause/barpause");
+                        complexes.push(Complex {
+                            position: 0,
+                            duration: bp1.0.max(bp2.0),
+                            ctype: ComplexType::TwoBarpauses(bp1, bp2),
+                        });
                     }
                 }
             }
             _ => {
-                println!("too many voices");
+                println!("Complex: too many voices");
             }
         }
 
         complexes
-        // vec![]
     }
 }
 
@@ -160,20 +208,40 @@ mod tests {
 
     #[test]
     fn complex() {
-        let voices = QCode::voices("Nv2 0 / Nv8 0 0 0 0 0");
+        let voices = QCode::voices("Nv4 0 0 / Nv8 0 0 0 0 0");
         let complexes = Complex::from_voices(&voices);
         for complex in complexes {
-            let s = match complex.ctype {
-                ComplexType::OneBarpause(bp) => format!("OneBarpause:{}", bp.0),
-                ComplexType::OneNote(note, dir) => format!("OneNote:{:?} ", dir),
-                ComplexType::TwoNotes(note1, note2) => format!("TwoNotes:"),
-                ComplexType::BarpauseNote(note) => format!("barpause-note:{:?}", note),
-                ComplexType::NoteBarpause(note) => format!("note-barpause:{:?}", note),
-            };
-
             println!(
                 "complex:{:?} {:?} {:?}",
-                complex.position, complex.duration, s
+                complex.position,
+                complex.duration,
+                complex.ctype.debug_str()
+            );
+        }
+    }
+    #[test]
+    fn complex2() {
+        let voices = QCode::voices(" Nv4 0 0 0 / bp Nv1");
+        let complexes = Complex::from_voices(&voices);
+        for complex in complexes {
+            println!(
+                "complex:{:?} {:?} {:?}",
+                complex.position,
+                complex.duration,
+                complex.ctype.debug_str()
+            );
+        }
+    }
+    #[test]
+    fn complex3() {
+        let voices = QCode::voices(" bp nv2 / bp nv4");
+        let complexes = Complex::from_voices(&voices);
+        for complex in complexes {
+            println!(
+                "complex:{:?} {:?} {:?}",
+                complex.position,
+                complex.duration,
+                complex.ctype.debug_str()
             );
         }
     }

@@ -26,12 +26,12 @@ impl BeamingItemsGenerator {
             BeamingPattern::NoBeams => {
                 let mut items: Vec<BeamingItem> = vec![];
                 for note in notes {
-                    let beamItem: BeamingItem = match note.ntype {
+                    let beam_item: BeamingItem = match note.ntype {
                         NoteType::Heads(_) => BeamingItem::Single(note),
                         NoteType::Pause => BeamingItem::Single(note),
                         NoteType::Slash => BeamingItem::Single(note),
                     };
-                    items.push(beamItem);
+                    items.push(beam_item);
                 }
                 items
             }

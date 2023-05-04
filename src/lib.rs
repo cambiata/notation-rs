@@ -1,13 +1,11 @@
 mod beaming;
 mod complex;
 mod core;
-mod experiment;
 mod head;
 mod heads;
 mod note;
 mod notes;
 mod quick;
-mod tools;
 mod voice;
 
 #[cfg(test)]

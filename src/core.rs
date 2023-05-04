@@ -113,38 +113,37 @@ pub enum Accidental {
 //     }
 // }
 
-pub trait NValueItem {
-    fn val(&self) -> u32;
-}
+// pub trait NValueItem {
+//     fn val(&self) -> u32;
+// }
 
-struct NValueIterator<'a> {
-    pos: usize,
-    idx: usize,
-    items: Vec<&'a dyn NValueItem>,
-}
+// struct NValueIterator<'a> {
+//     pos: usize,
+//     idx: usize,
+//     items: Vec<&'a dyn NValueItem>,
+// }
 
-impl<'a> NValueIterator<'a> {
-    fn new(items: Vec<&'a dyn NValueItem>) -> Self {
-        Self {
-            pos: 0,
-            idx: 0,
-            items,
-        }
-    }
-}
+// impl<'a> NValueIterator<'a> {
+//     fn new(items: Vec<&'a dyn NValueItem>) -> Self {
+//         Self {
+//             pos: 0,
+//             idx: 0,
+//             items,
+//         }
+//     }
+// }
 
-impl<'a> Iterator for NValueIterator<'a> {
-    type Item = &'a dyn NValueItem;
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.idx < self.items.len() - 1 {
-            let item = self.items[self.idx];
-            self.idx += 1;
-            return Some(item);
-        }
-        None
-    }
-}
-
+// impl<'a> Iterator for NValueIterator<'a> {
+//     type Item = &'a dyn NValueItem;
+//     fn next(&mut self) -> Option<Self::Item> {
+//         if self.idx < self.items.len() - 1 {
+//             let item = self.items[self.idx];
+//             self.idx += 1;
+//             return Some(item);
+//         }
+//         None
+//     }
+// }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub enum DirUAD {
     Up,

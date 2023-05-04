@@ -12,14 +12,14 @@ impl Notes {
     pub fn new(items: Vec<Note>) -> Self {
         let duration = &items.iter().fold(0, |sum, item| item.duration as i32 + sum);
 
-        let mut pos: usize = 0;
-        let mut end: usize = 0;
-        let mut positions: Vec<(usize, usize)> = vec![];
-        for note in items.iter() {
-            end = pos + note.duration as usize;
-            positions.push((pos, end));
-            pos += note.duration as usize;
-        }
+        // let mut pos: usize = 0;
+        // let mut end: usize = 0;
+        // let mut positions: Vec<(usize, usize)> = vec![];
+        // for note in items.iter() {
+        //     end = pos + note.duration as usize;
+        //     positions.push((pos, end));
+        //     pos += note.duration as usize;
+        // }
 
         Self {
             items,
