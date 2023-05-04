@@ -1,41 +1,48 @@
-
 use crate::core::*;
-
-
 use crate::notes::*;
 
 #[derive(Debug)]
 pub struct Voice {
-    pub val: usize,
+    pub duration: Duration,
     pub vtype: VoiceType,
     pub attr: VoiceAttributes,
 }
 
 impl Voice {
     pub fn new(vtype: VoiceType, attr: VoiceAttributes) -> Self {
-        let val = match vtype {
-            VoiceType::VBarpause(val) => val,
-            VoiceType::VNotes(ref notes) => notes.value,
+        let duration = match vtype {
+            VoiceType::VBarpause(ref bp) => {
+                let BarPause(duration) = bp;
+                *duration
+            }
+            VoiceType::VNotes(ref notes) => notes.duration,
         };
 
         Self {
-            val,
+            duration,
             vtype,
             attr,
             // beaming_items: vec![],
         }
     }
 
-    // pub fn create_beams(&mut self, pattern: BeamingPattern) {
-    //     if let VoiceType::VNotes(notes) = self.vtype {
-    //         self.beaming_items = BeamingItemsGenerator::generate(notes, pattern);
-    //     }
-    // }
+    pub fn get_duration(&self) -> Duration {
+        match self.vtype {
+            VoiceType::VBarpause(ref bp) => {
+                let BarPause(val) = bp;
+                *val
+            }
+            VoiceType::VNotes(ref notes) => notes.duration,
+        }
+    }
 }
 
 #[derive(Debug)]
+pub struct BarPause(pub usize);
+
+#[derive(Debug)]
 pub enum VoiceType {
-    VBarpause(usize), // val
+    VBarpause(BarPause), // val
     VNotes(Notes),
 }
 
@@ -47,7 +54,6 @@ mod tests {
     use super::VoiceType::{VBarpause, VNotes};
     use super::*;
     use crate::quick::QCode;
-    
 
     #[test]
     fn voice() {
@@ -58,7 +64,7 @@ mod tests {
 
     #[test]
     fn voice2() {
-        let voice = Voice::new(VBarpause(NValue::Nv1.into()), VoiceAttributes {});
+        let voice = Voice::new(VBarpause(BarPause(NV1)), VoiceAttributes {});
         println!("voice:{:?}", voice);
     }
 }

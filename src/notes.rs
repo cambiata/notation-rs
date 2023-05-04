@@ -1,20 +1,44 @@
-use crate::note::*;
+use crate::{core::Duration, note::*};
 
 use serde::{Deserialize, Serialize};
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct Notes {
     pub items: Vec<Note>,
-    pub value: usize,
+    pub duration: Duration,
+    // pub positions: Vec<(usize, usize)>,
 }
 
 impl Notes {
     pub fn new(items: Vec<Note>) -> Self {
-        let value = &items.iter().fold(0, |sum, item| item.value as i32 + sum);
+        let duration = &items.iter().fold(0, |sum, item| item.duration as i32 + sum);
+
+        let mut pos: usize = 0;
+        let mut end: usize = 0;
+        let mut positions: Vec<(usize, usize)> = vec![];
+        for note in items.iter() {
+            end = pos + note.duration as usize;
+            positions.push((pos, end));
+            pos += note.duration as usize;
+        }
 
         Self {
             items,
-            value: *value as usize,
+            duration: *duration as usize,
+            // positions,
         }
+    }
+
+    pub fn get_note_positions(&self) -> Vec<(&Note, usize, usize)> {
+        // note, pos, endpos
+        let mut pos: usize = 0;
+        let mut end: usize = 0;
+        let mut mapped: Vec<(&Note, usize, usize)> = vec![];
+        for note in self.items.iter() {
+            end = pos + note.duration as usize;
+            mapped.push((note, pos, end));
+            pos += note.duration as usize;
+        }
+        mapped
     }
 
     pub fn iter(&self) -> std::slice::Iter<'_, Note> {
@@ -72,9 +96,9 @@ impl<'a> Iterator for NotesPositions<'a> {
             let n = &self.notes.items[self.idx];
             let cur_idx = self.idx;
             let cur_pos = self.pos;
-            let end_pos = cur_pos + n.value as usize;
+            let end_pos = cur_pos + n.duration as usize;
             self.idx += 1;
-            self.pos += n.value as usize;
+            self.pos += n.duration as usize;
             return Some((cur_idx, cur_pos, end_pos, n));
         }
         None
@@ -147,13 +171,20 @@ mod tests {
         for n in notes_positions {
             println!("v:{:?}", n);
         }
+
+        for n in notes.get_note_positions() {
+            println!("v:{:?}", n);
+        }
     }
     #[test]
     fn notes_pairs() {
-        let notes = QCode::notes("0");
-        let pairs = NotesPairs::new(&notes);
-        for n in pairs {
-            println!("n:{:?}", n);
+        let notes = QCode::notes("0 1 2");
+        // let pairs = NotesPairs::new(&notes);
+        // for n in pairs {
+        //     println!("n:{:?}", n);
+        // }
+        for pair in notes.items.windows(2) {
+            println!("- pair:{:?}", pair);
         }
     }
 }

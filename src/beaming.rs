@@ -2,7 +2,7 @@ use crate::core::*;
 
 use crate::note::*;
 use crate::notes::*;
-// use crate::tools::pair_iterator::*;
+// use crate:1s::pair_iterator::*;
 
 #[derive(Debug)]
 pub enum BeamingItem<'a> {
@@ -15,7 +15,7 @@ pub struct BeamingItems<'a>(pub Vec<BeamingItem<'a>>);
 
 pub enum BeamingPattern {
     NoBeams,
-    NValues(Vec<NValue>),
+    NValues(Vec<usize>),
 }
 
 pub struct BeamingItemsGenerator;
@@ -37,14 +37,14 @@ impl BeamingItemsGenerator {
             }
 
             BeamingPattern::NValues(values) => {
-                println!("val:{:?}", notes.value);
+                println!("val:{:?}", notes.duration);
                 let mut value_cycle: Vec<(usize, usize)> = vec![];
                 let mut vpos_start: usize = 0;
                 let mut vpos_end: usize = 0;
                 let mut idx: usize = 0;
 
                 // create value cycle of sufficient length
-                while vpos_end <= notes.value as usize {
+                while vpos_end <= notes.duration as usize {
                     vpos_start = vpos_end;
                     let value = values[idx % values.len()] as usize;
                     // let value_to_push = values[(idx % values.len()) as usize];
@@ -146,7 +146,7 @@ impl BeamingItemsGenerator {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::NValue::{Nv4, Nv4dot};
+    use crate::core::{NV4, NV4DOT};
     use crate::quick::QCode;
 
     #[test]
@@ -155,7 +155,7 @@ mod tests {
         let notes = QCode::notes("nv8 0 0 0 0 p");
         let beams = BeamingItemsGenerator::generate(
             &notes,
-            super::BeamingPattern::NValues(vec![Nv4, Nv4dot]),
+            super::BeamingPattern::NValues(vec![NV4, NV4DOT]),
         );
         println!();
         for beam in beams.iter() {
@@ -170,7 +170,7 @@ mod tests {
         let notes = QCode::notes("nv8 0 0");
         // let notes = QCode::notes("nv4 0 0 0 0 0 ");
         let beams =
-            BeamingItemsGenerator::generate(&notes, super::BeamingPattern::NValues(vec![Nv4]));
+            BeamingItemsGenerator::generate(&notes, super::BeamingPattern::NValues(vec![NV4]));
         println!();
         for beam in beams.iter() {
             println!("beam:{:?}", beam);

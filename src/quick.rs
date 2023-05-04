@@ -1,29 +1,29 @@
 use crate::{
-    core::NValue,
+    core::{Dur, NV4},
+    // core::Duration,
     head::*,
     heads::*,
     note::*,
     notes::*,
-    voice::{Voice, VoiceAttributes, VoiceType},
-    voices::Voices,
+    voice::{BarPause, Voice, VoiceAttributes, VoiceType},
 };
 pub struct QCode;
 
 impl QCode {
     pub fn notes(code: &str) -> Notes {
         let segments: Vec<&str> = code.trim().split(' ').collect();
-        let mut cur_val: Option<NValue> = None;
+        let mut cur_val: Option<usize> = None;
         let mut notes: Vec<Note> = vec![];
         for segment in segments {
             match segment {
                 a if a.to_lowercase().starts_with("nv") => {
-                    cur_val = NValue::from_str(segment);
+                    cur_val = Dur::from_str(segment);
                 }
                 "p" => {
                     println!("pause:{}", segment);
-                    let value: NValue = cur_val.unwrap_or(NValue::Nv4);
+                    let value: usize = cur_val.unwrap_or(NV4);
                     let n = Note {
-                        value,
+                        duration: value,
                         ntype: NoteType::Pause,
                         attr: NoteAttributes { color: None },
                     };
@@ -41,7 +41,7 @@ impl QCode {
                         .collect();
                     let heads = Heads::new(items);
                     let n = Note::new(
-                        cur_val.unwrap_or(NValue::Nv4),
+                        cur_val.unwrap_or(NV4),
                         NoteType::Heads(heads),
                         NoteAttributes { color: None },
                     );
@@ -59,11 +59,11 @@ impl QCode {
             let segments = c2.split(' ').collect::<Vec<&str>>();
             let mut barpause_value: usize = 0;
             for segment in segments {
-                if let Some(v) = NValue::from_str(segment) {
+                if let Some(v) = Dur::from_str(segment) {
                     barpause_value += v as usize;
                 }
             }
-            VoiceType::VBarpause(barpause_value)
+            VoiceType::VBarpause(BarPause(barpause_value))
         } else {
             let notes = QCode::notes(code);
             VoiceType::VNotes(notes)
@@ -71,7 +71,7 @@ impl QCode {
         Voice::new(vtype, VoiceAttributes {})
     }
 
-    pub fn voices(code: &str) -> Voices {
+    pub fn voices(code: &str) -> Vec<Voice> {
         let segments: Vec<&str> = code.trim().split('/').collect();
         let mut voices: Vec<Voice> = vec![];
         if segments.len() > 2 {
@@ -81,7 +81,7 @@ impl QCode {
             let voice = QCode::voice(segment);
             voices.push(voice);
         }
-        Voices::new(voices)
+        voices
     }
 }
 
@@ -110,7 +110,7 @@ mod tests {
     #[test]
     fn test_voices() {
         let voices = QCode::voices("nv4 0 0 0 0 / bp Nv2dot");
-        for voice in voices.items.iter() {
+        for voice in voices.iter() {
             println!("- voice:{:?}", voice);
         }
     }

@@ -1,25 +1,28 @@
 use crate::core::*;
 use serde::{Deserialize, Serialize};
 
-
 use crate::heads::Heads;
 
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub struct Note {
-    pub value: NValue,
+    pub duration: Duration,
     pub ntype: NoteType,
     pub attr: NoteAttributes,
 }
 
 impl Note {
-    pub fn new(value: NValue, ntype: NoteType, attr: NoteAttributes) -> Note {
-        Note { value, ntype, attr }
+    pub fn new(duration: usize, ntype: NoteType, attr: NoteAttributes) -> Note {
+        Note {
+            duration,
+            ntype,
+            attr,
+        }
     }
 
     pub fn is_beamable(self: &Note) -> bool {
         match self.ntype {
             NoteType::Pause | NoteType::Slash => false,
-            NoteType::Heads(_) => self.value.is_beamable(),
+            NoteType::Heads(_) => Dur::is_beamable(self.duration),
         }
     }
 }

@@ -50,7 +50,7 @@ mod tests {
     // use super::Heads;
 
     #[test]
-    fn test_Heads() {
+    fn test_heads() {
         let _head0 = Head::new(1, HeadAttributes { accidental: None });
         let head1 = Head::new(-2, HeadAttributes { accidental: None });
         let vec = vec![Head::new(1, HeadAttributes { accidental: None }), head1];
@@ -61,6 +61,4 @@ mod tests {
 
         println!("heads.items[0];:{:?}", &heads);
     }
-
-
 }

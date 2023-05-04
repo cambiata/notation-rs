@@ -1,4 +1,5 @@
 mod beaming;
+mod complex;
 mod core;
 mod experiment;
 mod head;
@@ -8,7 +9,6 @@ mod notes;
 mod quick;
 mod tools;
 mod voice;
-mod voices;
 
 #[cfg(test)]
 mod tests {
@@ -50,11 +50,7 @@ mod tests {
             Head::new(4, HeadAttributes { accidental: None }),
         ]);
 
-        let note = Note::new(
-            NValue::Nv2,
-            NoteType::Heads(heads),
-            NoteAttributes { color: None },
-        );
+        let note = Note::new(NV2, NoteType::Heads(heads), NoteAttributes { color: None });
 
         let note_json = serde_json::to_string(&note).unwrap();
         println!("note_json:{:?}", note_json);

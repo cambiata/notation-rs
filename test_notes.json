@@ -1,7 +1,7 @@
 {
     "items": [
         {
-            "value": "Nv4",
+            "duration": "Nv4",
             "ntype": {
                 "Heads": {
                     "items": [
@@ -19,7 +19,7 @@
             }
         },
         {
-            "value": "Nv4",
+            "duration": "Nv4",
             "ntype": {
                 "Heads": {
                     "items": [
@@ -43,7 +43,7 @@
             }
         },
         {
-            "value": "Nv2",
+            "duration": "Nv2",
             "ntype": {
                 "Heads": {
                     "items": [
@@ -61,12 +61,12 @@
             }
         },
         {
-            "value": "Nv2",
+            "duration": "Nv2",
             "ntype": "Pause",
             "attr": {
                 "color": null
             }
         }
     ],
-    "value": 144
+    "duration": 144
 }
