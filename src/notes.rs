@@ -11,16 +11,6 @@ pub struct Notes {
 impl Notes {
     pub fn new(items: Vec<Note>) -> Self {
         let duration = &items.iter().fold(0, |sum, item| item.duration as i32 + sum);
-
-        // let mut pos: usize = 0;
-        // let mut end: usize = 0;
-        // let mut positions: Vec<(usize, usize)> = vec![];
-        // for note in items.iter() {
-        //     end = pos + note.duration as usize;
-        //     positions.push((pos, end));
-        //     pos += note.duration as usize;
-        // }
-
         Self {
             items,
             duration: *duration as usize,
@@ -52,9 +42,7 @@ impl Notes {
 
 impl<'a> IntoIterator for &'a Notes {
     type Item = &'a Note;
-
     type IntoIter = std::slice::Iter<'a, Note>;
-
     fn into_iter(self) -> Self::IntoIter {
         self.items.iter()
     }
@@ -62,7 +50,6 @@ impl<'a> IntoIterator for &'a Notes {
 
 impl<'a> IntoIterator for &'a mut Notes {
     type Item = &'a mut Note;
-
     type IntoIter = std::slice::IterMut<'a, Note>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -71,41 +58,40 @@ impl<'a> IntoIterator for &'a mut Notes {
 }
 
 //===============================================================
+// pub struct NotesPositions<'a> {
+//     notes: &'a Notes,
+//     idx: usize,
+//     pos: usize,
+// }
 
-pub struct NotesPositions<'a> {
-    notes: &'a Notes,
-    idx: usize,
-    pos: usize,
-}
+// impl<'a> NotesPositions<'a> {
+//     pub fn new(notes: &'a Notes) -> Self {
+//         Self {
+//             notes,
+//             idx: 0,
+//             pos: 0,
+//         }
+//     }
+// }
 
-impl<'a> NotesPositions<'a> {
-    pub fn new(notes: &'a Notes) -> Self {
-        Self {
-            notes,
-            idx: 0,
-            pos: 0,
-        }
-    }
-}
-
-impl<'a> Iterator for NotesPositions<'a> {
-    type Item = (usize, usize, usize, &'a Note);
-    fn next(&mut self) -> Option<Self::Item> {
-        // if self.idx < self.values.len() {
-        if self.idx < self.notes.items.len() {
-            let n = &self.notes.items[self.idx];
-            let cur_idx = self.idx;
-            let cur_pos = self.pos;
-            let end_pos = cur_pos + n.duration as usize;
-            self.idx += 1;
-            self.pos += n.duration as usize;
-            return Some((cur_idx, cur_pos, end_pos, n));
-        }
-        None
-    }
-}
-
+// impl<'a> Iterator for NotesPositions<'a> {
+//     type Item = (usize, usize, usize, &'a Note);
+//     fn next(&mut self) -> Option<Self::Item> {
+//         // if self.idx < self.values.len() {
+//         if self.idx < self.notes.items.len() {
+//             let n = &self.notes.items[self.idx];
+//             let cur_idx = self.idx;
+//             let cur_pos = self.pos;
+//             let end_pos = cur_pos + n.duration as usize;
+//             self.idx += 1;
+//             self.pos += n.duration as usize;
+//             return Some((cur_idx, cur_pos, end_pos, n));
+//         }
+//         None
+//     }
+// }
 //===============================================================
+
 struct NotesPairs<'a> {
     notes: &'a Notes,
     idx: usize,
@@ -157,7 +143,6 @@ mod tests {
     #[test]
     fn test_notes_constructor() {
         let notes = QCode::notes("nv4 0 nv8 1");
-
         for note in &notes {
             println!("- note:{:?}", note);
         }
@@ -167,10 +152,6 @@ mod tests {
     #[test]
     fn notes_positions() {
         let notes = QCode::notes("0 1 2 3");
-        let notes_positions = NotesPositions::new(&notes);
-        for n in notes_positions {
-            println!("v:{:?}", n);
-        }
 
         for n in notes.get_note_positions() {
             println!("v:{:?}", n);
@@ -179,10 +160,6 @@ mod tests {
     #[test]
     fn notes_pairs() {
         let notes = QCode::notes("0 1 2");
-        // let pairs = NotesPairs::new(&notes);
-        // for n in pairs {
-        //     println!("n:{:?}", n);
-        // }
         for pair in notes.items.windows(2) {
             println!("- pair:{:?}", pair);
         }
