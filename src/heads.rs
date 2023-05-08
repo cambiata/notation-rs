@@ -3,12 +3,15 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub struct Heads {
-    items: Vec<Head>,
+    pub items: Vec<Head>,
 }
 
 impl Heads {
-    pub fn new(items: Vec<Head>) -> Self {
-        // items.sort_by_key(|item| item.level);
+    pub fn new(mut items: Vec<Head>) -> Self {
+        if items.len() == 0 {
+            panic!("Heads::new() called with empty vector");
+        }
+        items.sort_by_key(|item| item.level);
         Self { items }
     }
 

@@ -1,11 +1,15 @@
 mod beaming;
+mod chord;
 mod complex;
 mod core;
+mod dynamic;
 mod head;
 mod heads;
 mod note;
+mod noterects;
 mod notes;
 mod quick;
+mod syllable;
 mod voice;
 
 #[cfg(test)]

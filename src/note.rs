@@ -1,4 +1,4 @@
-use crate::core::*;
+use crate::{chord::ChordItem, core::*, dynamic::DynamicItem, syllable::Syllable};
 use serde::{Deserialize, Serialize};
 
 use crate::heads::Heads;
@@ -21,8 +21,9 @@ impl Note {
 
     pub fn is_beamable(self: &Note) -> bool {
         match self.ntype {
-            NoteType::Pause | NoteType::Slash => false,
+            // NoteType::Pause | NoteType::Slash | NoteType::Lyric(_), NoteType::Dynamic(_), NoteType::Chord(_) => false,
             NoteType::Heads(_) => Dur::is_beamable(self.duration),
+            _ => false,
         }
     }
 }
@@ -32,6 +33,9 @@ pub enum NoteType {
     Heads(Heads),
     Pause,
     Slash,
+    Lyric(Syllable),
+    Dynamic(DynamicItem),
+    Chord(ChordItem),
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]

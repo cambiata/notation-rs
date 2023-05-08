@@ -30,6 +30,9 @@ impl BeamingItemsGenerator {
                         NoteType::Heads(_) => BeamingItem::Single(note),
                         NoteType::Pause => BeamingItem::Single(note),
                         NoteType::Slash => BeamingItem::Single(note),
+                        NoteType::Lyric(_) => BeamingItem::Single(note),
+                        NoteType::Chord(_) => BeamingItem::Single(note),
+                        NoteType::Dynamic(_) => BeamingItem::Single(note),
                     };
                     items.push(beam_item);
                 }
@@ -53,7 +56,6 @@ impl BeamingItemsGenerator {
                     idx += 1;
                 }
 
-                let note_positions = NotesPositions::new(notes);
                 let mut cycle_idx = 0;
                 let mut cycle_start = value_cycle[cycle_idx].0;
                 let mut cycle_end = value_cycle[cycle_idx].1;
@@ -61,8 +63,8 @@ impl BeamingItemsGenerator {
                 let mut beaming_items: Vec<BeamingItem> = vec![];
                 let mut note_group: Vec<&Note> = vec![];
 
-                for note_pos in note_positions {
-                    let (_note_idx, note_start, note_end, note) = note_pos;
+                for note_pos in notes.get_note_positions() {
+                    let (note, note_start, note_end) = note_pos;
 
                     if note_end <= cycle_end {
                         // println!("note fits in cycle");
@@ -152,7 +154,7 @@ mod tests {
     #[test]
     fn beaming2() {
         // let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
-        let notes = QCode::notes("nv8 0 0 0 0 p");
+        let notes = QCode::notes("nv8 0 0 0 0 0 p");
         let beams = BeamingItemsGenerator::generate(
             &notes,
             super::BeamingPattern::NValues(vec![NV4, NV4DOT]),

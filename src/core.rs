@@ -151,6 +151,12 @@ pub enum DirUAD {
     Down,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Deserialize, Serialize)]
+pub enum DirUD {
+    Up,
+    Down,
+}
+
 #[cfg(test)]
 mod tests {
     // use crate::core::Duration;
@@ -252,3 +258,5 @@ impl Dur {
         }
     }
 }
+
+pub struct Rect(f32, f32, f32, f32);

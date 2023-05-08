@@ -92,42 +92,42 @@ impl<'a> IntoIterator for &'a mut Notes {
 // }
 //===============================================================
 
-struct NotesPairs<'a> {
-    notes: &'a Notes,
-    idx: usize,
-}
+// struct NotesPairs<'a> {
+//     notes: &'a Notes,
+//     idx: usize,
+// }
 
-impl<'a> NotesPairs<'a> {
-    fn new(notes: &'a Notes) -> Self {
-        Self { notes, idx: 0 }
-    }
-}
+// impl<'a> NotesPairs<'a> {
+//     fn new(notes: &'a Notes) -> Self {
+//         Self { notes, idx: 0 }
+//     }
+// }
 
-impl<'a> Iterator for NotesPairs<'a> {
-    type Item = (usize, Option<&'a Note>, Option<&'a Note>);
-    fn next(&mut self) -> Option<Self::Item> {
-        match self.notes.items.len() {
-            0 => None,
-            1 => {
-                if self.idx == 0 {
-                    self.idx += 1;
-                    return Some((0, Some(&self.notes.items[0]), None));
-                }
-                None
-            }
-            _ => {
-                if self.idx < self.notes.items.len() - 1 {
-                    let n1 = &self.notes.items[self.idx];
-                    let n2 = &self.notes.items[self.idx + 1];
-                    let cur_idx = self.idx;
-                    self.idx += 1;
-                    return Some((cur_idx, Some(n1), Some(n2)));
-                }
-                None
-            }
-        }
-    }
-}
+// impl<'a> Iterator for NotesPairs<'a> {
+//     type Item = (usize, Option<&'a Note>, Option<&'a Note>);
+//     fn next(&mut self) -> Option<Self::Item> {
+//         match self.notes.items.len() {
+//             0 => None,
+//             1 => {
+//                 if self.idx == 0 {
+//                     self.idx += 1;
+//                     return Some((0, Some(&self.notes.items[0]), None));
+//                 }
+//                 None
+//             }
+//             _ => {
+//                 if self.idx < self.notes.items.len() - 1 {
+//                     let n1 = &self.notes.items[self.idx];
+//                     let n2 = &self.notes.items[self.idx + 1];
+//                     let cur_idx = self.idx;
+//                     self.idx += 1;
+//                     return Some((cur_idx, Some(n1), Some(n2)));
+//                 }
+//                 None
+//             }
+//         }
+//     }
+// }
 
 //===============================================================
 
@@ -137,8 +137,7 @@ mod tests {
     use super::Note;
     use super::NoteAttributes;
     use super::Notes;
-    use super::NotesPairs;
-    use super::NotesPositions;
+
     use crate::quick::QCode;
     #[test]
     fn test_notes_constructor() {

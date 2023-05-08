@@ -11,7 +11,6 @@ pub struct Complex<'a> {
     pub position: usize,
     pub duration: Duration,
     pub ctype: ComplexType<'a>,
-    // pub attr: ComplexAttributes,
 }
 
 #[derive(Debug)]
