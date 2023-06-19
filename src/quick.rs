@@ -1,6 +1,5 @@
 use crate::{
-    core::{Dur, NV4},
-    // core::Duration,
+    core::{Dur, Duration, NV4},
     head::*,
     heads::*,
     note::*,
@@ -53,19 +52,29 @@ impl QCode {
         Ok(Notes::new(notes))
     }
 
-    pub fn voice(code: &str) -> Result<Voice> {        
+    pub fn voice(code: &str) -> Result<Voice> {
         let vtype = if code.contains("bp") {
             let c = code.replace("bp", "");
             let c2 = c.trim();
             let segments = c2.split(' ').collect::<Vec<&str>>();
-            let mut barpause_value: usize = 0;
+            let mut barpause_value: Duration = 0;
             for segment in segments {
-                if segment.starts_with("nv") {
-                    barpause_value += Dur::from_str(&segment[2..])?;
-                    dbg!(barpause_value);
+                if segment.to_lowercase().starts_with("nv") {
+                    let dur = Dur::from_str(&segment[2..]);
+                    match dur {
+                        Ok(d) => barpause_value += d,
+                        Err(e) => {}
+                    }
                 }
             }
-            VoiceType::VBarpause(BarPause(Some(barpause_value)))
+
+            let barpause_value: Option<Duration> = if barpause_value == 0 {
+                None
+            } else {
+                Some(barpause_value)
+            };
+
+            VoiceType::VBarpause(BarPause(barpause_value))
         } else {
             let notes = QCode::notes(code)?;
             VoiceType::VNotes(notes)
@@ -113,7 +122,7 @@ mod tests {
     #[test]
     fn test_voice() {
         // let voice = QCode::voice("nv4 0 0 0 0");
-        let voice = QCode::voice("bp nv2 nv8 x").unwrap();
+        let voice = QCode::voice("bp x nv2 y nv8 z").unwrap();
         println!("voice:{:?}", voice);
     }
 

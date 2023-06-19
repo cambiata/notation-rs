@@ -242,15 +242,15 @@ mod tests {
     }
     #[test]
     fn complex3() {
-        let voices = QCode::voices(" bp nv2 / bp Nv4 ").unwrap();
-        // let complexes = Complex::from_voices(&voices).unwrap();
-        // for complex in complexes {
-        //     println!(
-        //         "complex:{:?} {:?} {:?}",
-        //         complex.position,
-        //         complex.duration,
-        //         complex.ctype.debug_str()
-        //     );
-        // }
+        let voices = QCode::voices(" bp nv4/ bp nv8 nv8 nv8  ").unwrap();
+        let complexes = Complex::from_voices(&voices).unwrap();
+        for complex in complexes {
+            println!(
+                "complex:{:?} {:?} {:?}",
+                complex.position,
+                complex.duration,
+                complex.ctype.debug_str()
+            );
+        }
     }
 }

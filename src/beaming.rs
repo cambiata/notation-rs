@@ -150,7 +150,6 @@ mod tests {
     use super::*;
     use crate::core::{NV4, NV4DOT};
     use crate::quick::QCode;
-
     fn print_beam(beam: &BeamingItem) {
         match beam {
             BeamingItem::None(note) => println!("single:{}", note.duration),
@@ -171,6 +170,7 @@ mod tests {
             super::BeamingPattern::NValues(vec![NV4, NV4DOT]),
         )
         .unwrap();
+
         for beam in beams.iter() {
             print_beam(beam);
         }
