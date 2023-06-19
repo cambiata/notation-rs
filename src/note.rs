@@ -21,7 +21,7 @@ impl Note {
 
     pub fn is_beamable(self: &Note) -> bool {
         match self.ntype {
-            // NoteType::Pause | NoteType::Slash | NoteType::Lyric(_), NoteType::Dynamic(_), NoteType::Chord(_) => false,
+            // normal note
             NoteType::Heads(_) => Dur::is_beamable(self.duration),
             _ => false,
         }
@@ -36,6 +36,7 @@ pub enum NoteType {
     Lyric(Syllable),
     Dynamic(DynamicItem),
     Chord(ChordItem),
+    Dummy,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]

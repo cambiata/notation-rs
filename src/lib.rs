@@ -22,6 +22,7 @@ pub mod notes;
 pub mod prelude;
 pub mod quick;
 pub mod syllable;
+pub mod utils;
 pub mod voice;
 
 #[cfg(test)]
@@ -36,10 +37,10 @@ mod tests {
     #[test]
     fn lib_serialize() {
         let heads = Heads::new(vec![
-            Head::new(1, HeadAttributes { accidental: None }),
-            Head::new(0, HeadAttributes { accidental: None }),
-            Head::new(-2, HeadAttributes { accidental: None }),
-            Head::new(4, HeadAttributes { accidental: None }),
+            Head::new(1, None, HeadAttributes {}),
+            Head::new(0, None, HeadAttributes {}),
+            Head::new(-2, None, HeadAttributes {}),
+            Head::new(4, None, HeadAttributes {}),
         ]);
 
         let note = Note::new(NV2, NoteType::Heads(heads), NoteAttributes { color: None });

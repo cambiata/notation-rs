@@ -10,11 +10,11 @@ pub struct Voice {
 
 impl Voice {
     pub fn new(vtype: VoiceType, attr: VoiceAttributes) -> Self {
-        let duration = match vtype {
-            VoiceType::VBarpause(ref bp) => {
-                let BarPause(duration) = bp;
-                *duration
-            }
+        let duration: Duration = match vtype {
+            VoiceType::VBarpause(ref bp) => match bp {
+                BarPause(Some(val)) => *val,
+                BarPause(None) => 0,
+            },
             VoiceType::VNotes(ref notes) => notes.duration,
         };
 
@@ -22,23 +22,12 @@ impl Voice {
             duration,
             vtype,
             attr,
-            // beaming_items: vec![],
-        }
-    }
-
-    pub fn get_duration(&self) -> Duration {
-        match self.vtype {
-            VoiceType::VBarpause(ref bp) => {
-                let BarPause(val) = bp;
-                *val
-            }
-            VoiceType::VNotes(ref notes) => notes.duration,
         }
     }
 }
 
 #[derive(Debug)]
-pub struct BarPause(pub usize);
+pub struct BarPause(pub Option<usize>);
 
 #[derive(Debug)]
 pub enum VoiceType {
@@ -64,7 +53,7 @@ mod tests {
 
     #[test]
     fn voice2() {
-        let voice = Voice::new(VBarpause(BarPause(NV1)), VoiceAttributes {});
+        let voice = Voice::new(VBarpause(BarPause(Some(NV1))), VoiceAttributes {});
         println!("voice:{:?}", voice);
     }
 }

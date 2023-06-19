@@ -7,7 +7,7 @@ use crate::voice::{BarPause, Voice, VoiceType};
 
 #[derive(Debug)]
 pub struct Complex<'a> {
-    pub position: usize,
+    pub position: Position,
     pub duration: Duration,
     pub ctype: ComplexType<'a>,
 }
@@ -44,13 +44,13 @@ impl<'a> Complex<'a> {
             0 => return Err(ComplexError("Complex: no voices".to_string()).into()),
             1 => {
                 println!("one voice");
-
                 match voices[0].vtype {
                     VoiceType::VBarpause(ref bp) => {
                         println!("barpause");
+
                         complexes.push(Complex {
                             position: 0,
-                            duration: bp.0,
+                            duration: voices[0].duration,
                             ctype: ComplexType::OneBarpause(bp),
                         });
                     }
@@ -186,7 +186,7 @@ impl<'a> Complex<'a> {
                         println!("barpause/barpause");
                         complexes.push(Complex {
                             position: 0,
-                            duration: bp1.0.max(bp2.0),
+                            duration: voices[0].duration.max(voices[1].duration),
                             ctype: ComplexType::TwoBarpauses(bp1, bp2),
                         });
                     }
@@ -208,9 +208,10 @@ mod tests {
 
     #[test]
     fn test1() {
-        let voices = QCode::voices("Nv4 0 / Nv8 0 0").unwrap();
+        let voices = QCode::voices("Nv4 #0 / Nv8 b1 0 0").unwrap();
         let complexes = Complex::from_voices(&voices).unwrap();
-        dbg!(complexes);
+        let first_complex = &complexes[0];
+        dbg!(first_complex);
     }
 
     #[test]
@@ -228,7 +229,7 @@ mod tests {
     }
     #[test]
     fn complex2() {
-        let voices = QCode::voices(" Nv4 0 0 0 / bp Nv1").unwrap();
+        let voices = QCode::voices(" Nv4 0 0 0 / bp").unwrap();
         let complexes = Complex::from_voices(&voices).unwrap();
         for complex in complexes {
             println!(
@@ -241,15 +242,15 @@ mod tests {
     }
     #[test]
     fn complex3() {
-        let voices = QCode::voices(" bp nv2 / bp nv4").unwrap();
-        let complexes = Complex::from_voices(&voices).unwrap();
-        for complex in complexes {
-            println!(
-                "complex:{:?} {:?} {:?}",
-                complex.position,
-                complex.duration,
-                complex.ctype.debug_str()
-            );
-        }
+        let voices = QCode::voices(" bp nv2 / bp Nv4 ").unwrap();
+        // let complexes = Complex::from_voices(&voices).unwrap();
+        // for complex in complexes {
+        //     println!(
+        //         "complex:{:?} {:?} {:?}",
+        //         complex.position,
+        //         complex.duration,
+        //         complex.ctype.debug_str()
+        //     );
+        // }
     }
 }

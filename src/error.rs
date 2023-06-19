@@ -6,6 +6,7 @@ pub enum NotationError {
     Generic(String),
     ComplexError(String),
     QuickCodeError(String),
+    DurationError(String),
     // UnknownElement(String),
     // UnknownAttribute(String),
     // TextfieldEmpty(String),
@@ -20,6 +21,9 @@ impl std::fmt::Display for NotationError {
             }
             NotationError::ComplexError(s) => {
                 write!(f, "NotationError::QuickCodeError error: {}", s)
+            }
+            NotationError::DurationError(s) => {
+                write!(f, "NotationError::DurationError error: {}", s)
             }
             // NotationError::UnknownElement(s) => write!(f, "NotationError::UnknownElement: {}", s),
             // NotationError::UnknownAttribute(s) => {

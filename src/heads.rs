@@ -28,7 +28,7 @@ impl Heads {
     }
 
     pub fn level_bottom(&self) -> i8 {
-        self.items[self.items.len()-1].level
+        self.items[self.items.len() - 1].level
     }
 }
 
@@ -57,15 +57,11 @@ impl<'a> IntoIterator for &'a mut Heads {
 #[cfg(test)]
 mod tests {
     use super::*;
-    // use super::Heads;
-    // use super::Heads;
 
     #[test]
     fn heads_1() {
-        let _head0 = Head::new(1, HeadAttributes { accidental: None });
-        let head1 = Head::new(-2, HeadAttributes { accidental: None });
-        let vec = vec![Head::new(1, HeadAttributes { accidental: None }), head1];
-        let heads = Heads::new(vec);
+        let head1 = Head::from_level(-2);
+        let heads = Heads::new(vec![Head::from_level(1), head1]);
         for head in &heads {
             println!("Heads: -- head:{:?}", head);
         }

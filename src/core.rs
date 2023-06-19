@@ -1,6 +1,6 @@
+use crate::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[allow(dead_code)]
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Hash)]
 pub enum Accidental {
     DblSharp,
@@ -10,7 +10,6 @@ pub enum Accidental {
     DblFlat,
 }
 
-#[allow(dead_code)]
 // #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq, Hash)]
 // pub enum Duration {
 //     Nv1dot = 144,
@@ -194,60 +193,52 @@ pub const NV8: usize = 12;
 pub const NV16DOT: usize = 9;
 pub const NV8TRI: usize = 8;
 pub const NV16: usize = 6;
+pub const NV16TRI: usize = 4;
 pub const NV32: usize = 3;
 
 pub type Duration = usize;
 
+pub type Position = usize;
+
 pub struct Dur;
 
 impl Dur {
-    pub fn from_str(s: &str) -> Option<usize> {
+    pub fn from_str(s: &str) -> Result<Duration> {
         match s.to_lowercase().as_str() {
-            "nv1dot" => Some(NV1DOT),
-            "nv1." => Some(NV1DOT),
-            "nv1" => Some(NV1),
-            "nv2dot" => Some(NV2DOT),
-            "nv2." => Some(NV2DOT),
-            "nv2" => Some(NV2),
-            "nv2tri" => Some(NV2TRI),
-            "nv4dot" => Some(NV4DOT),
-            "nv4." => Some(NV4DOT),
-            "nv4" => Some(NV4),
-            "nv8dot" => Some(NV8DOT),
-            "nv8." => Some(NV8DOT),
-            "nv4tri" => Some(NV4TRI),
-            "nv8" => Some(NV8),
-            "nv16dot" => Some(NV16DOT),
-            "nv16." => Some(NV16DOT),
-            "nv8tri" => Some(NV8TRI),
-            "nv16" => Some(NV16),
-            "nv32" => Some(NV32),
-            _ => {
-                println!("Unimplemented note value:{}", s);
-                None
-            }
+            "1dot" => Ok(NV1DOT),
+            "1." => Ok(NV1DOT),
+            "1" => Ok(NV1),
+            "2dot" => Ok(NV2DOT),
+            "2." => Ok(NV2DOT),
+            "2" => Ok(NV2),
+            "2tri" => Ok(NV2TRI),
+            "4dot" => Ok(NV4DOT),
+            "4." => Ok(NV4DOT),
+            "4" => Ok(NV4),
+            "8dot" => Ok(NV8DOT),
+            "8." => Ok(NV8DOT),
+            "4tri" => Ok(NV4TRI),
+            "8" => Ok(NV8),
+            "16dot" => Ok(NV16DOT),
+            "16." => Ok(NV16DOT),
+            "8tri" => Ok(NV8TRI),
+            "16" => Ok(NV16),
+            "16tri" => Ok(NV16TRI),
+            "32" => Ok(NV32),
+            _ => Err(DurationError(format!(
+                "Can not convert string '{}' into usize Duration",
+                s
+            ))
+            .into()),
         }
     }
 
-    pub fn from(v: usize) -> Option<usize> {
+    pub fn from(v: usize) -> Result<Duration> {
         match v {
-            144 => Some(NV1DOT),
-            96 => Some(NV1),
-            72 => Some(NV2DOT),
-            48 => Some(NV2),
-            36 => Some(NV4DOT),
-            32 => Some(NV2TRI),
-            24 => Some(NV4),
-            18 => Some(NV8DOT),
-            16 => Some(NV4TRI),
-            12 => Some(NV8),
-            9 => Some(NV16DOT),
-            6 => Some(NV16),
-            8 => Some(NV8TRI),
-            3 => Some(NV32),
+            NV1DOT | NV1 | NV2DOT | NV2 | NV4DOT | NV2TRI | NV4 | NV8DOT | NV4TRI | NV8
+            | NV16DOT | NV8TRI | NV16 | NV16TRI | NV32 => Ok(v),
             _ => {
-                println!("Unimplemented note value:{}", v);
-                None
+                Err(DurationError(format!("Can not convert value {} to usize Duration", v)).into())
             }
         }
     }

@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 pub struct Notes {
     pub items: Vec<Note>,
     pub duration: Duration,
-    // pub positions: Vec<(usize, usize)>,
 }
 
 impl Notes {
@@ -14,7 +13,6 @@ impl Notes {
         Self {
             items,
             duration: *duration as usize,
-            // positions,
         }
     }
 
