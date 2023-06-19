@@ -61,7 +61,7 @@ mod tests {
     // use super::Heads;
 
     #[test]
-    fn test_heads() {
+    fn heads_1() {
         let _head0 = Head::new(1, HeadAttributes { accidental: None });
         let head1 = Head::new(-2, HeadAttributes { accidental: None });
         let vec = vec![Head::new(1, HeadAttributes { accidental: None }), head1];

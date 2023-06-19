@@ -246,7 +246,8 @@ impl Dur {
             8 => Some(NV8TRI),
             3 => Some(NV32),
             _ => {
-                panic!("Unimplemented note value:{}", v);
+                println!("Unimplemented note value:{}", v);
+                None
             }
         }
     }

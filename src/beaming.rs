@@ -1,8 +1,5 @@
-use crate::core::*;
-
 use crate::note::*;
 use crate::notes::*;
-// use crate:1s::pair_iterator::*;
 
 #[derive(Debug)]
 pub enum BeamingItem<'a> {
@@ -152,7 +149,7 @@ mod tests {
     use crate::quick::QCode;
 
     #[test]
-    fn beaming2() {
+    fn beaming_2() {
         // let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
         let notes = QCode::notes("nv8 0 0 0 0 0 p");
         let beams = BeamingItemsGenerator::generate(
@@ -167,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn beaming3() {
+    fn beaming_3() {
         // let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
         let notes = QCode::notes("nv8 0 0");
         // let notes = QCode::notes("nv4 0 0 0 0 0 ");
@@ -181,13 +178,14 @@ mod tests {
     }
 
     #[test]
-    fn beaming1() {
+    fn beaming_1() {
         let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
         // let notes = QCode::notes("nv8 p 0");
         let beams = BeamingItemsGenerator::generate(&notes, super::BeamingPattern::NoBeams);
         println!();
         for beam in beams.iter() {
             println!("beam:{:?}", beam);
+            //
         }
     }
 }

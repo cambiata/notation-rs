@@ -1,9 +1,7 @@
 use std::collections::{HashMap, HashSet};
-use std::fmt;
 
 use crate::core::*;
 use crate::note::Note;
-use crate::notes::*;
 use crate::voice::{BarPause, Voice, VoiceType};
 
 #[derive(Debug)]
