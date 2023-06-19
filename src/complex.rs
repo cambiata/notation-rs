@@ -15,11 +15,12 @@ pub struct Complex<'a> {
 #[derive(Debug)]
 pub enum ComplexType<'a> {
     OneBarpause(&'a BarPause),
+    TwoBarpauses(&'a BarPause, &'a BarPause),
+    //
     OneNote(&'a Note, DirUAD),
     TwoNotes(&'a Note, &'a Note),
     BarpauseNote(&'a BarPause, &'a Note),
     NoteBarpause(&'a Note, &'a BarPause),
-    TwoBarpauses(&'a BarPause, &'a BarPause),
 }
 
 impl<'a> ComplexType<'a> {
