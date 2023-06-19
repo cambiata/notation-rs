@@ -4,6 +4,7 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum NotationError {
     Generic(String),
+    ComplexError(String),
     QuickCodeError(String),
     // UnknownElement(String),
     // UnknownAttribute(String),
@@ -15,6 +16,9 @@ impl std::fmt::Display for NotationError {
         match self {
             NotationError::Generic(s) => write!(f, "NotationError::Generic error: {}", s),
             NotationError::QuickCodeError(s) => {
+                write!(f, "NotationError::QuickCodeError error: {}", s)
+            }
+            NotationError::ComplexError(s) => {
                 write!(f, "NotationError::QuickCodeError error: {}", s)
             }
             // NotationError::UnknownElement(s) => write!(f, "NotationError::UnknownElement: {}", s),

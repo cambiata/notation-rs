@@ -3,6 +3,8 @@
 #![allow(unused_imports)]
 #![allow(unused_assignments)]
 #![allow(unused_mut)]
+#![allow(clippy::uninlined_format_args)]
+#![allow(clippy::useless_format)]
 
 //  cargo watch -q -c -w src -x "test beaming"
 

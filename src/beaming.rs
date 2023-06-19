@@ -44,9 +44,9 @@ impl BeamingItemsGenerator {
                 let mut idx: usize = 0;
 
                 // create value cycle of sufficient length
-                while vpos_end <= notes.duration as usize {
+                while vpos_end <= notes.duration {
                     vpos_start = vpos_end;
-                    let value = values[idx % values.len()] as usize;
+                    let value = values[idx % values.len()];
                     // let value_to_push = values[(idx % values.len()) as usize];
                     vpos_end = vpos_start + value;
                     value_cycle.push((vpos_start, vpos_end));
