@@ -9,33 +9,41 @@ struct NoteRects;
 
 impl NoteRects {
     fn get_heads_positions(heads: Heads, direction: DirUD) {
-        let mut result: &Vec<(&Head, i32)> =
-            &heads.items.iter().map(|head| (head, 0)).rev().collect();
-
-        for res in result {
-            println!("res:{:?}", res);
+        
+        println!("heads.level_bottom():{:?}", heads.level_bottom());
+        
+        for head in heads.items.iter().rev() {
+            println!("head:{:?}", head);
         }
 
-        for pair in result.windows(2) {
-            // println!("pair:{:?}", pair);
-            match pair {
-                [mut lower, mut upper] => {
-                    println!(
-                        "lower:{:?} \tupper:{:?} \tdiff:{:?}",
-                        lower.0.level,
-                        upper.0.level,
-                        lower.0.level - upper.0.level
-                    );
 
-                    lower.1 = 123;
-                }
-                _ => {}
-            }
-        }
+        // let mut result: &Vec<(&Head, i32)> =
+        //     &heads.items.iter().map(|head| (head, 0)).rev().collect();
 
-        for res in result {
-            println!("res:{:?}", res);
-        }
+        // for res in result {
+        //     println!("res:{:?}", res);
+        // }
+
+        // for pair in result.windows(2) {
+        //     // println!("pair:{:?}", pair);
+        //     match pair {
+        //         [mut lower, mut upper] => {
+        //             println!(
+        //                 "lower:{:?} \tupper:{:?} \tdiff:{:?}",
+        //                 lower.0.level,
+        //                 upper.0.level,
+        //                 lower.0.level - upper.0.level
+        //             );
+
+        //             lower.1 = 123;
+        //         }
+        //         _ => {}
+        //     }
+        // }
+
+        // for res in result {
+        //     println!("res:{:?}", res);
+        // }
     }
 
     fn get_rects(note_type: NoteType, direction: DirUD) -> Vec<Rect> {

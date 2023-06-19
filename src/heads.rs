@@ -22,6 +22,14 @@ impl Heads {
     pub fn iter_mut(&mut self) -> std::slice::IterMut<'_, Head> {
         self.into_iter()
     }
+
+    pub fn level_top(&self) -> i8 {
+        self.items[0].level
+    }
+
+    pub fn level_bottom(&self) -> i8 {
+        self.items[self.items.len()-1].level
+    }
 }
 
 impl<'a> IntoIterator for &'a Heads {
