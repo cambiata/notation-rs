@@ -11,11 +11,13 @@ mod chord;
 mod complex;
 mod core;
 mod dynamic;
+mod error;
 mod head;
 mod heads;
 mod note;
 mod noterects;
 mod notes;
+mod prelude;
 mod quick;
 mod syllable;
 mod voice;
@@ -39,7 +41,6 @@ mod tests {
         ]);
 
         let note = Note::new(NV2, NoteType::Heads(heads), NoteAttributes { color: None });
-
         let note_json = serde_json::to_string(&note).unwrap();
         println!("note_json:{:?}", note_json);
         std::fs::write("test_note.json", &note_json).unwrap();
@@ -49,7 +50,7 @@ mod tests {
 
     #[test]
     fn lib_code() {
-        let notes: Notes = QCode::notes("0 1,2 nv2 -4 p ");
+        let notes: Notes = QCode::notes("0 1,2 nv2 -4 p ").unwrap();
         println!("notes:{:?}", notes);
         let notes_json = serde_json::to_string(&notes).unwrap();
         println!("notes_json:{:?}", notes_json);

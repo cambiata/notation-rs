@@ -137,11 +137,11 @@ mod tests {
     use super::Note;
     use super::NoteAttributes;
     use super::Notes;
-
     use crate::quick::QCode;
+
     #[test]
     fn test_notes_constructor() {
-        let notes = QCode::notes("nv4 0 nv8 1");
+        let notes = QCode::notes("nv4 0 nv8 1").unwrap();
         for note in &notes {
             println!("- note:{:?}", note);
         }
@@ -150,7 +150,7 @@ mod tests {
 
     #[test]
     fn notes_positions() {
-        let notes = QCode::notes("0 1 2 3");
+        let notes = QCode::notes("0 1 2 3").unwrap();
 
         for n in notes.get_note_positions() {
             println!("v:{:?}", n);
@@ -158,7 +158,7 @@ mod tests {
     }
     #[test]
     fn notes_pairs() {
-        let notes = QCode::notes("0 1 2");
+        let notes = QCode::notes("0 1 2").unwrap();
         for pair in notes.items.windows(2) {
             println!("- pair:{:?}", pair);
         }

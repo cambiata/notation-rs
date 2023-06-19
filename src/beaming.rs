@@ -48,7 +48,7 @@ impl BeamingItemsGenerator {
                     vpos_start = vpos_end;
                     let value = values[idx % values.len()] as usize;
                     // let value_to_push = values[(idx % values.len()) as usize];
-                    vpos_end = vpos_start + value as usize;
+                    vpos_end = vpos_start + value;
                     value_cycle.push((vpos_start, vpos_end));
                     idx += 1;
                 }
@@ -151,7 +151,7 @@ mod tests {
     #[test]
     fn beaming_2() {
         // let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
-        let notes = QCode::notes("nv8 0 0 0 0 0 p");
+        let notes = QCode::notes("nv8 0 0 0 0 0 p").unwrap();
         let beams = BeamingItemsGenerator::generate(
             &notes,
             super::BeamingPattern::NValues(vec![NV4, NV4DOT]),
@@ -166,7 +166,7 @@ mod tests {
     #[test]
     fn beaming_3() {
         // let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
-        let notes = QCode::notes("nv8 0 0");
+        let notes = QCode::notes("nv8 0 0").unwrap();
         // let notes = QCode::notes("nv4 0 0 0 0 0 ");
         let beams =
             BeamingItemsGenerator::generate(&notes, super::BeamingPattern::NValues(vec![NV4]));
@@ -179,7 +179,7 @@ mod tests {
 
     #[test]
     fn beaming_1() {
-        let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
+        let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3").unwrap();
         // let notes = QCode::notes("nv8 p 0");
         let beams = BeamingItemsGenerator::generate(&notes, super::BeamingPattern::NoBeams);
         println!();

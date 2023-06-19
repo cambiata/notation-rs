@@ -205,7 +205,7 @@ mod tests {
 
     #[test]
     fn complex() {
-        let voices = QCode::voices("Nv4 0 0 / Nv8 0 0 0 0 0");
+        let voices = QCode::voices("Nv4 0 0 / Nv8 0 0 0 0 0").unwrap();
         let complexes = Complex::from_voices(&voices);
         for complex in complexes {
             println!(
@@ -218,7 +218,7 @@ mod tests {
     }
     #[test]
     fn complex2() {
-        let voices = QCode::voices(" Nv4 0 0 0 / bp Nv1");
+        let voices = QCode::voices(" Nv4 0 0 0 / bp Nv1").unwrap();
         let complexes = Complex::from_voices(&voices);
         for complex in complexes {
             println!(
@@ -231,7 +231,7 @@ mod tests {
     }
     #[test]
     fn complex3() {
-        let voices = QCode::voices(" bp nv2 / bp nv4");
+        let voices = QCode::voices(" bp nv2 / bp nv4").unwrap();
         let complexes = Complex::from_voices(&voices);
         for complex in complexes {
             println!(

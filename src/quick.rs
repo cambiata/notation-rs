@@ -5,12 +5,13 @@ use crate::{
     heads::*,
     note::*,
     notes::*,
+    prelude::*,
     voice::{BarPause, Voice, VoiceAttributes, VoiceType},
 };
 pub struct QCode;
 
 impl QCode {
-    pub fn notes(code: &str) -> Notes {
+    pub fn notes(code: &str) -> Result<Notes> {
         let segments: Vec<&str> = code.trim().split(' ').collect();
         let mut cur_val: Option<usize> = None;
         let mut notes: Vec<Note> = vec![];
@@ -20,7 +21,7 @@ impl QCode {
                     cur_val = Dur::from_str(segment);
                 }
                 "p" => {
-                    println!("pause:{}", segment);
+                    println!("pause:{segment}");
                     let value: usize = cur_val.unwrap_or(NV4);
                     let n = Note {
                         duration: value,
@@ -49,10 +50,10 @@ impl QCode {
                 }
             }
         }
-        Notes::new(notes)
+        Ok(Notes::new(notes))
     }
 
-    pub fn voice(code: &str) -> Voice {
+    pub fn voice(code: &str) -> Result<Voice> {
         let vtype = if code.contains("bp") {
             let c = code.replace("bp", "");
             let c2 = c.trim();
@@ -60,28 +61,28 @@ impl QCode {
             let mut barpause_value: usize = 0;
             for segment in segments {
                 if let Some(v) = Dur::from_str(segment) {
-                    barpause_value += v as usize;
+                    barpause_value += v;
                 }
             }
             VoiceType::VBarpause(BarPause(barpause_value))
         } else {
-            let notes = QCode::notes(code);
+            let notes = QCode::notes(code)?;
             VoiceType::VNotes(notes)
         };
-        Voice::new(vtype, VoiceAttributes {})
+        Ok(Voice::new(vtype, VoiceAttributes {}))
     }
 
-    pub fn voices(code: &str) -> Vec<Voice> {
+    pub fn voices(code: &str) -> Result<Vec<Voice>> {
         let segments: Vec<&str> = code.trim().split('/').collect();
         let mut voices: Vec<Voice> = vec![];
         if segments.len() > 2 {
             panic!("too many voices: {}", voices.len());
         }
         for segment in segments {
-            let voice = QCode::voice(segment);
+            let voice = QCode::voice(segment)?;
             voices.push(voice);
         }
-        voices
+        Ok(voices)
     }
 }
 
@@ -93,7 +94,7 @@ mod tests {
 
     #[test]
     fn test_notes() {
-        let notes: Notes = QCode::notes("0 1,2 nv2 -4 p ");
+        let notes: Notes = QCode::notes("0 1,2 nv2 -4 p ").unwrap();
         println!("notes:{:?}", notes);
         for note in &notes {
             println!("- note:{:?}", note);
@@ -103,13 +104,13 @@ mod tests {
     #[test]
     fn test_voice() {
         // let voice = QCode::voice("nv4 0 0 0 0");
-        let voice = QCode::voice("bp nv2 nv8 x");
+        let voice = QCode::voice("bp nv2 nv8 x").unwrap();
         println!("voice:{:?}", voice);
     }
 
     #[test]
     fn test_voices() {
-        let voices = QCode::voices("nv4 0 0 0 0 / bp Nv2dot");
+        let voices = QCode::voices("nv4 0 0 0 0 / bp Nv2dot").unwrap();
         for voice in voices.iter() {
             println!("- voice:{:?}", voice);
         }

@@ -57,7 +57,7 @@ mod tests {
 
     #[test]
     fn voice() {
-        let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3");
+        let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3").unwrap();
         let voice = Voice::new(VNotes(notes), VoiceAttributes {});
         println!("voice:{:?}", voice);
     }
