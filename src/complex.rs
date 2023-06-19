@@ -173,7 +173,7 @@ impl<'a> Complex<'a> {
                                     });
                                 }
                                 [None, None] => {
-                                    panic!("Complex match error - None/None");
+                                    // panic!("Complex match error - None/None");
                                     return Err(ComplexError(
                                         "Complex match error - None/None".to_string(),
                                     )
