@@ -8,21 +8,21 @@
 
 //  cargo watch -q -c -w src -x "test beaming"
 
-mod beaming;
-mod chord;
-mod complex;
-mod core;
-mod dynamic;
-mod error;
-mod head;
-mod heads;
-mod note;
-mod noterects;
-mod notes;
-mod prelude;
-mod quick;
-mod syllable;
-mod voice;
+pub mod beaming;
+pub mod chord;
+pub mod complex;
+pub mod core;
+pub mod dynamic;
+pub mod error;
+pub mod head;
+pub mod heads;
+pub mod note;
+pub mod noterects;
+pub mod notes;
+pub mod prelude;
+pub mod quick;
+pub mod syllable;
+pub mod voice;
 
 #[cfg(test)]
 mod tests {
