@@ -58,7 +58,7 @@ impl<'a> Complex<'a> {
                         let mut position = 0;
                         for note in notes {
                             println!("- note:{:?}", note);
-                            let duration = note.duration.into();
+                            let duration = note.duration;
                             complexes.push(Complex {
                                 position,
                                 duration,
@@ -72,7 +72,7 @@ impl<'a> Complex<'a> {
             2 => {
                 println!("two voices");
                 match [&voices[0].vtype, &voices[1].vtype] {
-                    [&VoiceType::VBarpause(ref bp), &VoiceType::VNotes(ref notes)] => {
+                    [VoiceType::VBarpause(ref bp), VoiceType::VNotes(ref notes)] => {
                         println!("barpause/notes");
                         let mut position = 0;
                         for (idx, note) in notes.iter().enumerate() {
@@ -89,7 +89,7 @@ impl<'a> Complex<'a> {
                             position += duration;
                         }
                     }
-                    [&VoiceType::VNotes(ref notes), &VoiceType::VBarpause(ref bp)] => {
+                    [VoiceType::VNotes(ref notes), VoiceType::VBarpause(ref bp)] => {
                         println!("notes/barpause");
                         let mut position = 0;
                         for (idx, note) in notes.iter().enumerate() {
@@ -106,7 +106,7 @@ impl<'a> Complex<'a> {
                             position += duration;
                         }
                     }
-                    [&VoiceType::VNotes(ref notes1), &VoiceType::VNotes(ref notes2)] => {
+                    [VoiceType::VNotes(ref notes1), VoiceType::VNotes(ref notes2)] => {
                         println!("notes/notes");
                         let max_duration = notes1.duration.max(notes2.duration);
                         let min_duration = notes1.duration.min(notes2.duration);
@@ -140,7 +140,7 @@ impl<'a> Complex<'a> {
                         for (idx, position) in positions.iter().enumerate() {
                             let duration = durations[idx];
 
-                            match [map1.get(&position), map2.get(&position)] {
+                            match [map1.get(position), map2.get(position)] {
                                 [Some(note1), Some(note2)] => {
                                     complexes.push(Complex {
                                         position: *position,
@@ -173,7 +173,6 @@ impl<'a> Complex<'a> {
                                     });
                                 }
                                 [None, None] => {
-                                    panic!("Complex match error - None/None");
                                     return Err(ComplexError(
                                         "Complex match error - None/None".to_string(),
                                     )
@@ -182,7 +181,7 @@ impl<'a> Complex<'a> {
                             }
                         }
                     }
-                    [&VoiceType::VBarpause(ref bp1), &VoiceType::VBarpause(ref bp2)] => {
+                    [VoiceType::VBarpause(ref bp1), VoiceType::VBarpause(ref bp2)] => {
                         println!("barpause/barpause");
                         complexes.push(Complex {
                             position: 0,

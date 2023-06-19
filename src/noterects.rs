@@ -9,13 +9,11 @@ struct NoteRects;
 
 impl NoteRects {
     fn get_heads_positions(heads: Heads, direction: DirUD) {
-        
         println!("heads.level_bottom():{:?}", heads.level_bottom());
-        
+
         for head in heads.items.iter().rev() {
             println!("head:{:?}", head);
         }
-
 
         // let mut result: &Vec<(&Head, i32)> =
         //     &heads.items.iter().map(|head| (head, 0)).rev().collect();
@@ -68,6 +66,6 @@ mod tests {
             Head::new(4, HeadAttributes { accidental: None }),
         ]);
 
-        let heads_positions = NoteRects::get_heads_positions(heads, DirUD::Up);
+        let heads_posititions = NoteRects::get_heads_positions(heads, DirUD::Up);
     }
 }
