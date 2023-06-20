@@ -1,5 +1,5 @@
 use crate::{
-    core::{Dur, Duration, NV4},
+    core::{Duration, DurationTools, NV4},
     head::*,
     heads::*,
     note::*,
@@ -18,7 +18,7 @@ impl QCode {
             match segment {
                 a if a.to_lowercase().starts_with("nv") => {
                     let s = &segment[2..];
-                    cur_val = Dur::from_str(s).ok();
+                    cur_val = DurationTools::from_str(s).ok();
                 }
                 "p" => {
                     println!("pause:{segment}");
@@ -60,7 +60,7 @@ impl QCode {
             let mut barpause_value: Duration = 0;
             for segment in segments {
                 if segment.to_lowercase().starts_with("nv") {
-                    let dur = Dur::from_str(&segment[2..]);
+                    let dur = DurationTools::from_str(&segment[2..]);
                     match dur {
                         Ok(d) => barpause_value += d,
                         Err(e) => {}

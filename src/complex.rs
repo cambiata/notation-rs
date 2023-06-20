@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use std::marker::PhantomData;
 
 use crate::core::*;
 use crate::note::Note;
@@ -37,7 +38,19 @@ impl<'a> ComplexType<'a> {
 }
 
 impl<'a> Complex<'a> {
-    pub fn from_voices(voices: &'a Vec<Voice>) -> Result<Vec<Complex<'a>>> {
+    pub fn new(position: Position, duration: Duration, ctype: ComplexType<'a>) -> Self {
+        Self {
+            position,
+            duration,
+            ctype,
+        }
+    }
+}
+
+pub struct Complexes;
+
+impl Complexes {
+    pub fn from_voices(voices: &Vec<Voice>) -> Result<Vec<Complex>> {
         let mut complexes: Vec<Complex> = vec![];
 
         match voices.len() {
@@ -202,14 +215,14 @@ impl<'a> Complex<'a> {
 #[cfg(test)]
 mod tests {
     use crate::{
-        complex::{Complex, ComplexType},
+        complex::{Complex, ComplexType, Complexes},
         quick::QCode,
     };
 
     #[test]
     fn test1() {
         let voices = QCode::voices("Nv4 #0 / Nv8 b1 0 0").unwrap();
-        let complexes = Complex::from_voices(&voices).unwrap();
+        let complexes = Complexes::from_voices(&voices).unwrap();
         let first_complex = &complexes[0];
         dbg!(first_complex);
     }
@@ -217,7 +230,7 @@ mod tests {
     #[test]
     fn complex() {
         let voices = QCode::voices("Nv4 0 0 / Nv8 0 0 0 0 0").unwrap();
-        let complexes = Complex::from_voices(&voices).unwrap();
+        let complexes = Complexes::from_voices(&voices).unwrap();
         for complex in complexes {
             println!(
                 "complex:{:?} {:?} {:?}",
@@ -230,7 +243,7 @@ mod tests {
     #[test]
     fn complex2() {
         let voices = QCode::voices(" Nv4 0 0 0 / bp").unwrap();
-        let complexes = Complex::from_voices(&voices).unwrap();
+        let complexes = Complexes::from_voices(&voices).unwrap();
         for complex in complexes {
             println!(
                 "complex:{:?} {:?} {:?}",
@@ -243,7 +256,7 @@ mod tests {
     #[test]
     fn complex3() {
         let voices = QCode::voices(" bp nv4/ bp nv8 nv8 nv8  ").unwrap();
-        let complexes = Complex::from_voices(&voices).unwrap();
+        let complexes = Complexes::from_voices(&voices).unwrap();
         for complex in complexes {
             println!(
                 "complex:{:?} {:?} {:?}",

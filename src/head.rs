@@ -38,3 +38,9 @@ impl Head {
 pub struct HeadAttributes {
     // pub accidental: Option<Accidental>,
 }
+
+#[derive(Debug)]
+pub enum HeadType {
+    NormalHead,
+    WideHead,
+}

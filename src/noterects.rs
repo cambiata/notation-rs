@@ -9,7 +9,7 @@ struct NoteRects;
 
 impl NoteRects {
     fn get_heads_positions(heads: Heads, direction: DirUD) {
-        println!("heads.level_bottom():{:?}", heads.level_bottom());
+        println!("heads.level_bottom():{:?}", heads.get_level_bottom());
 
         for head in heads.items.iter().rev() {
             println!("head:{:?}", head);

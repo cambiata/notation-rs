@@ -26,6 +26,8 @@ impl Voice {
     }
 }
 
+pub type Voices = Vec<Voice>;
+
 #[derive(Debug)]
 pub struct BarPause(pub Option<usize>);
 

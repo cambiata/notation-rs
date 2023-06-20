@@ -1,16 +1,37 @@
+use crate::core::DirUAD;
 use crate::note::*;
 use crate::notes::*;
 use crate::prelude::*;
+use crate::voice::Voice;
+use crate::voice::VoiceType;
+
+pub struct BeamingItem<'a> {
+    pub btype: BeamingItemType<'a>,
+    pub direction: DirUAD,
+}
+
+impl<'a> BeamingItem<'a> {
+    pub fn new(btype: BeamingItemType<'a>) -> Self {
+        Self {
+            btype,
+            direction: DirUAD::Auto,
+        }
+    }
+
+    pub fn set_direction(&mut self, direction: DirUAD) {
+        self.direction = direction;
+    }
+}
+
+pub type BeamingItems<'a> = Vec<BeamingItem<'a>>;
 
 #[derive(Debug)]
-pub enum BeamingItem<'a> {
+pub enum BeamingItemType<'a> {
     None(&'a Note),
     Group(Vec<&'a Note>),
 }
 
-#[derive(Debug)]
-pub struct BeamingItems<'a>(pub Vec<BeamingItem<'a>>);
-
+#[derive(Debug, Clone)]
 pub enum BeamingPattern {
     NoBeams,
     NValues(Vec<usize>),
@@ -19,7 +40,14 @@ pub enum BeamingPattern {
 pub struct BeamingItemsGenerator;
 
 impl BeamingItemsGenerator {
-    pub fn generate(notes: &Notes, pattern: BeamingPattern) -> Result<Vec<BeamingItem>> {
+    pub fn from_voice(voice: &Voice, pattern: BeamingPattern) -> Option<BeamingItems> {
+        match voice.vtype {
+            VoiceType::VBarpause(_) => None,
+            VoiceType::VNotes(ref notes) => BeamingItemsGenerator::from_notes(notes, pattern).ok(),
+        }
+    }
+
+    pub fn from_notes(notes: &Notes, pattern: BeamingPattern) -> Result<BeamingItems> {
         if notes.items.len() == 0 {
             return Err(Generic(format!("notes is empty")).into());
         }
@@ -28,16 +56,16 @@ impl BeamingItemsGenerator {
             BeamingPattern::NoBeams => {
                 let mut items: Vec<BeamingItem> = vec![];
                 for note in notes {
-                    let beam_item: BeamingItem = match note.ntype {
-                        NoteType::Heads(_) => BeamingItem::None(note),
-                        NoteType::Pause => BeamingItem::None(note),
-                        NoteType::Slash => BeamingItem::None(note),
-                        NoteType::Lyric(_) => BeamingItem::None(note),
-                        NoteType::Chord(_) => BeamingItem::None(note),
-                        NoteType::Dynamic(_) => BeamingItem::None(note),
-                        NoteType::Dummy => BeamingItem::None(note),
+                    let btype: BeamingItemType = match note.ntype {
+                        NoteType::Heads(_) => BeamingItemType::None(note),
+                        NoteType::Pause => BeamingItemType::None(note),
+                        NoteType::Slash => BeamingItemType::None(note),
+                        NoteType::Lyric(_) => BeamingItemType::None(note),
+                        NoteType::Chord(_) => BeamingItemType::None(note),
+                        NoteType::Dynamic(_) => BeamingItemType::None(note),
+                        NoteType::Spacer => BeamingItemType::None(note),
                     };
-                    items.push(beam_item);
+                    items.push(BeamingItem::new(btype));
                 }
                 Ok(items)
             }
@@ -67,7 +95,6 @@ impl BeamingItemsGenerator {
 
                 for note_pos in notes.get_note_positions() {
                     let (note, note_start, note_end) = note_pos;
-
                     if note_end <= cycle_end {
                         // println!("note fits in cycle");
                         if note.is_beamable() {
@@ -79,19 +106,19 @@ impl BeamingItemsGenerator {
                             match note_group.len() {
                                 0 => {}
                                 1 => {
-                                    // println!("create group with single item");
-                                    let item = BeamingItem::None(note_group[0]);
-                                    beaming_items.push(item);
+                                    // println!("create group wiBeamingItemTypeth single item");
+                                    let btype = BeamingItemType::None(note_group[0]);
+                                    beaming_items.push(BeamingItem::new(btype));
                                 }
                                 _ => {
                                     // println!("create group with multiple items");
-                                    let item = BeamingItem::Group(note_group);
-                                    beaming_items.push(item);
+                                    let btype = BeamingItemType::Group(note_group);
+                                    beaming_items.push(BeamingItem::new(btype));
                                 }
                             }
                             note_group = vec![];
 
-                            beaming_items.push(BeamingItem::None(note));
+                            beaming_items.push(BeamingItem::new(BeamingItemType::None(note)));
                             note_group = vec![];
                         }
                     } else {
@@ -100,12 +127,12 @@ impl BeamingItemsGenerator {
                         match note_group.len() {
                             0 => {}
                             1 => {
-                                let item = BeamingItem::None(note);
-                                beaming_items.push(item);
+                                let btype = BeamingItemType::None(note);
+                                beaming_items.push(BeamingItem::new(btype));
                             }
                             _ => {
-                                let item = BeamingItem::Group(note_group);
-                                beaming_items.push(item);
+                                let btype = BeamingItemType::Group(note_group);
+                                beaming_items.push(BeamingItem::new(btype));
                             }
                         }
                         note_group = vec![];
@@ -115,7 +142,8 @@ impl BeamingItemsGenerator {
                             note_group.push(note);
                         } else {
                             // println!("note is not beamable {}", note_group.len());
-                            beaming_items.push(BeamingItem::None(note));
+                            let btype = BeamingItemType::None(note);
+                            beaming_items.push(BeamingItem::new(btype));
                             note_group = vec![];
                         }
 
@@ -130,12 +158,12 @@ impl BeamingItemsGenerator {
                 match note_group.len() {
                     0 => {}
                     1 => {
-                        let item = BeamingItem::None(note_group[0]);
-                        beaming_items.push(item);
+                        let btype = BeamingItemType::None(note_group[0]);
+                        beaming_items.push(BeamingItem::new(btype));
                     }
                     _ => {
-                        let item = BeamingItem::Group(note_group);
-                        beaming_items.push(item);
+                        let btype = BeamingItemType::Group(note_group);
+                        beaming_items.push(BeamingItem::new(btype));
                     }
                 }
 
@@ -151,9 +179,9 @@ mod tests {
     use crate::core::{NV4, NV4DOT};
     use crate::quick::QCode;
     fn print_beam(beam: &BeamingItem) {
-        match beam {
-            BeamingItem::None(note) => println!("single:{}", note.duration),
-            BeamingItem::Group(notes) => {
+        match &beam.btype {
+            BeamingItemType::None(note) => println!("single:{}", note.duration),
+            BeamingItemType::Group(notes) => {
                 println!("group:");
                 for note in notes.iter() {
                     println!(" - note:{}", note.duration);
@@ -165,7 +193,7 @@ mod tests {
     #[test]
     fn beaming_2_3() {
         let notes = QCode::notes("nv8 0 0 0 0 0 0 0 0 0 0 0").unwrap();
-        let beams = BeamingItemsGenerator::generate(
+        let beams = BeamingItemsGenerator::from_notes(
             &notes,
             super::BeamingPattern::NValues(vec![NV4, NV4DOT]),
         )
@@ -180,7 +208,7 @@ mod tests {
     fn beaming_3() {
         let notes = QCode::notes("nv8 0 nv16 0 0 0 0 nv8 0 nv16 0 0 0 0 0 nv8 0 nv16 0 nv8tri 0 0 0 nv16tri 0 0 0 0 0 0 ").unwrap();
         let beams =
-            BeamingItemsGenerator::generate(&notes, super::BeamingPattern::NValues(vec![NV4]))
+            BeamingItemsGenerator::from_notes(&notes, super::BeamingPattern::NValues(vec![NV4]))
                 .unwrap();
         println!();
         for beam in beams.iter() {
@@ -192,7 +220,7 @@ mod tests {
     fn beaming_1() {
         let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3").unwrap();
         let beams =
-            BeamingItemsGenerator::generate(&notes, super::BeamingPattern::NoBeams).unwrap();
+            BeamingItemsGenerator::from_notes(&notes, super::BeamingPattern::NoBeams).unwrap();
         println!();
         for beam in beams.iter() {
             print_beam(beam);

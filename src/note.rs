@@ -22,7 +22,7 @@ impl Note {
     pub fn is_beamable(self: &Note) -> bool {
         match self.ntype {
             // normal note
-            NoteType::Heads(_) => Dur::is_beamable(self.duration),
+            NoteType::Heads(_) => DurationTools::is_beamable(self.duration),
             _ => false,
         }
     }
@@ -36,7 +36,7 @@ pub enum NoteType {
     Lyric(Syllable),
     Dynamic(DynamicItem),
     Chord(ChordItem),
-    Dummy,
+    Spacer,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]

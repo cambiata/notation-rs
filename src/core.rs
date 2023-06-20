@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{head::HeadType, prelude::*};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Hash)]
@@ -158,11 +158,8 @@ pub enum DirUD {
 
 #[cfg(test)]
 mod tests {
-    // use crate::core::Duration;
-
+    use super::DurationTools;
     use crate::{core::NV4, quick::QCode};
-
-    use super::Dur;
 
     #[test]
     fn example() {
@@ -176,7 +173,7 @@ mod tests {
 
     #[test]
     fn nvalues2() {
-        let _v = Dur::from(333);
+        let _v = DurationTools::from(333);
     }
 }
 
@@ -200,9 +197,9 @@ pub type Duration = usize;
 
 pub type Position = usize;
 
-pub struct Dur;
+pub struct DurationTools;
 
-impl Dur {
+impl DurationTools {
     pub fn from_str(s: &str) -> Result<Duration> {
         match s.to_lowercase().as_str() {
             "1dot" => Ok(NV1DOT),
@@ -247,6 +244,13 @@ impl Dur {
         match dur {
             NV8 | NV8DOT | NV8TRI | NV16 | NV16DOT | NV32 => true,
             _ => false,
+        }
+    }
+
+    pub fn get_headtype(duration: Duration) -> HeadType {
+        match duration {
+            NV1DOT | NV1 => HeadType::WideHead,
+            _ => HeadType::NormalHead,
         }
     }
 }

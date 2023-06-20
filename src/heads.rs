@@ -23,11 +23,11 @@ impl Heads {
         self.into_iter()
     }
 
-    pub fn level_top(&self) -> i8 {
+    pub fn get_level_top(&self) -> i8 {
         self.items[0].level
     }
 
-    pub fn level_bottom(&self) -> i8 {
+    pub fn get_level_bottom(&self) -> i8 {
         self.items[self.items.len() - 1].level
     }
 }
