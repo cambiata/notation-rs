@@ -47,11 +47,11 @@ impl<'a> Complex<'a> {
     }
 }
 
-pub fn complexes_from_voicesx(voicesx: &VoicesX) -> Result<Vec<Complex>> {
+pub fn complexes_from_voices(voices: &Voices) -> Result<Vec<Complex>> {
     let mut complexes: Vec<Complex> = vec![];
 
-    match voicesx {
-        (Some(upper), None) => match upper.vtype {
+    match voices {
+        Voices::One(upper) => match upper.vtype {
             VoiceType::VBarpause(ref bp) => {
                 complexes.push(Complex {
                     position: 0,
@@ -74,7 +74,7 @@ pub fn complexes_from_voicesx(voicesx: &VoicesX) -> Result<Vec<Complex>> {
                 }
             }
         },
-        (Some(upper), Some(lower)) => {
+        Voices::Two(upper, lower) => {
             match [&upper.vtype, &lower.vtype] {
                 [VoiceType::VBarpause(ref bp), VoiceType::VNotes(ref notes)] => {
                     let mut position = 0;
@@ -191,16 +191,6 @@ pub fn complexes_from_voicesx(voicesx: &VoicesX) -> Result<Vec<Complex>> {
                     });
                 }
             }
-        }
-
-        (None, Some(lower)) => {
-            return Err(ComplexError(
-                "Should not happen: no upper voice, but lower voice".to_string(),
-            )
-            .into());
-        }
-        (None, None) => {
-            return Err(ComplexError("no voices".to_string()).into());
         }
     };
 
@@ -377,7 +367,7 @@ mod tests {
     #[test]
     fn test1() {
         let voices = QCode::voices("Nv4 #0 / Nv8 b1 0 0").unwrap();
-        let complexes = complexes_from_voicesx(&voices).unwrap();
+        let complexes = complexes_from_voices(&voices).unwrap();
         let first_complex = &complexes[0];
         dbg!(first_complex);
     }
@@ -385,7 +375,7 @@ mod tests {
     #[test]
     fn complex() {
         let voices = QCode::voices("Nv4 0 0 / Nv8 0 0 0 0 0").unwrap();
-        let complexes = complexes_from_voicesx(&voices).unwrap();
+        let complexes = complexes_from_voices(&voices).unwrap();
         for complex in complexes {
             println!(
                 "complex:{:?} {:?} {:?}",
@@ -398,7 +388,7 @@ mod tests {
     #[test]
     fn complex2() {
         let voices = QCode::voices(" Nv4 0 0 0 / bp").unwrap();
-        let complexes = complexes_from_voicesx(&voices).unwrap();
+        let complexes = complexes_from_voices(&voices).unwrap();
         for complex in complexes {
             println!(
                 "complex:{:?} {:?} {:?}",
@@ -411,7 +401,7 @@ mod tests {
     #[test]
     fn complex3() {
         let voices = QCode::voices(" bp nv4/ bp nv8 nv8 nv8  ").unwrap();
-        let complexes = complexes_from_voicesx(&voices).unwrap();
+        let complexes = complexes_from_voices(&voices).unwrap();
         for complex in complexes {
             println!(
                 "complex:{:?} {:?} {:?}",

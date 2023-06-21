@@ -67,7 +67,7 @@ mod tests {
     #[test]
     fn example() {
         let voices = QCode::voices("0 / 1").unwrap();
-        let complexes = complexes_from_voicesx(&voices).unwrap();
+        let complexes = complexes_from_voices(&voices).unwrap();
         let complex_ext = ComplexExt::new(&complexes[0]);
 
         let notes = QCode::notes("0 -1").unwrap();

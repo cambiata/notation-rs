@@ -37,44 +37,38 @@ pub enum BeamingPattern {
     NValues(Vec<usize>),
 }
 
-pub type VoicesBeamings<'a> = (Option<Vec<BeamingItem<'a>>>, Option<Vec<BeamingItem<'a>>>);
+#[derive(Debug)]
+pub enum VoiceBeamability<'a> {
+    Unbeamable,
+    Beamable(BeamingItems<'a>),
+}
 
-pub fn beamings_from_voicesx(voices: &VoicesX, pattern: BeamingPattern) -> Result<VoicesBeamings> {
+pub enum VoicesBeamings<'a> {
+    One(VoiceBeamability<'a>),
+    Two(VoiceBeamability<'a>, VoiceBeamability<'a>),
+}
+
+pub fn beamings_from_voices(voices: &Voices, pattern: BeamingPattern) -> Result<VoicesBeamings> {
     match voices {
-        (Some(upper), None) => {
-            let upper_beaming = beamings_from_voice(upper, pattern.clone());
-            return Ok((upper_beaming, None));
+        Voices::One(voice) => {
+            let voice_beaming = beamings_from_voice(voice, pattern.clone())?;
+            Ok(VoicesBeamings::One(voice_beaming))
         }
-        (Some(upper), Some(lower)) => {
-            let upper_beaming = beamings_from_voice(upper, pattern.clone());
-            let lower_beaming = beamings_from_voice(lower, pattern.clone());
-            return Ok((upper_beaming, lower_beaming));
+        Voices::Two(upper, lower) => {
+            let upper_beaming = beamings_from_voice(upper, pattern.clone())?;
+            let lower_beaming = beamings_from_voice(lower, pattern.clone())?;
+            Ok(VoicesBeamings::Two(upper_beaming, lower_beaming))
         }
-        (None, Some(lower)) => {
-            Err(Generic(format!("voices has lower voice but not upper voice")).into())
-        }
-        (None, None) => return Err(Generic(format!("voices is empty")).into()),
     }
 }
 
-/*
-pub fn beamings_from_voices(
-    voices: &Vec<Voice>,
-    pattern: BeamingPattern,
-) -> Result<Vec<Option<BeamingItems>>> {
-    let mut items: Vec<Option<Vec<BeamingItem>>> = vec![];
-    for voice in voices {
-        let beaming = beamings_from_voice(voice, pattern.clone());
-        items.push(beaming);
-    }
-    Ok(items)
-}
-*/
-
-pub fn beamings_from_voice(voice: &Voice, pattern: BeamingPattern) -> Option<BeamingItems> {
+pub fn beamings_from_voice(voice: &Voice, pattern: BeamingPattern) -> Result<VoiceBeamability> {
     match voice.vtype {
-        VoiceType::VBarpause(_) => None,
-        VoiceType::VNotes(ref notes) => beamings_from_notes(notes, pattern).ok(),
+        VoiceType::VBarpause(_) => Ok(VoiceBeamability::Unbeamable),
+        VoiceType::VNotes(ref notes) => {
+            let beamings = beamings_from_notes(notes, pattern)?;
+            Ok(VoiceBeamability::Beamable(beamings))
+        }
     }
 }
 

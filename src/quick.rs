@@ -82,32 +82,19 @@ impl QCode {
         Ok(Voice::new(vtype, VoiceAttributes {}))
     }
 
-    // pub fn voices(code: &str) -> Result<Vec<Voice>> {
-    //     let segments: Vec<&str> = code.trim().split('/').collect();
-    //     let mut voices: Vec<Voice> = vec![];
-    //     if segments.len() > 2 {
-    //         panic!("too many voices: {}", voices.len());
-    //     }
-    //     for segment in segments {
-    //         let voice = QCode::voice(segment)?;
-    //         voices.push(voice);
-    //     }
-    //     Ok(voices)
-    // }
-
-    pub fn voices(code: &str) -> Result<VoicesX> {
+    pub fn voices(code: &str) -> Result<Voices> {
         let segments: Vec<&str> = code.trim().split('/').collect();
         let nr_of_voices = segments.len();
         match nr_of_voices {
             0 => Err(Generic("no voice in code".to_string()).into()),
             1 => {
                 let voice = QCode::voice(segments[0])?;
-                Ok((Some(voice), None))
+                Ok(Voices::One(voice))
             }
             2 => {
                 let voice1 = QCode::voice(segments[0])?;
                 let voice2 = QCode::voice(segments[1])?;
-                Ok((Some(voice1), Some(voice2)))
+                Ok(Voices::Two(voice1, voice2))
             }
             _ => Err(Generic(format!("too many voices in code: {}", nr_of_voices)).into()),
         }
@@ -145,7 +132,7 @@ mod tests {
     }
 
     #[test]
-    fn test_voicesx() {
+    fn test_voices() {
         let voices = QCode::voices("nv4 0 0 0 0 / bp").unwrap();
         dbg!(voices);
     }

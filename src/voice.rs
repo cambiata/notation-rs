@@ -25,7 +25,7 @@ impl Voice {
     }
 }
 
-pub type Voices = Vec<Voice>;
+// pub type Voices = Vec<Voice>;
 
 #[derive(Debug)]
 pub struct BarPause(pub Option<usize>);
@@ -39,7 +39,12 @@ pub enum VoiceType {
 #[derive(Debug)]
 pub struct VoiceAttributes {}
 
-pub type VoicesX = (Option<Voice>, Option<Voice>);
+// pub type Voices = (Option<Voice>, Option<Voice>);
+#[derive(Debug)]
+pub enum Voices {
+    Two(Voice, Voice),
+    One(Voice),
+}
 
 #[cfg(test)]
 mod tests {
