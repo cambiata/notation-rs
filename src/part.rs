@@ -26,21 +26,32 @@ pub enum PartBackground {
 
 #[cfg(test)]
 mod tests {
-    use crate::prelude::*;
 
+    use crate::prelude::*;
     #[test]
     fn example() {
         let voices = QCode::voices("Nv8 0 0 0 / Nv8 0 0 0 0").unwrap();
-        let beamings = BeamingItemsGenerator::create_beamings_from_voices(
-            &voices,
-            BeamingPattern::NValues(vec![NV4]),
-        )
-        .unwrap();
-        let complexes = Complexes::from_voices(&voices).unwrap();
-        assert_eq!(voices.len(), 2);
-        assert_eq!(beamings.len(), 2);
-        assert_eq!(complexes.len(), 4);
+        let beamings = beamings_from_voicesx(&voices, BeamingPattern::NValues(vec![NV4])).unwrap();
 
-        dbg!(beamings);
+        match beamings {
+            (Some(upper_beaming), Some(lower_beaming)) => {
+                assert_eq!(upper_beaming.len(), 2);
+                assert_eq!(lower_beaming.len(), 2);
+            }
+            (Some(upper_beaming), None) => {
+                println!("beaming1:{:?}", upper_beaming);
+            }
+            (None, Some(lower_beaming)) => {
+                panic!("Should not happen");
+            }
+            (None, None) => {
+                panic!("Should not happen");
+            }
+        }
+
+        let complexes = complexes_from_voicesx(&voices).unwrap();
+        // assert_eq!(voices.len(), 2);
+        // assert_eq!(beamings.len(), 2);
+        assert_eq!(complexes.len(), 4);
     }
 }

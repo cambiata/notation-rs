@@ -39,6 +39,8 @@ pub enum VoiceType {
 #[derive(Debug)]
 pub struct VoiceAttributes {}
 
+pub type VoicesX = (Option<Voice>, Option<Voice>);
+
 #[cfg(test)]
 mod tests {
     use super::VoiceType::{VBarpause, VNotes};

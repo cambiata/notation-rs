@@ -22,7 +22,7 @@ impl Note {
     pub fn is_beamable(self: &Note) -> bool {
         match self.ntype {
             // normal note
-            NoteType::Heads(_) => DurationTools::is_beamable(self.duration),
+            NoteType::Heads(_) => duration_is_beamable(self.duration),
             _ => false,
         }
     }

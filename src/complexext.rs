@@ -1,6 +1,3 @@
-use crate::complex::Complex;
-use crate::core::DurationTools;
-use crate::note::NoteType;
 use crate::prelude::*;
 
 #[derive(Debug)]
@@ -30,7 +27,7 @@ impl<'a> ComplexExt<'a> {
                         let level_diff =
                             lower_heads.get_level_top() - upper_heads.get_level_bottom();
 
-                        let upper_head_width = match DurationTools::get_headtype(upper.duration) {
+                        let upper_head_width = match duration_get_headtype(upper.duration) {
                             crate::head::HeadType::NormalHead => OVERLAP_NORMAL_HEAD,
                             crate::head::HeadType::WideHead => OVERLAP_WIDE_HEAD,
                         };
@@ -64,24 +61,20 @@ pub enum ComplexNotesOverlap {
 
 #[cfg(test)]
 mod tests {
-    use crate::complex::complexes_from_voices;
-    use crate::complex::Complex;
-    use crate::complex::{self};
-    use crate::complexext::ComplexExt;
+
     use crate::prelude::*;
-    use crate::quick::QCode;
 
     #[test]
     fn example() {
         let voices = QCode::voices("0 / 1").unwrap();
-        let complexes = complexes_from_voices(&voices).unwrap();
+        let complexes = complexes_from_voicesx(&voices).unwrap();
         let complex_ext = ComplexExt::new(&complexes[0]);
 
         let notes = QCode::notes("0 -1").unwrap();
         let complex = Complex::new(
             0,
             0,
-            complex::ComplexType::TwoNotes(&notes.items[0], &notes.items[1]),
+            ComplexType::TwoNotes(&notes.items[0], &notes.items[1]),
         );
         let ext = ComplexExt::new(&complex);
         let ext_type = ext.notes_overlap;

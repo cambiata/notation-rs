@@ -156,27 +156,6 @@ pub enum DirUD {
     Down,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::DurationTools;
-    use crate::{core::NV4, quick::QCode};
-
-    #[test]
-    fn example() {
-        let _notes = QCode::notes("nv4 0 nv8 1 nv2 2");
-    }
-
-    #[test]
-    fn nvalues() {
-        assert_eq!(NV4, 24);
-    }
-
-    #[test]
-    fn nvalues2() {
-        let _v = DurationTools::from(333);
-    }
-}
-
 pub const NV1DOT: usize = 144;
 pub const NV1: usize = 96;
 pub const NV2DOT: usize = 72;
@@ -197,62 +176,77 @@ pub type Duration = usize;
 
 pub type Position = usize;
 
-pub struct DurationTools;
-
-impl DurationTools {
-    pub fn from_str(s: &str) -> Result<Duration> {
-        match s.to_lowercase().as_str() {
-            "1dot" => Ok(NV1DOT),
-            "1." => Ok(NV1DOT),
-            "1" => Ok(NV1),
-            "2dot" => Ok(NV2DOT),
-            "2." => Ok(NV2DOT),
-            "2" => Ok(NV2),
-            "2tri" => Ok(NV2TRI),
-            "4dot" => Ok(NV4DOT),
-            "4." => Ok(NV4DOT),
-            "4" => Ok(NV4),
-            "8dot" => Ok(NV8DOT),
-            "8." => Ok(NV8DOT),
-            "4tri" => Ok(NV4TRI),
-            "8" => Ok(NV8),
-            "16dot" => Ok(NV16DOT),
-            "16." => Ok(NV16DOT),
-            "8tri" => Ok(NV8TRI),
-            "16" => Ok(NV16),
-            "16tri" => Ok(NV16TRI),
-            "32" => Ok(NV32),
-            _ => Err(DurationError(format!(
-                "Can not convert string '{}' into usize Duration",
-                s
-            ))
-            .into()),
-        }
+pub fn duration_from_str(s: &str) -> Result<Duration> {
+    match s.to_lowercase().as_str() {
+        "1dot" => Ok(NV1DOT),
+        "1." => Ok(NV1DOT),
+        "1" => Ok(NV1),
+        "2dot" => Ok(NV2DOT),
+        "2." => Ok(NV2DOT),
+        "2" => Ok(NV2),
+        "2tri" => Ok(NV2TRI),
+        "4dot" => Ok(NV4DOT),
+        "4." => Ok(NV4DOT),
+        "4" => Ok(NV4),
+        "8dot" => Ok(NV8DOT),
+        "8." => Ok(NV8DOT),
+        "4tri" => Ok(NV4TRI),
+        "8" => Ok(NV8),
+        "16dot" => Ok(NV16DOT),
+        "16." => Ok(NV16DOT),
+        "8tri" => Ok(NV8TRI),
+        "16" => Ok(NV16),
+        "16tri" => Ok(NV16TRI),
+        "32" => Ok(NV32),
+        _ => Err(DurationError(format!(
+            "Can not convert string '{}' into usize Duration",
+            s
+        ))
+        .into()),
     }
+}
 
-    pub fn from(v: usize) -> Result<Duration> {
-        match v {
-            NV1DOT | NV1 | NV2DOT | NV2 | NV4DOT | NV2TRI | NV4 | NV8DOT | NV4TRI | NV8
-            | NV16DOT | NV8TRI | NV16 | NV16TRI | NV32 => Ok(v),
-            _ => {
-                Err(DurationError(format!("Can not convert value {} to usize Duration", v)).into())
-            }
-        }
+pub fn duration_from(v: usize) -> Result<Duration> {
+    match v {
+        NV1DOT | NV1 | NV2DOT | NV2 | NV4DOT | NV2TRI | NV4 | NV8DOT | NV4TRI | NV8 | NV16DOT
+        | NV8TRI | NV16 | NV16TRI | NV32 => Ok(v),
+        _ => Err(DurationError(format!("Can not convert value {} to usize Duration", v)).into()),
     }
+}
 
-    pub fn is_beamable(dur: usize) -> bool {
-        match dur {
-            NV8 | NV8DOT | NV8TRI | NV16 | NV16DOT | NV32 => true,
-            _ => false,
-        }
+pub fn duration_is_beamable(dur: usize) -> bool {
+    match dur {
+        NV8 | NV8DOT | NV8TRI | NV16 | NV16DOT | NV32 => true,
+        _ => false,
     }
+}
 
-    pub fn get_headtype(duration: Duration) -> HeadType {
-        match duration {
-            NV1DOT | NV1 => HeadType::WideHead,
-            _ => HeadType::NormalHead,
-        }
+pub fn duration_get_headtype(duration: Duration) -> HeadType {
+    match duration {
+        NV1DOT | NV1 => HeadType::WideHead,
+        _ => HeadType::NormalHead,
     }
 }
 
 pub struct Rect(f32, f32, f32, f32);
+
+#[cfg(test)]
+mod tests {
+
+    use crate::prelude::*;
+
+    #[test]
+    fn example() {
+        let _notes = QCode::notes("nv4 0 nv8 1 nv2 2");
+    }
+
+    #[test]
+    fn nvalues() {
+        assert_eq!(NV4, 24);
+    }
+
+    #[test]
+    fn nvalues2() {
+        let _v = duration_from(333);
+    }
+}
