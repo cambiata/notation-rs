@@ -5,22 +5,53 @@ pub struct BeamingItem<'a> {
     pub position: Position,
     pub end_position: Position,
     pub btype: BeamingItemType<'a>,
-    pub direction: DirUAD,
+    // pub heads_balance: i8,
+    pub direction: Option<DirUD>,
 }
 
 impl<'a> BeamingItem<'a> {
     pub fn new(btype: BeamingItemType<'a>) -> Self {
+        let heads_balance = crate::beaming::get_heads_balance(&btype);
+        let direction = if heads_balance > 0 {
+            Some(DirUD::Up)
+        } else {
+            Some(DirUD::Down)
+        };
+
         Self {
             btype,
-            direction: DirUAD::Auto,
+            direction, // set default direction based upon heads_balance
             position: 0,
             end_position: 0,
+            // heads_balance,
         }
     }
 
-    pub fn set_direction(&mut self, direction: DirUAD) {
+    pub fn set_direction(&mut self, direction: Option<DirUD>) {
         self.direction = direction;
     }
+}
+
+pub fn get_heads_balance(btype: &BeamingItemType) -> i8 {
+    let balance: i8;
+    match btype {
+        BeamingItemType::None(note) => {
+            balance = note.get_heads_bottom() + note.get_heads_top();
+            println!("NONE balance:{}", &balance);
+        }
+        BeamingItemType::Group(notes) => {
+            let heads_top = notes.iter().map(|note| note.get_heads_top()).min().unwrap();
+            let heads_bottom = notes
+                .iter()
+                .map(|note| note.get_heads_bottom())
+                .max()
+                .unwrap();
+
+            balance = heads_bottom + heads_top;
+            println!("GROUP balance:{} {} {}", balance, heads_top, heads_bottom);
+        }
+    }
+    balance
 }
 
 pub type BeamingItems<'a> = Vec<BeamingItem<'a>>;
@@ -43,6 +74,7 @@ pub enum VoiceBeamability<'a> {
     Beamable(BeamingItems<'a>),
 }
 
+#[derive(Debug)]
 pub enum VoicesBeamings<'a> {
     One(VoiceBeamability<'a>),
     Two(VoiceBeamability<'a>, VoiceBeamability<'a>),
@@ -228,10 +260,16 @@ mod tests {
     fn print_beam(beam: &BeamingItem) {
         match &beam.btype {
             BeamingItemType::None(note) => {
-                println!("single:{} {}", beam.position, beam.end_position)
+                println!(
+                    "single:{} {} {:?}",
+                    beam.position, beam.end_position, beam.direction
+                );
             }
             BeamingItemType::Group(notes) => {
-                println!("group: {} {}", beam.position, beam.end_position);
+                println!(
+                    "group: {} {} {:?}",
+                    beam.position, beam.end_position, beam.direction
+                );
                 for note in notes.iter() {
                     println!(" - note:{}", note.duration);
                 }
@@ -279,6 +317,15 @@ mod tests {
         let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3").unwrap();
         let beams = beamings_from_notes(&notes, super::BeamingPattern::NoBeams).unwrap();
         println!();
+        for beam in beams.iter() {
+            print_beam(beam);
+        }
+    }
+
+    #[test]
+    fn balance1() {
+        let notes = QCode::notes("nv8 -3  3").unwrap();
+        let beams = beamings_from_notes(&notes, super::BeamingPattern::NValues(vec![NV4])).unwrap();
         for beam in beams.iter() {
             print_beam(beam);
         }

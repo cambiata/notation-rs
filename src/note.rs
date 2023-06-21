@@ -26,6 +26,34 @@ impl Note {
             _ => false,
         }
     }
+
+    // pub fn get_heads_balance(self: &Note) -> i8 {
+    //     match self.ntype {
+    //         NoteType::Heads(ref heads) => {
+    //             println!(
+    //                 "heads.get_level_bottom(), heads.get_level_top():{}, :{}",
+    //                 heads.get_level_bottom(),
+    //                 heads.get_level_top()
+    //             );
+    //             heads.get_level_bottom() - heads.get_level_top()
+    //         }
+    //         _ => 0,
+    //     }
+    // }
+
+    pub fn get_heads_top(self: &Note) -> i8 {
+        match self.ntype {
+            NoteType::Heads(ref heads) => heads.get_level_top(),
+            _ => 0,
+        }
+    }
+
+    pub fn get_heads_bottom(self: &Note) -> i8 {
+        match self.ntype {
+            NoteType::Heads(ref heads) => heads.get_level_bottom(),
+            _ => 0,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]

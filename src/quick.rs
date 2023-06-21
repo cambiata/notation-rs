@@ -11,6 +11,7 @@ pub struct QCode;
 
 impl QCode {
     pub fn notes(code: &str) -> Result<Notes> {
+        let code = code.replace("  ", " ");
         let segments: Vec<&str> = code.trim().split(' ').collect();
         let mut cur_val: Option<usize> = None;
         let mut notes: Vec<Note> = vec![];
