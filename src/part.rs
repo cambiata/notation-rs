@@ -29,5 +29,18 @@ mod tests {
     use crate::prelude::*;
 
     #[test]
-    fn example() {}
+    fn example() {
+        let voices = QCode::voices("Nv8 0 0 0 / Nv8 0 0 0 0").unwrap();
+        let beamings = BeamingItemsGenerator::create_beamings_from_voices(
+            &voices,
+            BeamingPattern::NValues(vec![NV4]),
+        )
+        .unwrap();
+        let complexes = Complexes::from_voices(&voices).unwrap();
+        assert_eq!(voices.len(), 2);
+        assert_eq!(beamings.len(), 2);
+        assert_eq!(complexes.len(), 4);
+
+        dbg!(beamings);
+    }
 }

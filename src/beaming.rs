@@ -40,26 +40,34 @@ pub enum BeamingPattern {
 pub struct BeamingItemsGenerator;
 
 impl BeamingItemsGenerator {
-    pub fn from_voices(
+    pub fn create_beamings_from_voices(
         voices: &Vec<Voice>,
         pattern: BeamingPattern,
     ) -> Result<Vec<Option<BeamingItems>>> {
         let mut items: Vec<Option<Vec<BeamingItem>>> = vec![];
         for voice in voices {
-            let beaming = BeamingItemsGenerator::from_voice(voice, pattern.clone());
+            let beaming = BeamingItemsGenerator::create_beamings_from_voice(voice, pattern.clone());
             items.push(beaming);
         }
         Ok(items)
     }
 
-    pub fn from_voice(voice: &Voice, pattern: BeamingPattern) -> Option<BeamingItems> {
+    pub fn create_beamings_from_voice(
+        voice: &Voice,
+        pattern: BeamingPattern,
+    ) -> Option<BeamingItems> {
         match voice.vtype {
             VoiceType::VBarpause(_) => None,
-            VoiceType::VNotes(ref notes) => BeamingItemsGenerator::from_notes(notes, pattern).ok(),
+            VoiceType::VNotes(ref notes) => {
+                BeamingItemsGenerator::create_beamings_from_notes(notes, pattern).ok()
+            }
         }
     }
 
-    pub fn from_notes(notes: &Notes, pattern: BeamingPattern) -> Result<BeamingItems> {
+    pub fn create_beamings_from_notes(
+        notes: &Notes,
+        pattern: BeamingPattern,
+    ) -> Result<BeamingItems> {
         if notes.items.len() == 0 {
             return Err(Generic(format!("notes is empty")).into());
         }
@@ -231,7 +239,7 @@ mod tests {
     #[test]
     fn beaming_mixed() {
         let notes = QCode::notes("nv4 0 nv8 0 0 0 Nv4 0 nv8 0").unwrap();
-        let beams = BeamingItemsGenerator::from_notes(
+        let beams = BeamingItemsGenerator::create_beamings_from_notes(
             &notes,
             super::BeamingPattern::NValues(vec![NV4, NV4DOT]),
             // super::BeamingPattern::NoBeams,
@@ -245,7 +253,7 @@ mod tests {
     #[test]
     fn beaming_2_3() {
         let notes = QCode::notes("nv8 0 0 0 0 0 0 0 0 0 0 0").unwrap();
-        let beams = BeamingItemsGenerator::from_notes(
+        let beams = BeamingItemsGenerator::create_beamings_from_notes(
             &notes,
             super::BeamingPattern::NValues(vec![NV4, NV4DOT]),
         )
@@ -259,9 +267,11 @@ mod tests {
     #[test]
     fn beaming_3() {
         let notes = QCode::notes("nv8 0 nv16 0 0 0 0 nv8 0 nv16 0 0 0 0 0 nv8 0 nv16 0 nv8tri 0 0 0 nv16tri 0 0 0 0 0 0 ").unwrap();
-        let beams =
-            BeamingItemsGenerator::from_notes(&notes, super::BeamingPattern::NValues(vec![NV4]))
-                .unwrap();
+        let beams = BeamingItemsGenerator::create_beamings_from_notes(
+            &notes,
+            super::BeamingPattern::NValues(vec![NV4]),
+        )
+        .unwrap();
         println!();
         for beam in beams.iter() {
             print_beam(beam);
@@ -271,8 +281,11 @@ mod tests {
     #[test]
     fn beaming_1() {
         let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3").unwrap();
-        let beams =
-            BeamingItemsGenerator::from_notes(&notes, super::BeamingPattern::NoBeams).unwrap();
+        let beams = BeamingItemsGenerator::create_beamings_from_notes(
+            &notes,
+            super::BeamingPattern::NoBeams,
+        )
+        .unwrap();
         println!();
         for beam in beams.iter() {
             print_beam(beam);
