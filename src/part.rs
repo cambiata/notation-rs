@@ -1,6 +1,4 @@
 use crate::prelude::*;
-use crate::voice::Voice;
-use crate::{complex::Complex, core::Duration, note::*};
 
 #[derive(Debug)]
 pub struct Part {
@@ -9,11 +7,11 @@ pub struct Part {
 }
 
 impl Part {
-    pub fn from_voices(voices: Vec<Voice>) -> Self {
-        Self {
+    pub fn from_voices(voices: Vec<Voice>) -> Result<Self> {
+        Ok(Self {
             ptype: PartType::Voices(voices),
             background: PartBackground::FiveLines,
-        }
+        })
     }
 }
 
@@ -26,12 +24,21 @@ pub enum PartBackground {
     FiveLines,
 }
 
-
 #[cfg(test)]
 mod tests {
+    use crate::prelude::*;
+
     #[test]
     fn example() {
-        
-        
+        let voices = QCode::voices("Nv8 0 0 0 / Nv8 0 0 0 0").unwrap();
+        let beamings =
+            BeamingItemsGenerator::from_voices(&voices, BeamingPattern::NValues(vec![NV4]))
+                .unwrap();
+        let complexes = Complexes::from_voices(&voices).unwrap();
+        // assert_eq!(voices.len(), 2);
+        // assert_eq!(beamings.len(), 2);
+        // assert_eq!(complexes.len(), 4);
+
+        dbg!(beamings);
     }
 }
