@@ -1,5 +1,4 @@
-use crate::core::*;
-use crate::notes::*;
+use crate::prelude::*;
 
 #[derive(Debug)]
 pub struct Voice {

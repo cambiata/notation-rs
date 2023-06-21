@@ -1,6 +1,4 @@
 use crate::prelude::*;
-use crate::voice::Voice;
-use crate::{complex::Complex, core::Duration, note::*};
 
 #[derive(Debug)]
 pub struct Part {
@@ -9,11 +7,11 @@ pub struct Part {
 }
 
 impl Part {
-    pub fn from_voices(voices: Vec<Voice>) -> Self {
-        Self {
+    pub fn from_voices(voices: Vec<Voice>) -> Result<Self> {
+        Ok(Self {
             ptype: PartType::Voices(voices),
             background: PartBackground::FiveLines,
-        }
+        })
     }
 }
 
@@ -28,6 +26,8 @@ pub enum PartBackground {
 
 #[cfg(test)]
 mod tests {
+    use crate::prelude::*;
+
     #[test]
     fn example() {}
 }
