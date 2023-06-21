@@ -64,8 +64,9 @@ pub enum ComplexNotesOverlap {
 
 #[cfg(test)]
 mod tests {
+    use crate::complex::complexes_from_voices;
     use crate::complex::Complex;
-    use crate::complex::{self, Complexes};
+    use crate::complex::{self};
     use crate::complexext::ComplexExt;
     use crate::prelude::*;
     use crate::quick::QCode;
@@ -73,7 +74,7 @@ mod tests {
     #[test]
     fn example() {
         let voices = QCode::voices("0 / 1").unwrap();
-        let complexes = Complexes::from_voices(&voices).unwrap();
+        let complexes = complexes_from_voices(&voices).unwrap();
         let complex_ext = ComplexExt::new(&complexes[0]);
 
         let notes = QCode::notes("0 -1").unwrap();

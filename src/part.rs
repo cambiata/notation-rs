@@ -26,12 +26,8 @@ pub enum PartBackground {
     FiveLines,
 }
 
-
 #[cfg(test)]
 mod tests {
     #[test]
-    fn example() {
-        
-        
-    }
+    fn example() {}
 }

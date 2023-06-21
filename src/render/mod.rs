@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
 
-    use crate::complex::Complexes;
+    use crate::complex::complexes_from_voices;
     use crate::prelude::*;
     use crate::quick::QCode;
 
@@ -11,8 +11,6 @@ mod tests {
 
         let voices = QCode::voices("nv4 0 0  / nv8 2 2 2 2").unwrap();
 
-
-        
-        let complexes = Complexes::from_voices(&voices).unwrap();
+        let complexes = complexes_from_voices(&voices).unwrap();
     }
 }
