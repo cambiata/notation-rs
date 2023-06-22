@@ -11,6 +11,14 @@ pub struct Note {
 }
 
 impl Note {
+    pub fn from_heads(duration: usize, heads: Heads) -> Note {
+        Note::new(
+            duration,
+            NoteType::Heads(heads),
+            NoteAttributes { color: None },
+        )
+    }
+
     pub fn new(duration: usize, ntype: NoteType, attr: NoteAttributes) -> Note {
         Note {
             duration,

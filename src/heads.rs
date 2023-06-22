@@ -8,7 +8,7 @@ pub struct Heads {
 
 impl Heads {
     pub fn new(mut items: Vec<Head>) -> Self {
-        if items.len() == 0 {
+        if items.is_empty() {
             panic!("Heads::new() called with empty vector");
         }
         items.sort_by_key(|item| item.level);
