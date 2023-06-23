@@ -47,6 +47,29 @@ impl<'a> Complex<'a> {
     }
 }
 
+pub fn complexes_from_beamings(beamings: &VoicesBeamings) -> Result<()> {
+    todo!();
+    let mut complexes: Vec<Complex> = vec![];
+    match beamings {
+        VoicesBeamings::One(voice_beamability) => match voice_beamability {
+            VoiceBeamability::Unbeamable => {}
+            VoiceBeamability::Beamable(items) => {}
+        },
+        VoicesBeamings::Two(upper_beamability, lower_beamability) => {
+            match upper_beamability {
+                VoiceBeamability::Unbeamable => {}
+                VoiceBeamability::Beamable(upper_items) => {}
+            }
+            match lower_beamability {
+                VoiceBeamability::Unbeamable => {}
+                VoiceBeamability::Beamable(lower_items) => {}
+            }
+        }
+    }
+
+    Ok(())
+}
+
 pub fn complexes_from_voices(voices: &Voices) -> Result<Vec<Complex>> {
     let mut complexes: Vec<Complex> = vec![];
 

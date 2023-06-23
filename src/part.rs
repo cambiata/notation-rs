@@ -41,10 +41,14 @@ mod tests {
             DirUAD::Auto,
         )
         .unwrap();
+
+        complexes_from_beamings(&beamings).unwrap();
+
         let map = get_map_note_beamings(&beamings).unwrap();
 
         // dbg!(&beamings);&
         let complexes = complexes_from_voices(&voices).unwrap();
+
         // assert_eq!(voices.len(), 2);
         // assert_eq!(beamings.len(), 2);
         // assert_eq!(complexes.len(), 4);
