@@ -79,7 +79,7 @@ pub enum BeamingPattern {
 
 #[derive(Debug)]
 pub enum VoiceBeamability<'a> {
-    Unbeamable,
+    Unbeamable, //(VoiceType<'a>),
     Beamable(BeamingItems<'a>),
 }
 
@@ -155,6 +155,7 @@ pub fn get_beam_per_note_map<'a>(beamings: VoicesBeamings<'a>) -> Result<BeamPer
     }
     Ok(map)
 }
+
 */
 pub fn beamings_from_voices(
     voices: &Voices,
@@ -227,7 +228,8 @@ pub fn beamings_from_notes(
 
     match pattern {
         BeamingPattern::NoBeams => {
-            let mut items: Vec<BeamingItem> = vec![];
+            let mut beaming_items: Vec<BeamingItem> = vec![];
+            // let mut items: Vec<BeamingItem> = vec![];
             for (note, pos, endpos) in notes.get_note_positions() {
                 let btype: BeamingItemType = match note.ntype {
                     NoteType::Heads(_) => BeamingItemType::None(note),
@@ -246,12 +248,29 @@ pub fn beamings_from_notes(
                 let mut beaming_item = BeamingItem::new(btype);
                 beaming_item.position = pos;
                 beaming_item.end_position = endpos;
-                items.push(beaming_item);
+                beaming_items.push(beaming_item);
+
+                // let mut map: HashMap<&Note, &BeamingItem> = HashMap::new();
+                // for item in &beaming_items {
+                //     // print_beam(&item);
+                //     match &item.btype {
+                //         BeamingItemType::None(note) => {
+                //             map.insert(note, &item);
+                //         }
+                //         BeamingItemType::Group(notes) => {
+                //             for note in notes {
+                //                 map.insert(note, &item);
+                //             }
+                //         }
+                //     }
+                // }
             }
-            Ok(items)
+            Ok(beaming_items)
         }
 
         BeamingPattern::NValues(values) => {
+            let mut beaming_items: Vec<BeamingItem> = vec![];
+
             let mut value_cycle: Vec<(usize, usize)> = vec![];
             let mut vpos_start: usize = 0;
             let mut vpos_end: usize = 0;
@@ -270,7 +289,7 @@ pub fn beamings_from_notes(
             let mut cycle_idx = 0;
             let mut cycle_start = value_cycle[cycle_idx].0;
             let mut cycle_end = value_cycle[cycle_idx].1;
-            let mut beaming_items: Vec<BeamingItem> = vec![];
+            // let mut beaming_items: Vec<BeamingItem> = vec![];
             let mut note_group: Vec<&Note> = vec![];
             let mut note_group_start: usize = 0;
 
@@ -406,6 +425,21 @@ pub fn beamings_from_notes(
 
                 beaming_item.internal_direction = Some(dir_ud);
             }
+
+            // let mut map: HashMap<&Note, &BeamingItem> = HashMap::new();
+            // for item in &beaming_items {
+            //     // print_beam(&item);
+            //     match &item.btype {
+            //         BeamingItemType::None(note) => {
+            //             map.insert(note, &item);
+            //         }
+            //         BeamingItemType::Group(notes) => {
+            //             for note in notes {
+            //                 map.insert(note, &item);
+            //             }
+            //         }
+            //     }
+            // }
 
             Ok(beaming_items)
         }
@@ -560,3 +594,5 @@ mod tests {
         }
     }
 }
+
+//=========================================================================================================

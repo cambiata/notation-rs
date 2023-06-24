@@ -33,7 +33,7 @@ mod tests {
     use crate::{note, prelude::*};
     #[test]
     fn example() {
-        let voices = QCode::voices("Nv8 0 0 ").unwrap();
+        let voices = QCode::voices("Nv8 0 1 1,-2").unwrap();
         let beamings = beamings_from_voices(
             &voices,
             BeamingPattern::NValues(vec![NV4]),
@@ -42,18 +42,26 @@ mod tests {
         )
         .unwrap();
 
-        complexes_from_beamings(&beamings).unwrap();
-
         let map = get_map_note_beamings(&beamings).unwrap();
-
+        // test_voices_and_map(&voices, &map);
         // dbg!(&beamings);&
-        let complexes = complexes_from_voices(&voices).unwrap();
+        let complexes = complexes_from_voices2(&voices, &map).unwrap();
+        // complexes_from_beamings(&beamings).unwrap();
 
         // assert_eq!(voices.len(), 2);
         // assert_eq!(beamings.len(), 2);
         // assert_eq!(complexes.len(), 4);
 
         // set_beamings_directions(beamings, &complexes, DirUAD::Auto).unwrap();
+    }
+
+    // fn test_map(map: HashMap<&Note, &BeamingItem>) {}
+
+    fn test_voices_and_map<'a>(
+        voices: &'a Voices,
+        map: &'a HashMap<&Note, &BeamingItem<'a>>,
+    ) -> Result<Vec<Complex<'a>>> {
+        Ok(vec![])
     }
 }
 
