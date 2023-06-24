@@ -42,10 +42,10 @@ mod tests {
         )
         .unwrap();
 
-        let map = get_map_note_beamings(&beamings).unwrap();
+        let beaming_map = get_map_note_beamings(&beamings).unwrap();
         // test_voices_and_map(&voices, &map);
         // dbg!(&beamings);&
-        let complexes = complexes_from_voices2(&voices, &map).unwrap();
+        let complexes = complexes_from_voices(&voices).unwrap();
         // complexes_from_beamings(&beamings).unwrap();
 
         // assert_eq!(voices.len(), 2);
