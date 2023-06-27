@@ -224,7 +224,7 @@ pub fn get_map_note_beamings<'a>(
     let mut note_idx = 0;
     match &beamings {
         VoicesBeamings::One(ref beamability) => match beamability {
-            VoiceBeamability::Beamable(ref beamings) => {
+            Some(ref beamings) => {
                 for (idx, bitem) in beamings.iter().enumerate() {
                     match &bitem.btype {
                         BeamingItemType::None(ref note) => {
@@ -248,11 +248,11 @@ pub fn get_map_note_beamings<'a>(
                     }
                 }
             }
-            VoiceBeamability::Unbeamable => {}
+            None => {}
         },
         VoicesBeamings::Two(upper_beamability, lower_beamability) => {
             match upper_beamability {
-                VoiceBeamability::Beamable(ref beamings) => {
+                Some(ref beamings) => {
                     for bitem in beamings.iter() {
                         match &bitem.btype {
                             BeamingItemType::None(ref note) => {
@@ -266,10 +266,10 @@ pub fn get_map_note_beamings<'a>(
                         }
                     }
                 }
-                VoiceBeamability::Unbeamable => {}
+                None => {}
             };
             match lower_beamability {
-                VoiceBeamability::Beamable(ref beamings) => {
+                Some(ref beamings) => {
                     for bitem in beamings.iter() {
                         match &bitem.btype {
                             BeamingItemType::None(ref note) => {
@@ -283,7 +283,7 @@ pub fn get_map_note_beamings<'a>(
                         }
                     }
                 }
-                VoiceBeamability::Unbeamable => {}
+                None => {}
             };
         }
     }

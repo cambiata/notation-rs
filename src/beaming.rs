@@ -77,16 +77,16 @@ pub enum BeamingPattern {
     NValues(Vec<usize>),
 }
 
-#[derive(Debug)]
-pub enum VoiceBeamability<'a> {
-    Unbeamable, //(VoiceType<'a>),
-    Beamable(BeamingItems<'a>),
-}
+// #[derive(Debug)]
+// pub enum VoiceBeamability<'a> {
+//     None, //(VoiceType<'a>),
+//     Some(BeamingItems<'a>),
+// }
 
 #[derive(Debug)]
 pub enum VoicesBeamings<'a> {
-    One(VoiceBeamability<'a>),
-    Two(VoiceBeamability<'a>, VoiceBeamability<'a>),
+    One(Option<BeamingItems<'a>>),
+    Two(Option<BeamingItems<'a>>, Option<BeamingItems<'a>>),
 }
 
 type BeamPerNoteMap<'a> = HashMap<&'a Note, &'a BeamingItem<'a>>;
@@ -133,9 +133,9 @@ pub fn beamings_from_voice(
     dir_before_breakpoint: DirUAD,
     breakpoint: usize,
     dir_after_breakpoint: DirUAD,
-) -> Result<VoiceBeamability> {
+) -> Result<Option<BeamingItems>> {
     match voice.vtype {
-        VoiceType::VBarpause(_) => Ok(VoiceBeamability::Unbeamable),
+        VoiceType::VBarpause(_) => Ok(None),
         VoiceType::VNotes(ref notes) => {
             let beamings = beamings_from_notes(
                 notes,
@@ -144,7 +144,7 @@ pub fn beamings_from_voice(
                 breakpoint,
                 dir_after_breakpoint,
             )?;
-            Ok(VoiceBeamability::Beamable(beamings))
+            Ok(Some(beamings))
         }
     }
 }
@@ -354,11 +354,11 @@ mod tests {
     use crate::core::{NV4, NV4DOT};
     use crate::quick::QCode;
 
-    fn print_voice_beamability(vb: &VoiceBeamability) {
+    fn print_voice_beamability(vb: &Option<BeamingItems>) {
         match vb {
-            VoiceBeamability::Unbeamable => println!("unbeamable"),
-            VoiceBeamability::Beamable(items) => {
-                println!("beamable");
+            None => println!("unbeamable == None"),
+            Some(items) => {
+                println!("beamable == Some");
                 for item in items.iter() {
                     print_beam(item);
                 }
