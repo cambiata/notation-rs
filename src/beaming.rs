@@ -91,12 +91,17 @@ pub enum VoicesBeamings<'a> {
 
 type BeamPerNoteMap<'a> = HashMap<&'a Note, &'a BeamingItem<'a>>;
 
-pub fn beamings_from_voices(
-    voices: &Voices,
-    pattern: BeamingPattern,
-    main_direction: DirUAD,
-    overlap_direction: DirUAD,
-) -> Result<VoicesBeamings> {
+// pub struct VoicesBeamingsResult<'a> {
+//     voices_beamings: &'a VoicesBeamings<'a>,
+//     map: BeamPerNoteMap<'a>,
+// }
+
+pub fn beamings_from_voices<'a>(
+    voices: &'a Voices,
+    pattern: &BeamingPattern,
+    main_direction: &DirUAD,
+    overlap_direction: &DirUAD,
+) -> Result<VoicesBeamings<'a>> {
     match voices {
         Voices::One(voice) => {
             let voice_beaming =
@@ -110,30 +115,30 @@ pub fn beamings_from_voices(
 
             let upper_beaming = beamings_from_voice(
                 upper,
-                pattern.clone(),
-                DirUAD::Up,
+                pattern,
+                &DirUAD::Up,
                 shortest_duration,
                 overlap_direction,
             )?;
             let lower_beaming = beamings_from_voice(
                 lower,
                 pattern,
-                DirUAD::Down,
+                &DirUAD::Down,
                 shortest_duration,
-                overlap_direction,
+                &overlap_direction,
             )?;
             Ok(VoicesBeamings::Two(upper_beaming, lower_beaming))
         }
     }
 }
 
-pub fn beamings_from_voice(
-    voice: &Voice,
-    pattern: BeamingPattern,
-    dir_before_breakpoint: DirUAD,
+pub fn beamings_from_voice<'a>(
+    voice: &'a Voice,
+    pattern: &BeamingPattern,
+    dir_before_breakpoint: &DirUAD,
     breakpoint: usize,
-    dir_after_breakpoint: DirUAD,
-) -> Result<Option<BeamingItems>> {
+    dir_after_breakpoint: &DirUAD,
+) -> Result<Option<BeamingItems<'a>>> {
     match voice.vtype {
         VoiceType::VBarpause(_) => Ok(None),
         VoiceType::VNotes(ref notes) => {
@@ -149,20 +154,20 @@ pub fn beamings_from_voice(
     }
 }
 
-pub fn beamings_from_notes(
-    notes: &Notes,
-    pattern: BeamingPattern,
-    dir_before_breakpoint: DirUAD,
+pub fn beamings_from_notes<'a>(
+    notes: &'a Notes,
+    pattern: &BeamingPattern,
+    dir_before_breakpoint: &DirUAD,
     breakpoint: usize,
-    dir_after_breakpoint: DirUAD,
-) -> Result<BeamingItems> {
+    dir_after_breakpoint: &DirUAD,
+) -> Result<BeamingItems<'a>> {
     if notes.items.is_empty() {
         return Err(Generic(format!("notes is empty")).into());
     }
 
     match pattern {
         BeamingPattern::NoBeams => {
-            let mut beaming_items: Vec<BeamingItem> = vec![];
+            let mut beaming_items: BeamingItems = vec![];
             // let mut items: Vec<BeamingItem> = vec![];
             for (note, pos, endpos) in notes.get_note_positions() {
                 let btype: BeamingItemType = match note.ntype {
@@ -188,7 +193,7 @@ pub fn beamings_from_notes(
         }
 
         BeamingPattern::NValues(values) => {
-            let mut beaming_items: Vec<BeamingItem> = vec![];
+            let mut beaming_items: BeamingItems = vec![];
 
             let mut value_cycle: Vec<(usize, usize)> = vec![];
             let mut vpos_start: usize = 0;
@@ -391,10 +396,10 @@ mod tests {
         let notes = QCode::notes("nv4 0 nv8 0 0 0 Nv4 0 nv8 0").unwrap();
         let beams = beamings_from_notes(
             &notes,
-            super::BeamingPattern::NValues(vec![NV4, NV4DOT]),
-            DirUAD::Auto,
+            &super::BeamingPattern::NValues(vec![NV4, NV4DOT]),
+            &DirUAD::Auto,
             0,
-            DirUAD::Auto,
+            &DirUAD::Auto,
         )
         .unwrap();
 
@@ -407,10 +412,10 @@ mod tests {
         let notes = QCode::notes("nv8 0 0 0 0 0 0 0 0 0 0 0").unwrap();
         let beams = beamings_from_notes(
             &notes,
-            super::BeamingPattern::NValues(vec![NV4, NV4DOT]),
-            DirUAD::Auto,
+            &super::BeamingPattern::NValues(vec![NV4, NV4DOT]),
+            &DirUAD::Auto,
             0,
-            DirUAD::Auto,
+            &DirUAD::Auto,
         )
         .unwrap();
 
@@ -424,10 +429,10 @@ mod tests {
         let notes = QCode::notes("nv8 0 nv16 0 0 0 0 nv8 0 nv16 0 0 0 0 0 nv8 0 nv16 0 nv8tri 0 0 0 nv16tri 0 0 0 0 0 0 ").unwrap();
         let beams = beamings_from_notes(
             &notes,
-            super::BeamingPattern::NValues(vec![NV4]),
-            DirUAD::Auto,
+            &super::BeamingPattern::NValues(vec![NV4]),
+            &DirUAD::Auto,
             0,
-            DirUAD::Auto,
+            &DirUAD::Auto,
         )
         .unwrap();
         println!();
@@ -441,10 +446,10 @@ mod tests {
         let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3").unwrap();
         let beams = beamings_from_notes(
             &notes,
-            super::BeamingPattern::NoBeams,
-            DirUAD::Auto,
+            &super::BeamingPattern::NoBeams,
+            &DirUAD::Auto,
             0,
-            DirUAD::Auto,
+            &DirUAD::Auto,
         )
         .unwrap();
         println!();
@@ -458,10 +463,10 @@ mod tests {
         let notes = QCode::notes("nv8 0 0 0 0 0 0 0 0").unwrap();
         let beams = beamings_from_notes(
             &notes,
-            super::BeamingPattern::NValues(vec![NV4]),
-            DirUAD::Up,
+            &super::BeamingPattern::NValues(vec![NV4]),
+            &DirUAD::Up,
             72,
-            DirUAD::Auto,
+            &DirUAD::Auto,
         )
         .unwrap();
         for beam in beams.iter() {
@@ -474,9 +479,9 @@ mod tests {
         let voices = QCode::voices("nv8 0 0 0 0 1 / NV8 0 0 0 0").unwrap();
         let beams = beamings_from_voices(
             &voices,
-            BeamingPattern::NValues(vec![NV4]),
-            DirUAD::Auto,
-            DirUAD::Down,
+            &BeamingPattern::NValues(vec![NV4]),
+            &DirUAD::Auto,
+            &DirUAD::Down,
         )
         .unwrap();
         match beams {

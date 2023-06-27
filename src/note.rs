@@ -4,10 +4,6 @@ use crate::{chord::ChordItem, core::*, dynamic::DynamicItem, syllable::Syllable}
 use serde::{Deserialize, Serialize};
 
 static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
-fn get_unique_id() -> usize {
-    ID_COUNTER.fetch_add(1, Ordering::SeqCst);
-    ID_COUNTER.load(Ordering::SeqCst).into()
-}
 
 use crate::heads::Heads;
 
@@ -30,7 +26,7 @@ impl Note {
 
     pub fn new(duration: usize, ntype: NoteType, attr: NoteAttributes) -> Note {
         Note {
-            id: get_unique_id(),
+            id: ID_COUNTER.fetch_add(1, Ordering::SeqCst),
             duration,
             ntype,
             attr,
@@ -44,20 +40,6 @@ impl Note {
             _ => false,
         }
     }
-
-    // pub fn get_heads_balance(self: &Note) -> i8 {
-    //     match self.ntype {
-    //         NoteType::Heads(ref heads) => {
-    //             println!(
-    //                 "heads.get_level_bottom(), heads.get_level_top():{}, :{}",
-    //                 heads.get_level_bottom(),
-    //                 heads.get_level_top()
-    //             );
-    //             heads.get_level_bottom() - heads.get_level_top()
-    //         }
-    //         _ => 0,
-    //     }
-    // }
 
     pub fn get_heads_top(self: &Note) -> i8 {
         match self.ntype {

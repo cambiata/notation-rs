@@ -15,14 +15,20 @@ pub struct Complex<'a> {
 }
 
 #[derive(Debug)]
+pub struct NoteExt<'a> {
+    note: &'a Note,
+    dir: Option<DirUD>,
+}
+
+#[derive(Debug)]
 pub enum ComplexType<'a> {
     OneBarpause(&'a BarPause),
     TwoBarpauses(&'a BarPause, &'a BarPause),
     //
-    OneNote(&'a Note),
-    TwoNotes(&'a Note, &'a Note),
-    BarpauseNote(&'a BarPause, &'a Note),
-    NoteBarpause(&'a Note, &'a BarPause),
+    OneNote(NoteExt<'a>),
+    TwoNotes(NoteExt<'a>, NoteExt<'a>),
+    BarpauseNote(&'a BarPause, NoteExt<'a>),
+    NoteBarpause(NoteExt<'a>, &'a BarPause),
 }
 
 impl<'a> ComplexType<'a> {
@@ -48,7 +54,10 @@ impl<'a> Complex<'a> {
     }
 }
 
-pub fn complexes_from_voices(voices: &Voices) -> Result<Vec<Complex>> {
+pub fn complexes_from_voices<'a>(
+    voices: &'a Voices,
+    map: &HashMap<&Note, &BeamingItem<'a>>,
+) -> Result<Vec<Complex<'a>>> {
     let mut complexes: Vec<Complex> = vec![];
 
     match voices {
@@ -69,7 +78,10 @@ pub fn complexes_from_voices(voices: &Voices) -> Result<Vec<Complex>> {
                     complexes.push(Complex {
                         position,
                         duration,
-                        ctype: ComplexType::OneNote(note),
+                        ctype: ComplexType::OneNote(NoteExt {
+                            note,
+                            dir: map.get(note).unwrap().internal_direction,
+                        }),
                     });
                     position += duration;
                 }
@@ -81,13 +93,23 @@ pub fn complexes_from_voices(voices: &Voices) -> Result<Vec<Complex>> {
                     let mut position = 0;
                     for (idx, note) in notes.iter().enumerate() {
                         let duration = note.duration;
+                        // let dir = map.get(note).ok_or(Basic.into())?.internal_direction;
                         complexes.push(Complex {
                             position,
                             duration,
                             ctype: if idx == 0 {
-                                ComplexType::BarpauseNote(bp, note)
+                                ComplexType::BarpauseNote(
+                                    bp,
+                                    NoteExt {
+                                        note,
+                                        dir: map.get(note).unwrap().internal_direction,
+                                    },
+                                )
                             } else {
-                                ComplexType::OneNote(note)
+                                ComplexType::OneNote(NoteExt {
+                                    note,
+                                    dir: map.get(note).unwrap().internal_direction,
+                                })
                             },
                         });
                         position += duration;
@@ -97,13 +119,17 @@ pub fn complexes_from_voices(voices: &Voices) -> Result<Vec<Complex>> {
                     let mut position = 0;
                     for (idx, note) in notes.iter().enumerate() {
                         let duration = note.duration;
+                        // let dir: Option<DirUD> = map
+                        //     .get(note)
+                        //     .ok_or(Basic).into())?
+                        //     .internal_direction;
                         complexes.push(Complex {
                             position,
                             duration,
                             ctype: if idx == 0 {
-                                ComplexType::NoteBarpause(note, bp)
+                                ComplexType::NoteBarpause(NoteExt { note, dir: None }, bp)
                             } else {
-                                ComplexType::OneNote(note)
+                                ComplexType::OneNote(NoteExt { note, dir: None })
                             },
                         });
                         position += duration;
@@ -147,21 +173,36 @@ pub fn complexes_from_voices(voices: &Voices) -> Result<Vec<Complex>> {
                                 complexes.push(Complex {
                                     position: *position,
                                     duration,
-                                    ctype: ComplexType::TwoNotes(note1, note2),
+                                    ctype: ComplexType::TwoNotes(
+                                        NoteExt {
+                                            note: note1,
+                                            dir: map.get(note1).unwrap().internal_direction,
+                                        },
+                                        NoteExt {
+                                            note: note2,
+                                            dir: map.get(note2).unwrap().internal_direction,
+                                        },
+                                    ),
                                 });
                             }
-                            [Some(note1), None] => {
+                            [Some(note), None] => {
                                 complexes.push(Complex {
                                     position: *position,
                                     duration,
-                                    ctype: ComplexType::OneNote(note1),
+                                    ctype: ComplexType::OneNote(NoteExt {
+                                        note: note,
+                                        dir: map.get(note).unwrap().internal_direction,
+                                    }),
                                 });
                             }
-                            [None, Some(note2)] => {
+                            [None, Some(note)] => {
                                 complexes.push(Complex {
                                     position: *position,
                                     duration,
-                                    ctype: ComplexType::OneNote(note2),
+                                    ctype: ComplexType::OneNote(NoteExt {
+                                        note,
+                                        dir: map.get(note).unwrap().internal_direction,
+                                    }),
                                 });
                             }
                             [None, None] => {
@@ -192,37 +233,37 @@ pub fn get_complex_directions(
     complex: &Complex,
     map: &HashMap<&Note, &BeamingItem>,
 ) -> Result<ComplexDirections> {
-    match complex.ctype {
+    match &complex.ctype {
         ComplexType::OneBarpause(_) => Ok(ComplexDirections::One(None)),
         ComplexType::TwoBarpauses(_, _) => Ok(ComplexDirections::Two(None, None)),
         ComplexType::OneNote(note) => {
-            let dir = map.get(&note).ok_or(Basic)?.internal_direction;
+            let dir = map.get(&note.note).ok_or(Basic)?.internal_direction;
             Ok(ComplexDirections::One(dir))
         }
         ComplexType::TwoNotes(upper, lower) => {
-            let upper_dir = map.get(&upper).ok_or(Basic)?.internal_direction;
-            let lower_dir = map.get(&lower).ok_or(Basic)?.internal_direction;
-            println!("upper_dir, lower_dir:{:?}, :{:?}", &upper_dir, &lower_dir);
+            let upper_dir = map.get(&upper.note).ok_or(Basic)?.internal_direction;
+            let lower_dir = map.get(&lower.note).ok_or(Basic)?.internal_direction;
+            // println!("upper_dir, lower_dir:{:?}, :{:?}", &upper_dir, &lower_dir);
             Ok(ComplexDirections::Two(upper_dir, lower_dir))
         }
         ComplexType::BarpauseNote(_, note) => {
-            let dir = map.get(&note).ok_or(Basic)?.internal_direction;
+            let dir = map.get(&note.note).ok_or(Basic)?.internal_direction;
             Ok(ComplexDirections::Two(None, dir))
         }
         ComplexType::NoteBarpause(note, _) => {
-            let dir = map.get(&note).ok_or(Basic)?.internal_direction;
+            let dir = map.get(&note.note).ok_or(Basic)?.internal_direction;
             Ok(ComplexDirections::Two(dir, None))
         }
     }
 }
 
 pub fn get_map_note_beamings<'a>(
-    beamings: &'a VoicesBeamings,
+    beamings: &'a VoicesBeamings<'a>,
 ) -> Result<HashMap<&'a Note, &'a BeamingItem<'a>>> {
     let mut map: HashMap<&Note, &BeamingItem<'a>> = HashMap::new();
-
     let mut note_idx = 0;
-    match &beamings {
+
+    match beamings {
         VoicesBeamings::One(ref beamability) => match beamability {
             Some(ref beamings) => {
                 for (idx, bitem) in beamings.iter().enumerate() {
@@ -250,6 +291,7 @@ pub fn get_map_note_beamings<'a>(
             }
             None => {}
         },
+
         VoicesBeamings::Two(upper_beamability, lower_beamability) => {
             match upper_beamability {
                 Some(ref beamings) => {
@@ -268,6 +310,7 @@ pub fn get_map_note_beamings<'a>(
                 }
                 None => {}
             };
+
             match lower_beamability {
                 Some(ref beamings) => {
                     for bitem in beamings.iter() {
@@ -303,18 +346,18 @@ pub const OVERLAP_SPACE: f32 = 0.2;
 pub const OVERLAP_DIAGONAL_SPACE: f32 = -0.5;
 
 pub fn get_complex_notes_overlap_type<'a>(complex: &'a Complex) -> ComplexNotesOverlap {
-    match complex.ctype {
+    match &complex.ctype {
         crate::complex::ComplexType::OneBarpause(_) => ComplexNotesOverlap::None,
         crate::complex::ComplexType::TwoBarpauses(_, _) => ComplexNotesOverlap::None,
         crate::complex::ComplexType::OneNote(_) => ComplexNotesOverlap::None,
         crate::complex::ComplexType::BarpauseNote(_, _) => ComplexNotesOverlap::None,
         crate::complex::ComplexType::NoteBarpause(_, _) => ComplexNotesOverlap::None,
         crate::complex::ComplexType::TwoNotes(upper, lower) => {
-            let overlap = match [&upper.ntype, &lower.ntype] {
+            let overlap = match [&upper.note.ntype, &lower.note.ntype] {
                 [NoteType::Heads(upper_heads), NoteType::Heads(lower_heads)] => {
                     let level_diff = lower_heads.get_level_top() - upper_heads.get_level_bottom();
 
-                    let upper_head_width = match duration_get_headtype(upper.duration) {
+                    let upper_head_width = match duration_get_headtype(upper.note.duration) {
                         crate::head::HeadType::NormalHead => OVERLAP_NORMAL_HEAD,
                         crate::head::HeadType::WideHead => OVERLAP_WIDE_HEAD,
                     };
@@ -345,12 +388,24 @@ pub enum ComplexDirections {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
     use crate::prelude::*;
 
     #[test]
     fn test1() {
         let voices = QCode::voices("Nv4 #0 / Nv8 b1 0 0").unwrap();
-        let complexes = complexes_from_voices(&voices).unwrap();
+        let voices_beamings = beamings_from_voices(
+            &voices,
+            &BeamingPattern::NValues(vec![NV4]),
+            &DirUAD::Auto,
+            &DirUAD::Auto,
+        )
+        .unwrap();
+        let map: HashMap<&Note, &BeamingItem<'_>> =
+            get_map_note_beamings(&voices_beamings).unwrap();
+        let complexes = complexes_from_voices(&voices, &map).unwrap();
+
         let first_complex = &complexes[0];
         dbg!(first_complex);
     }
@@ -358,7 +413,17 @@ mod tests {
     #[test]
     fn complex() {
         let voices = QCode::voices("Nv4 0 0 / Nv8 0 0 0 0 0").unwrap();
-        let complexes = complexes_from_voices(&voices).unwrap();
+        let voices_beamings = beamings_from_voices(
+            &voices,
+            &BeamingPattern::NValues(vec![NV4]),
+            &DirUAD::Auto,
+            &DirUAD::Auto,
+        )
+        .unwrap();
+        let map: HashMap<&Note, &BeamingItem<'_>> =
+            get_map_note_beamings(&voices_beamings).unwrap();
+        let complexes = complexes_from_voices(&voices, &map).unwrap();
+
         for complex in complexes {
             println!(
                 "complex:{:?} {:?} {:?}",
@@ -371,7 +436,17 @@ mod tests {
     #[test]
     fn complex2() {
         let voices = QCode::voices(" Nv4 0 0 0 / bp").unwrap();
-        let complexes = complexes_from_voices(&voices).unwrap();
+        let voices_beamings = beamings_from_voices(
+            &voices,
+            &BeamingPattern::NValues(vec![NV4]),
+            &DirUAD::Auto,
+            &DirUAD::Auto,
+        )
+        .unwrap();
+        let map: HashMap<&Note, &BeamingItem<'_>> =
+            get_map_note_beamings(&voices_beamings).unwrap();
+        let complexes = complexes_from_voices(&voices, &map).unwrap();
+
         for complex in complexes {
             println!(
                 "complex:{:?} {:?} {:?}",
@@ -384,7 +459,17 @@ mod tests {
     #[test]
     fn complex3() {
         let voices = QCode::voices(" bp nv4/ bp nv8 nv8 nv8  ").unwrap();
-        let complexes = complexes_from_voices(&voices).unwrap();
+        let voices_beamings = beamings_from_voices(
+            &voices,
+            &BeamingPattern::NValues(vec![NV4]),
+            &DirUAD::Auto,
+            &DirUAD::Auto,
+        )
+        .unwrap();
+        let map: HashMap<&Note, &BeamingItem<'_>> =
+            get_map_note_beamings(&voices_beamings).unwrap();
+        let complexes = complexes_from_voices(&voices, &map).unwrap();
+
         for complex in complexes {
             println!(
                 "complex:{:?} {:?} {:?}",
