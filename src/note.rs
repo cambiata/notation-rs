@@ -1,10 +1,19 @@
+use std::{sync::atomic::AtomicUsize, sync::atomic::Ordering};
+
 use crate::{chord::ChordItem, core::*, dynamic::DynamicItem, syllable::Syllable};
 use serde::{Deserialize, Serialize};
+
+static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
+fn get_unique_id() -> usize {
+    ID_COUNTER.fetch_add(1, Ordering::SeqCst);
+    ID_COUNTER.load(Ordering::SeqCst).into()
+}
 
 use crate::heads::Heads;
 
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub struct Note {
+    pub id: usize,
     pub duration: Duration,
     pub ntype: NoteType,
     pub attr: NoteAttributes,
@@ -21,6 +30,7 @@ impl Note {
 
     pub fn new(duration: usize, ntype: NoteType, attr: NoteAttributes) -> Note {
         Note {
+            id: get_unique_id(),
             duration,
             ntype,
             attr,

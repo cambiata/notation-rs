@@ -24,11 +24,7 @@ impl QCode {
                 "p" => {
                     println!("pause:{segment}");
                     let value: usize = cur_val.unwrap_or(NV4);
-                    let n = Note {
-                        duration: value,
-                        ntype: NoteType::Pause,
-                        attr: NoteAttributes { color: None },
-                    };
+                    let n = Note::new(value, NoteType::Pause, NoteAttributes { color: None });
                     notes.push(n);
                 }
                 _ => {

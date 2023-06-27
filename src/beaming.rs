@@ -46,7 +46,7 @@ pub fn get_heads_balance(btype: &BeamingItemType) -> i8 {
     match btype {
         BeamingItemType::None(note) => {
             balance = note.get_heads_bottom() + note.get_heads_top();
-            println!("NONE balance:{}", &balance);
+            // println!("NONE balance:{}", &balance);
         }
         BeamingItemType::Group(notes) => {
             let heads_top = notes.iter().map(|note| note.get_heads_top()).min().unwrap();
@@ -57,7 +57,7 @@ pub fn get_heads_balance(btype: &BeamingItemType) -> i8 {
                 .unwrap();
 
             balance = heads_bottom + heads_top;
-            println!("GROUP balance:{} {} {}", balance, heads_top, heads_bottom);
+            // println!("GROUP balance:{} {} {}", balance, heads_top, heads_bottom);
         }
     }
     balance
@@ -91,72 +91,6 @@ pub enum VoicesBeamings<'a> {
 
 type BeamPerNoteMap<'a> = HashMap<&'a Note, &'a BeamingItem<'a>>;
 
-/*
-pub fn get_beam_per_note_map<'a>(beamings: VoicesBeamings<'a>) -> Result<BeamPerNoteMap<'a>> {
-    let mut map: BeamPerNoteMap<'a> = HashMap::new();
-
-    match beamings {
-        VoicesBeamings::One(voicebeams) => match voicebeams {
-            VoiceBeamability::Unbeamable => {}
-            VoiceBeamability::Beamable(items) => {
-                for item in items.iter() {
-                    match &item.btype {
-                        BeamingItemType::None(note) => {
-                            map.insert(note, item);
-                        }
-                        BeamingItemType::Group(notes) => {
-                            println!("{} {}", item.position, notes.len());
-                            for note in notes.iter() {
-                                map.insert(note, item);
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        VoicesBeamings::Two(upper, lower) => {
-            match upper {
-                VoiceBeamability::Unbeamable => {}
-                VoiceBeamability::Beamable(items) => {
-                    for item in items.iter() {
-                        match &item.btype {
-                            BeamingItemType::None(note) => {
-                                map.insert(note, item);
-                            }
-                            BeamingItemType::Group(notes) => {
-                                println!("{} {}", item.position, notes.len());
-                                for note in notes.iter() {
-                                    map.insert(note, item);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            match lower {
-                VoiceBeamability::Unbeamable => {}
-                VoiceBeamability::Beamable(items) => {
-                    for item in items.iter() {
-                        match &item.btype {
-                            BeamingItemType::None(note) => {
-                                map.insert(note, item);
-                            }
-                            BeamingItemType::Group(notes) => {
-                                println!("{} {}", item.position, notes.len());
-                                for note in notes.iter() {
-                                    map.insert(note, item);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    Ok(map)
-}
-
-*/
 pub fn beamings_from_voices(
     voices: &Voices,
     pattern: BeamingPattern,
@@ -170,8 +104,8 @@ pub fn beamings_from_voices(
             Ok(VoicesBeamings::One(voice_beaming))
         }
         Voices::Two(upper, lower) => {
-            println!("upper.duration:{}", upper.duration);
-            println!("lower.duration:{}", lower.duration);
+            // println!("upper.duration:{}", upper.duration);
+            // println!("lower.duration:{}", lower.duration);
             let shortest_duration = min(upper.duration, lower.duration);
 
             let upper_beaming = beamings_from_voice(
@@ -249,21 +183,6 @@ pub fn beamings_from_notes(
                 beaming_item.position = pos;
                 beaming_item.end_position = endpos;
                 beaming_items.push(beaming_item);
-
-                // let mut map: HashMap<&Note, &BeamingItem> = HashMap::new();
-                // for item in &beaming_items {
-                //     // print_beam(&item);
-                //     match &item.btype {
-                //         BeamingItemType::None(note) => {
-                //             map.insert(note, &item);
-                //         }
-                //         BeamingItemType::Group(notes) => {
-                //             for note in notes {
-                //                 map.insert(note, &item);
-                //             }
-                //         }
-                //     }
-                // }
             }
             Ok(beaming_items)
         }
@@ -400,7 +319,6 @@ pub fn beamings_from_notes(
                         DirUAD::Up => DirUD::Up,
                         DirUAD::Down => DirUD::Down,
                         DirUAD::Auto => {
-                            println!("auto after...");
                             if crate::beaming::get_heads_balance(&beaming_item.btype) > 0 {
                                 DirUD::Up
                             } else {
@@ -413,7 +331,6 @@ pub fn beamings_from_notes(
                         DirUAD::Up => DirUD::Up,
                         DirUAD::Down => DirUD::Down,
                         DirUAD::Auto => {
-                            println!("auto before...");
                             if crate::beaming::get_heads_balance(&beaming_item.btype) > 0 {
                                 DirUD::Up
                             } else {
@@ -425,21 +342,6 @@ pub fn beamings_from_notes(
 
                 beaming_item.internal_direction = Some(dir_ud);
             }
-
-            // let mut map: HashMap<&Note, &BeamingItem> = HashMap::new();
-            // for item in &beaming_items {
-            //     // print_beam(&item);
-            //     match &item.btype {
-            //         BeamingItemType::None(note) => {
-            //             map.insert(note, &item);
-            //         }
-            //         BeamingItemType::Group(notes) => {
-            //             for note in notes {
-            //                 map.insert(note, &item);
-            //             }
-            //         }
-            //     }
-            // }
 
             Ok(beaming_items)
         }

@@ -1,4 +1,4 @@
-use crate::{core::Duration, note::*};
+use crate::prelude::*;
 
 use serde::{Deserialize, Serialize};
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize)]
@@ -35,6 +35,12 @@ impl Notes {
 
     pub fn iter_mut(&mut self) -> std::slice::IterMut<'_, Note> {
         self.into_iter()
+    }
+
+    pub fn get_note_idx(&self, idx: usize) -> Result<&Note> {
+        self.items
+            .get(idx)
+            .ok_or(Generic(format!("Note index {} out fo bounds", idx)).into())
     }
 }
 

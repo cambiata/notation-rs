@@ -28,102 +28,51 @@ pub enum PartBackground {
 
 #[cfg(test)]
 mod tests {
+    use crate::{complex::*, note, prelude::*};
     use std::collections::HashMap;
-
-    use crate::{note, prelude::*};
     #[test]
-    fn example() {
-        let voices = QCode::voices("Nv8 0 1 1,-2").unwrap();
-        let beamings = beamings_from_voices(
+    fn example() -> Result<()> {
+        let voices = QCode::voices("nv4 0 / nv4 0").unwrap();
+        let upper_note0 = voices.get_note(0, 0)?;
+        // let upper_note1 = voices.get_note(0, 1)?;
+        // let lower_note = voices.get_note(1, 0)?;
+
+        let voices_beamings = beamings_from_voices(
             &voices,
             BeamingPattern::NValues(vec![NV4]),
             DirUAD::Auto,
             DirUAD::Auto,
-        )
-        .unwrap();
+        )?;
+        dbg!(&voices_beamings);
 
-        let beaming_map = get_map_note_beamings(&beamings).unwrap();
-        let complexes = complexes_from_voices(&voices).unwrap();
+        let note_beamings_map = get_map_note_beamings(&voices_beamings)?;
+        let upper_beam0 = note_beamings_map.get(upper_note0).unwrap();
+        // let upper_beam1 = note_beamings_map.get(upper_note1).unwrap();
+        // let lower_beam = note_beamings_map.get(lower_note).unwrap();
+        // dbg!(upper_note);
+
+        dbg!(upper_beam0);
+        // dbg!(upper_beam1);
+
+        // println!("-----------------------");
+        // dbg!(lower_note);
+        // dbg!(lower_beam);
+
+        // let complexes = complexes_from_voices(&voices)?;
+        // for complex in &complexes {
+        //     let overlap = get_complex_notes_overlap_type(&complex);
+        //     let directions = get_complex_directions(&complex, &note_beamings_map)?;
+        //     println!(
+        //         "complex:{:?} {:?} {:?} {:?} {:?}",
+        //         complex.position,
+        //         complex.duration,
+        //         complex.ctype.debug_str(),
+        //         overlap,
+        //         directions
+        //     );
+        // }
+        Ok(())
     }
 
     // fn test_map(map: HashMap<&Note, &BeamingItem>) {}
-
-    fn test_voices_and_map<'a>(
-        voices: &'a Voices,
-        map: &'a HashMap<&Note, &BeamingItem<'a>>,
-    ) -> Result<Vec<Complex<'a>>> {
-        Ok(vec![])
-    }
-}
-
-pub fn get_map_note_beamings<'a>(
-    beamings: &'a VoicesBeamings,
-) -> Result<HashMap<&'a Note, &'a BeamingItem<'a>>> {
-    let mut map: HashMap<&Note, &BeamingItem<'a>> = HashMap::new();
-
-    match &beamings {
-        VoicesBeamings::One(ref beamability) => match beamability {
-            VoiceBeamability::Beamable(ref beamings) => {
-                for bitem in beamings.iter() {
-                    println!("bitem: {:?}", bitem);
-                    match &bitem.btype {
-                        BeamingItemType::None(ref note) => {
-                            println!("note: {:?}", note);
-                            map.insert(note, bitem);
-                        }
-                        BeamingItemType::Group(ref notes) => {
-                            for note in notes {
-                                println!("note: {:?}", note);
-                                map.insert(note, bitem);
-                            }
-                        }
-                    }
-                }
-            }
-            VoiceBeamability::Unbeamable => {}
-        },
-        VoicesBeamings::Two(upper_beamability, lower_beamability) => {
-            match upper_beamability {
-                VoiceBeamability::Beamable(ref beamings) => {
-                    for bitem in beamings.iter() {
-                        println!("bitem: {:?}", bitem);
-                        match &bitem.btype {
-                            BeamingItemType::None(ref note) => {
-                                println!("note: {:?}", note);
-                                map.insert(note, bitem);
-                            }
-                            BeamingItemType::Group(ref notes) => {
-                                for note in notes {
-                                    println!("note: {:?}", note);
-                                    map.insert(note, bitem);
-                                }
-                            }
-                        }
-                    }
-                }
-                VoiceBeamability::Unbeamable => {}
-            };
-            match lower_beamability {
-                VoiceBeamability::Beamable(ref beamings) => {
-                    for bitem in beamings.iter() {
-                        println!("bitem: {:?}", bitem);
-                        match &bitem.btype {
-                            BeamingItemType::None(ref note) => {
-                                println!("note: {:?}", note);
-                                map.insert(note, bitem);
-                            }
-                            BeamingItemType::Group(ref notes) => {
-                                for note in notes {
-                                    println!("note: {:?}", note);
-                                    map.insert(note, bitem);
-                                }
-                            }
-                        }
-                    }
-                }
-                VoiceBeamability::Unbeamable => {}
-            };
-        }
-    }
-    Ok(map)
 }

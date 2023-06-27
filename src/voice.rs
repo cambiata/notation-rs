@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{error::NotationError, prelude::*};
 
 #[derive(Debug)]
 pub struct Voice {
@@ -23,6 +23,16 @@ impl Voice {
             attr,
         }
     }
+
+    pub fn get_note_idx(&self, idx: usize) -> Result<&Note> {
+        match self.vtype {
+            VoiceType::VBarpause(_) => Err(NotationError::Generic(
+                "Can not get note from VoiceType::VBarpause".to_string(),
+            )
+            .into()),
+            VoiceType::VNotes(ref notes) => notes.get_note_idx(idx),
+        }
+    }
 }
 
 // pub type Voices = Vec<Voice>;
@@ -44,6 +54,26 @@ pub struct VoiceAttributes {}
 pub enum Voices {
     Two(Voice, Voice),
     One(Voice),
+}
+
+impl Voices {
+    pub fn get_note(&self, voice_idx: usize, note_idx: usize) -> Result<&Note> {
+        match self {
+            Voices::Two(upper, lower) => match voice_idx {
+                0 => upper.get_note_idx(note_idx as usize),
+                1 => lower.get_note_idx(note_idx as usize),
+                _ => Err(NotationError::Generic("Voice index out of bounds".to_string()).into()),
+            },
+            Voices::One(voice) => {
+                if voice_idx > 0 {
+                    return Err(
+                        NotationError::Generic("Voice index out of bounds".to_string()).into(),
+                    );
+                }
+                voice.get_note_idx(note_idx as usize)
+            }
+        }
+    }
 }
 
 #[cfg(test)]
