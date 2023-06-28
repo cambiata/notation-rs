@@ -18,6 +18,7 @@ pub struct Complex<'a> {
 pub struct NoteExt<'a> {
     note: &'a Note,
     dir: Option<DirUD>,
+    placements: Option<HeadsPlacement>,
 }
 
 #[derive(Debug)]
@@ -38,7 +39,7 @@ impl<'a> ComplexType<'a> {
             ComplexType::OneNote(note) => format!("OneNote: {} {:?}", note.note.duration, note.dir),
             ComplexType::TwoNotes(note1, note2) => format!(
                 "TwoNotes: {} {:?} / {} {:?}",
-                note1.note.duration, note1.dir, note2.note.duration, note2.dir
+                note1.note.duration, note1.dir, note2.note.duration, note2.dir,
             ),
             ComplexType::BarpauseNote(bp, note) => {
                 format!("BarpauseNote: {:?} {:?}", note.note.duration, note.dir)
@@ -57,6 +58,64 @@ impl<'a> Complex<'a> {
             position,
             duration,
             ctype,
+        }
+    }
+
+    pub fn get_heads_placements(&self) -> Option<HeadsPlacement> {
+        match &self.ctype {
+            ComplexType::OneBarpause(_) => None,
+            ComplexType::TwoBarpauses(_, _) => None,
+            ComplexType::OneNote(ref note) => note.placements.clone(),
+            ComplexType::TwoNotes(upper, lower) => {
+                let mut placements = upper.placements.clone().unwrap();
+                placements.extend(lower.placements.clone().unwrap());
+                Some(placements)
+            }
+            ComplexType::BarpauseNote(_, note) => note.placements.clone(),
+            ComplexType::NoteBarpause(note, _) => note.placements.clone(),
+        }
+    }
+
+    pub fn get_notes_overlap_type(&self) -> ComplexNotesOverlap {
+        match &self.ctype {
+            crate::complex::ComplexType::OneBarpause(_) => ComplexNotesOverlap::None,
+            crate::complex::ComplexType::TwoBarpauses(_, _) => ComplexNotesOverlap::None,
+            crate::complex::ComplexType::OneNote(_) => ComplexNotesOverlap::None,
+            crate::complex::ComplexType::BarpauseNote(_, _) => ComplexNotesOverlap::None,
+            crate::complex::ComplexType::NoteBarpause(_, _) => ComplexNotesOverlap::None,
+            crate::complex::ComplexType::TwoNotes(upper, lower) => {
+                let overlap = match [&upper.note.ntype, &lower.note.ntype] {
+                    [NoteType::Heads(upper_heads), NoteType::Heads(lower_heads)] => {
+                        let level_diff =
+                            lower_heads.get_level_top() - upper_heads.get_level_bottom();
+                        let upper_head_width = match duration_get_headtype(upper.note.duration) {
+                            crate::head::HeadType::NormalHead => OVERLAP_NORMAL_HEAD,
+                            crate::head::HeadType::WideHead => OVERLAP_WIDE_HEAD,
+                        };
+                        let lower_head_width = match duration_get_headtype(lower.note.duration) {
+                            crate::head::HeadType::NormalHead => OVERLAP_NORMAL_HEAD,
+                            crate::head::HeadType::WideHead => OVERLAP_WIDE_HEAD,
+                        };
+
+                        if level_diff < 0 {
+                            ComplexNotesOverlap::UpperRight(upper_head_width + OVERLAP_SPACE)
+                        } else if level_diff == 0 {
+                            let same_duration = upper.note.duration == lower.note.duration;
+                            if same_duration {
+                                ComplexNotesOverlap::None
+                            } else {
+                                ComplexNotesOverlap::UpperRight(lower_head_width + OVERLAP_SPACE)
+                            }
+                        } else if level_diff == 1 {
+                            ComplexNotesOverlap::LowerRight(upper_head_width)
+                        } else {
+                            ComplexNotesOverlap::None
+                        }
+                    }
+                    _ => ComplexNotesOverlap::None,
+                };
+                overlap
+            }
         }
     }
 }
@@ -82,12 +141,15 @@ pub fn complexes_from_voices<'a>(
                 for note in notes {
                     println!("- note:{:?}", note);
                     let duration = note.duration;
+                    let dir = map.get(note).unwrap().internal_direction;
+                    let placements = note.get_heads_placements(&dir.unwrap());
                     complexes.push(Complex {
                         position,
                         duration,
                         ctype: ComplexType::OneNote(NoteExt {
                             note,
-                            dir: map.get(note).unwrap().internal_direction,
+                            dir,
+                            placements,
                         }),
                     });
                     position += duration;
@@ -100,7 +162,8 @@ pub fn complexes_from_voices<'a>(
                     let mut position = 0;
                     for (idx, note) in notes.iter().enumerate() {
                         let duration = note.duration;
-                        // let dir = map.get(note).ok_or(Basic.into())?.internal_direction;
+                        let dir = map.get(note).unwrap().internal_direction;
+                        let placements = note.get_heads_placements(&dir.unwrap());
                         complexes.push(Complex {
                             position,
                             duration,
@@ -109,13 +172,15 @@ pub fn complexes_from_voices<'a>(
                                     bp,
                                     NoteExt {
                                         note,
-                                        dir: map.get(note).unwrap().internal_direction,
+                                        dir,
+                                        placements,
                                     },
                                 )
                             } else {
                                 ComplexType::OneNote(NoteExt {
                                     note,
-                                    dir: map.get(note).unwrap().internal_direction,
+                                    dir,
+                                    placements,
                                 })
                             },
                         });
@@ -130,13 +195,27 @@ pub fn complexes_from_voices<'a>(
                         //     .get(note)
                         //     .ok_or(Basic).into())?
                         //     .internal_direction;
+                        let dir = map.get(note).unwrap().internal_direction;
+                        let placements = note.get_heads_placements(&dir.unwrap());
+
                         complexes.push(Complex {
                             position,
                             duration,
                             ctype: if idx == 0 {
-                                ComplexType::NoteBarpause(NoteExt { note, dir: None }, bp)
+                                ComplexType::NoteBarpause(
+                                    NoteExt {
+                                        note,
+                                        dir,
+                                        placements,
+                                    },
+                                    bp,
+                                )
                             } else {
-                                ComplexType::OneNote(NoteExt { note, dir: None })
+                                ComplexType::OneNote(NoteExt {
+                                    note,
+                                    dir,
+                                    placements,
+                                })
                             },
                         });
                         position += duration;
@@ -177,38 +256,50 @@ pub fn complexes_from_voices<'a>(
 
                         match [map1.get(position), map2.get(position)] {
                             [Some(note1), Some(note2)] => {
+                                let dir1 = map.get(note1).unwrap().internal_direction;
+                                let dir2 = map.get(note1).unwrap().internal_direction;
+                                let placements1 = note1.get_heads_placements(&dir1.unwrap());
+                                let placements2 = note2.get_heads_placements(&dir2.unwrap());
                                 complexes.push(Complex {
                                     position: *position,
                                     duration,
                                     ctype: ComplexType::TwoNotes(
                                         NoteExt {
                                             note: note1,
-                                            dir: map.get(note1).unwrap().internal_direction,
+                                            dir: dir1,
+                                            placements: placements1,
                                         },
                                         NoteExt {
                                             note: note2,
-                                            dir: map.get(note2).unwrap().internal_direction,
+                                            dir: dir2,
+                                            placements: placements2,
                                         },
                                     ),
                                 });
                             }
                             [Some(note), None] => {
-                                complexes.push(Complex {
-                                    position: *position,
-                                    duration,
-                                    ctype: ComplexType::OneNote(NoteExt {
-                                        note: note,
-                                        dir: map.get(note).unwrap().internal_direction,
-                                    }),
-                                });
-                            }
-                            [None, Some(note)] => {
+                                let dir = map.get(note).unwrap().internal_direction;
+                                let placements = note.get_heads_placements(&dir.unwrap());
                                 complexes.push(Complex {
                                     position: *position,
                                     duration,
                                     ctype: ComplexType::OneNote(NoteExt {
                                         note,
-                                        dir: map.get(note).unwrap().internal_direction,
+                                        dir,
+                                        placements,
+                                    }),
+                                });
+                            }
+                            [None, Some(note)] => {
+                                let dir = map.get(note).unwrap().internal_direction;
+                                let placements = note.get_heads_placements(&dir.unwrap());
+                                complexes.push(Complex {
+                                    position: *position,
+                                    duration,
+                                    ctype: ComplexType::OneNote(NoteExt {
+                                        note,
+                                        dir,
+                                        placements,
                                     }),
                                 });
                             }
@@ -235,36 +326,6 @@ pub fn complexes_from_voices<'a>(
 
     Ok(complexes)
 }
-
-/*
-pub fn get_complex_directions(
-    complex: &Complex,
-    map: &HashMap<&Note, &BeamingItem>,
-) -> Result<ComplexDirections> {
-    match &complex.ctype {
-        ComplexType::OneBarpause(_) => Ok(ComplexDirections::One(None)),
-        ComplexType::TwoBarpauses(_, _) => Ok(ComplexDirections::Two(None, None)),
-        ComplexType::OneNote(note) => {
-            let dir = map.get(&note.note).ok_or(Basic)?.internal_direction;
-            Ok(ComplexDirections::One(dir))
-        }
-        ComplexType::TwoNotes(upper, lower) => {
-            let upper_dir = map.get(&upper.note).ok_or(Basic)?.internal_direction;
-            let lower_dir = map.get(&lower.note).ok_or(Basic)?.internal_direction;
-            // println!("upper_dir, lower_dir:{:?}, :{:?}", &upper_dir, &lower_dir);
-            Ok(ComplexDirections::Two(upper_dir, lower_dir))
-        }
-        ComplexType::BarpauseNote(_, note) => {
-            let dir = map.get(&note.note).ok_or(Basic)?.internal_direction;
-            Ok(ComplexDirections::Two(None, dir))
-        }
-        ComplexType::NoteBarpause(note, _) => {
-            let dir = map.get(&note.note).ok_or(Basic)?.internal_direction;
-            Ok(ComplexDirections::Two(dir, None))
-        }
-    }
-}
-*/
 
 pub fn get_map_note_beamings<'a>(
     beamings: &'a VoicesBeamings<'a>,
@@ -354,6 +415,7 @@ pub const OVERLAP_WIDE_HEAD: f32 = 1.5;
 pub const OVERLAP_SPACE: f32 = 0.2;
 pub const OVERLAP_DIAGONAL_SPACE: f32 = -0.5;
 
+/*
 pub fn get_complex_notes_overlap_type<'a>(complex: &'a Complex) -> ComplexNotesOverlap {
     match &complex.ctype {
         crate::complex::ComplexType::OneBarpause(_) => ComplexNotesOverlap::None,
@@ -395,6 +457,7 @@ pub fn get_complex_notes_overlap_type<'a>(complex: &'a Complex) -> ComplexNotesO
         }
     }
 }
+*/
 
 #[derive(Debug)]
 pub enum ComplexDirections {

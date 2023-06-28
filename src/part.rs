@@ -46,13 +46,13 @@ mod tests {
         let complexes = complexes_from_voices(&voices, &note_beamings_map)?;
 
         for complex in &complexes {
-            let overlap = get_complex_notes_overlap_type(complex);
             println!(
-                "complex:{:?} {:?} {:?} {:?}",
+                "complex:{:?} {:?} {:?} {:?}  {:?}",
                 complex.position,
                 complex.duration,
                 complex.ctype.debug_str(),
-                overlap
+                complex.get_notes_overlap_type(),
+                complex.get_heads_placements()
             );
         }
         Ok(())

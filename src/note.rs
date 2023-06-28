@@ -55,14 +55,14 @@ impl Note {
         }
     }
 
-    pub fn get_heads_placements(self: &Note, dir: &DirUD) -> Option<Vec<(i8, HeadPlacement)>> {
+    pub fn get_heads_placements(self: &Note, dir: &DirUD) -> Option<HeadsPlacement> {
         if let NoteType::Heads(ref heads) = self.ntype {
             let levels = heads.get_levels();
             if levels.len() == 1 {
                 return Some(vec![(levels[0], HeadPlacement::Center)]);
             }
             //------------------------------------------------------------
-            let mut result: Vec<(i8, HeadPlacement)> = Vec::new();
+            let mut result: HeadsPlacement = Vec::new();
             return match dir {
                 DirUD::Up => {
                     for (idx, level_pair) in levels
@@ -151,12 +151,14 @@ impl Note {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum HeadPlacement {
     Left = -1,
     Center = 0,
     Right = 1,
 }
+
+pub type HeadsPlacement = Vec<(i8, HeadPlacement)>;
 
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub enum NoteType {
