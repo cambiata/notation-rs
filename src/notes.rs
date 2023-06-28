@@ -42,6 +42,7 @@ impl Notes {
             .get(idx)
             .ok_or(Generic(format!("Note index {} out fo bounds", idx)).into())
     }
+
 }
 
 impl<'a> IntoIterator for &'a Notes {

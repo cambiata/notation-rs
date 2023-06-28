@@ -54,6 +54,108 @@ impl Note {
             _ => 0,
         }
     }
+
+    pub fn get_heads_placements(self: &Note, dir: &DirUD) -> Option<Vec<(i8, HeadPlacement)>> {
+        if let NoteType::Heads(ref heads) = self.ntype {
+            let levels = heads.get_levels();
+            if levels.len() == 1 {
+                return Some(vec![(levels[0], HeadPlacement::Center)]);
+            }
+            //------------------------------------------------------------
+            let mut result: Vec<(i8, HeadPlacement)> = Vec::new();
+            return match dir {
+                DirUD::Up => {
+                    for (idx, level_pair) in levels
+                        .into_iter()
+                        .rev()
+                        .collect::<Vec<i8>>()
+                        .windows(2)
+                        .enumerate()
+                    {
+                        let lower_level = level_pair[0];
+                        let upper_level = level_pair[1];
+                        let diff = lower_level - upper_level;
+
+                        if idx == 0 {
+                            result.push((lower_level, HeadPlacement::Center));
+                            if diff < 2 {
+                                result.push((upper_level, HeadPlacement::Right));
+                            } else {
+                                result.push((upper_level, HeadPlacement::Center));
+                            }
+                        } else {
+                            let (current_level, current_placement) = &result[idx];
+                            match diff {
+                                0 | 1 => {
+                                    if let HeadPlacement::Center = current_placement {
+                                        result.push((upper_level, HeadPlacement::Right));
+                                    } else {
+                                        result.push((upper_level, HeadPlacement::Center));
+                                    }
+                                }
+                                _ => {
+                                    result.push((upper_level, HeadPlacement::Center));
+                                }
+                            }
+                        }
+                    }
+                    Some(result)
+                }
+                DirUD::Down => {
+                    for (idx, level_pair) in levels.windows(2).enumerate() {
+                        let upper_level = level_pair[0];
+                        let lower_level = level_pair[1];
+                        let diff = lower_level - upper_level;
+
+                        if idx == 0 {
+                            result.push((upper_level, HeadPlacement::Center));
+                            if diff < 2 {
+                                result.push((lower_level, HeadPlacement::Left));
+                            } else {
+                                result.push((lower_level, HeadPlacement::Center));
+                            }
+                        } else {
+                            let (current_level, current_placement) = &result[idx];
+                            match diff {
+                                0 | 1 => {
+                                    if let HeadPlacement::Center = current_placement {
+                                        result.push((lower_level, HeadPlacement::Left));
+                                    } else {
+                                        result.push((lower_level, HeadPlacement::Center));
+                                    }
+                                }
+                                _ => {
+                                    result.push((lower_level, HeadPlacement::Center));
+                                }
+                            }
+                        }
+                    }
+                    Some(result)
+                }
+            };
+        }
+        None
+    }
+
+    pub fn get_accidentals(self: &Note) -> Option<Vec<(i8, &Accidental)>> {
+        if let NoteType::Heads(ref heads) = self.ntype {
+            let mut result: Vec<(i8, &Accidental)> = Vec::new();
+            for head in heads {
+                if let Some(accidental) = &head.accidental {
+                    result.push((head.level, accidental));
+                }
+            }
+            return Some(result);
+        }
+        None
+    }
+}
+
+#[derive(Debug)]
+pub enum HeadPlacement {
+    Left = -1,
+    Center = 0,
+    Right = 1,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
@@ -70,4 +172,18 @@ pub enum NoteType {
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub struct NoteAttributes {
     pub color: Option<u16>,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::prelude::*;
+
+    #[test]
+    fn example() {
+        let notes = QCode::notes("4,3,0,-2 -2,-3,0,2").unwrap();
+        let note0 = notes.get_note_idx(0).unwrap();
+        dbg!(note0.get_heads_placements(&DirUD::Up));
+        let note1 = notes.get_note_idx(1).unwrap();
+        dbg!(note1.get_heads_placements(&DirUD::Down));
+    }
 }

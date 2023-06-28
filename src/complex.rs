@@ -34,12 +34,19 @@ pub enum ComplexType<'a> {
 impl<'a> ComplexType<'a> {
     pub fn debug_str(&self) -> String {
         match self {
-            ComplexType::OneBarpause(bp) => format!("OneBarpause({:?})", bp),
-            ComplexType::OneNote(note) => format!("OneNote"),
-            ComplexType::TwoNotes(note1, note2) => format!("TwoNotes()"),
-            ComplexType::BarpauseNote(bp, note) => format!("BarpauseNote({:?} note)", bp),
-            ComplexType::NoteBarpause(note, bp) => format!("NoteBarpause(note/{:?})", bp),
-            ComplexType::TwoBarpauses(bp1, bp2) => format!("TwoBarpauses({:?}/{:?})", bp1, bp2),
+            ComplexType::OneBarpause(bp) => format!("OneBarpause"),
+            ComplexType::OneNote(note) => format!("OneNote: {} {:?}", note.note.duration, note.dir),
+            ComplexType::TwoNotes(note1, note2) => format!(
+                "TwoNotes: {} {:?} / {} {:?}",
+                note1.note.duration, note1.dir, note2.note.duration, note2.dir
+            ),
+            ComplexType::BarpauseNote(bp, note) => {
+                format!("BarpauseNote: {:?} {:?}", note.note.duration, note.dir)
+            }
+            ComplexType::NoteBarpause(note, bp) => {
+                format!("NoteBarpause: {:?} {:?})", note.note.duration, note.dir)
+            }
+            ComplexType::TwoBarpauses(bp1, bp2) => format!("TwoBarpauses"),
         }
     }
 }
@@ -229,6 +236,7 @@ pub fn complexes_from_voices<'a>(
     Ok(complexes)
 }
 
+/*
 pub fn get_complex_directions(
     complex: &Complex,
     map: &HashMap<&Note, &BeamingItem>,
@@ -256,6 +264,7 @@ pub fn get_complex_directions(
         }
     }
 }
+*/
 
 pub fn get_map_note_beamings<'a>(
     beamings: &'a VoicesBeamings<'a>,
@@ -336,7 +345,7 @@ pub fn get_map_note_beamings<'a>(
 #[derive(Debug)]
 pub enum ComplexNotesOverlap {
     None,
-    UnderRight(f32),
+    UpperRight(f32),
     LowerRight(f32),
 }
 
@@ -356,18 +365,26 @@ pub fn get_complex_notes_overlap_type<'a>(complex: &'a Complex) -> ComplexNotesO
             let overlap = match [&upper.note.ntype, &lower.note.ntype] {
                 [NoteType::Heads(upper_heads), NoteType::Heads(lower_heads)] => {
                     let level_diff = lower_heads.get_level_top() - upper_heads.get_level_bottom();
-
                     let upper_head_width = match duration_get_headtype(upper.note.duration) {
+                        crate::head::HeadType::NormalHead => OVERLAP_NORMAL_HEAD,
+                        crate::head::HeadType::WideHead => OVERLAP_WIDE_HEAD,
+                    };
+                    let lower_head_width = match duration_get_headtype(lower.note.duration) {
                         crate::head::HeadType::NormalHead => OVERLAP_NORMAL_HEAD,
                         crate::head::HeadType::WideHead => OVERLAP_WIDE_HEAD,
                     };
 
                     if level_diff < 0 {
-                        ComplexNotesOverlap::UnderRight(upper_head_width + OVERLAP_SPACE)
+                        ComplexNotesOverlap::UpperRight(upper_head_width + OVERLAP_SPACE)
                     } else if level_diff == 0 {
-                        ComplexNotesOverlap::UnderRight(upper_head_width)
+                        let same_duration = upper.note.duration == lower.note.duration;
+                        if same_duration {
+                            ComplexNotesOverlap::None
+                        } else {
+                            ComplexNotesOverlap::UpperRight(lower_head_width + OVERLAP_SPACE)
+                        }
                     } else if level_diff == 1 {
-                        ComplexNotesOverlap::UnderRight(upper_head_width + OVERLAP_DIAGONAL_SPACE)
+                        ComplexNotesOverlap::LowerRight(upper_head_width)
                     } else {
                         ComplexNotesOverlap::None
                     }
