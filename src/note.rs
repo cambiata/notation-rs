@@ -26,7 +26,7 @@ impl Note {
 
     pub fn new(duration: usize, ntype: NoteType, attr: NoteAttributes) -> Note {
         Note {
-            id: ID_COUNTER.fetch_add(1, Ordering::SeqCst),
+            id: ID_COUNTER.fetch_add(1, Ordering::Relaxed),
             duration,
             ntype,
             attr,

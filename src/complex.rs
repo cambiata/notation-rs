@@ -76,6 +76,10 @@ impl<'a> Complex<'a> {
         }
     }
 
+    const OVERLAP_NORMAL_HEAD: f32 = 1.0;
+    const OVERLAP_WIDE_HEAD: f32 = 1.5;
+    const OVERLAP_SPACE: f32 = 0.2;
+    const OVERLAP_DIAGONAL_SPACE: f32 = -0.5;
     pub fn get_notes_overlap_type(&self) -> ComplexNotesOverlap {
         match &self.ctype {
             crate::complex::ComplexType::OneBarpause(_) => ComplexNotesOverlap::None,
@@ -89,22 +93,24 @@ impl<'a> Complex<'a> {
                         let level_diff =
                             lower_heads.get_level_top() - upper_heads.get_level_bottom();
                         let upper_head_width = match duration_get_headtype(upper.note.duration) {
-                            crate::head::HeadType::NormalHead => OVERLAP_NORMAL_HEAD,
-                            crate::head::HeadType::WideHead => OVERLAP_WIDE_HEAD,
+                            crate::head::HeadType::NormalHead => Self::OVERLAP_NORMAL_HEAD,
+                            crate::head::HeadType::WideHead => Self::OVERLAP_WIDE_HEAD,
                         };
                         let lower_head_width = match duration_get_headtype(lower.note.duration) {
-                            crate::head::HeadType::NormalHead => OVERLAP_NORMAL_HEAD,
-                            crate::head::HeadType::WideHead => OVERLAP_WIDE_HEAD,
+                            crate::head::HeadType::NormalHead => Self::OVERLAP_NORMAL_HEAD,
+                            crate::head::HeadType::WideHead => Self::OVERLAP_WIDE_HEAD,
                         };
 
                         if level_diff < 0 {
-                            ComplexNotesOverlap::UpperRight(upper_head_width + OVERLAP_SPACE)
+                            ComplexNotesOverlap::UpperRight(upper_head_width + Self::OVERLAP_SPACE)
                         } else if level_diff == 0 {
                             let same_duration = upper.note.duration == lower.note.duration;
                             if same_duration {
                                 ComplexNotesOverlap::None
                             } else {
-                                ComplexNotesOverlap::UpperRight(lower_head_width + OVERLAP_SPACE)
+                                ComplexNotesOverlap::UpperRight(
+                                    lower_head_width + Self::OVERLAP_SPACE,
+                                )
                             }
                         } else if level_diff == 1 {
                             ComplexNotesOverlap::LowerRight(upper_head_width)
@@ -409,55 +415,6 @@ pub enum ComplexNotesOverlap {
     UpperRight(f32),
     LowerRight(f32),
 }
-
-pub const OVERLAP_NORMAL_HEAD: f32 = 1.0;
-pub const OVERLAP_WIDE_HEAD: f32 = 1.5;
-pub const OVERLAP_SPACE: f32 = 0.2;
-pub const OVERLAP_DIAGONAL_SPACE: f32 = -0.5;
-
-/*
-pub fn get_complex_notes_overlap_type<'a>(complex: &'a Complex) -> ComplexNotesOverlap {
-    match &complex.ctype {
-        crate::complex::ComplexType::OneBarpause(_) => ComplexNotesOverlap::None,
-        crate::complex::ComplexType::TwoBarpauses(_, _) => ComplexNotesOverlap::None,
-        crate::complex::ComplexType::OneNote(_) => ComplexNotesOverlap::None,
-        crate::complex::ComplexType::BarpauseNote(_, _) => ComplexNotesOverlap::None,
-        crate::complex::ComplexType::NoteBarpause(_, _) => ComplexNotesOverlap::None,
-        crate::complex::ComplexType::TwoNotes(upper, lower) => {
-            let overlap = match [&upper.note.ntype, &lower.note.ntype] {
-                [NoteType::Heads(upper_heads), NoteType::Heads(lower_heads)] => {
-                    let level_diff = lower_heads.get_level_top() - upper_heads.get_level_bottom();
-                    let upper_head_width = match duration_get_headtype(upper.note.duration) {
-                        crate::head::HeadType::NormalHead => OVERLAP_NORMAL_HEAD,
-                        crate::head::HeadType::WideHead => OVERLAP_WIDE_HEAD,
-                    };
-                    let lower_head_width = match duration_get_headtype(lower.note.duration) {
-                        crate::head::HeadType::NormalHead => OVERLAP_NORMAL_HEAD,
-                        crate::head::HeadType::WideHead => OVERLAP_WIDE_HEAD,
-                    };
-
-                    if level_diff < 0 {
-                        ComplexNotesOverlap::UpperRight(upper_head_width + OVERLAP_SPACE)
-                    } else if level_diff == 0 {
-                        let same_duration = upper.note.duration == lower.note.duration;
-                        if same_duration {
-                            ComplexNotesOverlap::None
-                        } else {
-                            ComplexNotesOverlap::UpperRight(lower_head_width + OVERLAP_SPACE)
-                        }
-                    } else if level_diff == 1 {
-                        ComplexNotesOverlap::LowerRight(upper_head_width)
-                    } else {
-                        ComplexNotesOverlap::None
-                    }
-                }
-                _ => ComplexNotesOverlap::None,
-            };
-            overlap
-        }
-    }
-}
-*/
 
 #[derive(Debug)]
 pub enum ComplexDirections {
