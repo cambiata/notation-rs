@@ -15,11 +15,14 @@ pub struct Complex<'a> {
 }
 
 #[derive(Debug)]
-pub struct NoteExt<'a> {
+pub struct NoteExt2<'a> {
     note: &'a Note,
     dir: Option<DirUD>,
     placements: Option<HeadsPlacement>,
 }
+
+#[derive(Debug)]
+pub struct NoteExt<'a>(pub &'a Note, pub Option<DirUD>, pub Option<HeadsPlacement>);
 
 #[derive(Debug)]
 pub enum ComplexType<'a> {
@@ -36,16 +39,16 @@ impl<'a> ComplexType<'a> {
     pub fn debug_str(&self) -> String {
         match self {
             ComplexType::OneBarpause(bp) => format!("OneBarpause"),
-            ComplexType::OneNote(note) => format!("OneNote: {} {:?}", note.note.duration, note.dir),
+            ComplexType::OneNote(note) => format!("OneNote: {} {:?}", note.0.duration, note.1),
             ComplexType::TwoNotes(note1, note2) => format!(
                 "TwoNotes: {} {:?} / {} {:?}",
-                note1.note.duration, note1.dir, note2.note.duration, note2.dir,
+                note1.0.duration, note1.1, note2.0.duration, note2.1,
             ),
             ComplexType::BarpauseNote(bp, note) => {
-                format!("BarpauseNote: {:?} {:?}", note.note.duration, note.dir)
+                format!("BarpauseNote: {:?} {:?}", note.0.duration, note.1)
             }
             ComplexType::NoteBarpause(note, bp) => {
-                format!("NoteBarpause: {:?} {:?})", note.note.duration, note.dir)
+                format!("NoteBarpause: {:?} {:?})", note.0.duration, note.1)
             }
             ComplexType::TwoBarpauses(bp1, bp2) => format!("TwoBarpauses"),
         }
@@ -65,14 +68,14 @@ impl<'a> Complex<'a> {
         match &self.ctype {
             ComplexType::OneBarpause(_) => None,
             ComplexType::TwoBarpauses(_, _) => None,
-            ComplexType::OneNote(ref note) => note.placements.clone(),
+            ComplexType::OneNote(ref note) => note.2.clone(),
             ComplexType::TwoNotes(upper, lower) => {
-                let mut placements = upper.placements.clone().unwrap();
-                placements.extend(lower.placements.clone().unwrap());
+                let mut placements = upper.2.clone().unwrap();
+                placements.extend(lower.2.clone().unwrap());
                 Some(placements)
             }
-            ComplexType::BarpauseNote(_, note) => note.placements.clone(),
-            ComplexType::NoteBarpause(note, _) => note.placements.clone(),
+            ComplexType::BarpauseNote(_, note) => note.2.clone(),
+            ComplexType::NoteBarpause(note, _) => note.2.clone(),
         }
     }
 
@@ -88,15 +91,15 @@ impl<'a> Complex<'a> {
             crate::complex::ComplexType::BarpauseNote(_, _) => ComplexNotesOverlap::None,
             crate::complex::ComplexType::NoteBarpause(_, _) => ComplexNotesOverlap::None,
             crate::complex::ComplexType::TwoNotes(upper, lower) => {
-                let overlap = match [&upper.note.ntype, &lower.note.ntype] {
+                let overlap = match [&upper.0.ntype, &lower.0.ntype] {
                     [NoteType::Heads(upper_heads), NoteType::Heads(lower_heads)] => {
                         let level_diff =
                             lower_heads.get_level_top() - upper_heads.get_level_bottom();
-                        let upper_head_width = match duration_get_headtype(upper.note.duration) {
+                        let upper_head_width = match duration_get_headtype(upper.0.duration) {
                             crate::head::HeadType::NormalHead => Self::OVERLAP_NORMAL_HEAD,
                             crate::head::HeadType::WideHead => Self::OVERLAP_WIDE_HEAD,
                         };
-                        let lower_head_width = match duration_get_headtype(lower.note.duration) {
+                        let lower_head_width = match duration_get_headtype(lower.0.duration) {
                             crate::head::HeadType::NormalHead => Self::OVERLAP_NORMAL_HEAD,
                             crate::head::HeadType::WideHead => Self::OVERLAP_WIDE_HEAD,
                         };
@@ -104,7 +107,7 @@ impl<'a> Complex<'a> {
                         if level_diff < 0 {
                             ComplexNotesOverlap::UpperRight(upper_head_width + Self::OVERLAP_SPACE)
                         } else if level_diff == 0 {
-                            let same_duration = upper.note.duration == lower.note.duration;
+                            let same_duration = upper.0.duration == lower.0.duration;
                             if same_duration {
                                 ComplexNotesOverlap::None
                             } else {
@@ -152,11 +155,7 @@ pub fn complexes_from_voices<'a>(
                     complexes.push(Complex {
                         position,
                         duration,
-                        ctype: ComplexType::OneNote(NoteExt {
-                            note,
-                            dir,
-                            placements,
-                        }),
+                        ctype: ComplexType::OneNote(NoteExt(note, dir, placements)),
                     });
                     position += duration;
                 }
@@ -174,20 +173,9 @@ pub fn complexes_from_voices<'a>(
                             position,
                             duration,
                             ctype: if idx == 0 {
-                                ComplexType::BarpauseNote(
-                                    bp,
-                                    NoteExt {
-                                        note,
-                                        dir,
-                                        placements,
-                                    },
-                                )
+                                ComplexType::BarpauseNote(bp, NoteExt(note, dir, placements))
                             } else {
-                                ComplexType::OneNote(NoteExt {
-                                    note,
-                                    dir,
-                                    placements,
-                                })
+                                ComplexType::OneNote(NoteExt(note, dir, placements))
                             },
                         });
                         position += duration;
@@ -208,20 +196,9 @@ pub fn complexes_from_voices<'a>(
                             position,
                             duration,
                             ctype: if idx == 0 {
-                                ComplexType::NoteBarpause(
-                                    NoteExt {
-                                        note,
-                                        dir,
-                                        placements,
-                                    },
-                                    bp,
-                                )
+                                ComplexType::NoteBarpause(NoteExt(note, dir, placements), bp)
                             } else {
-                                ComplexType::OneNote(NoteExt {
-                                    note,
-                                    dir,
-                                    placements,
-                                })
+                                ComplexType::OneNote(NoteExt(note, dir, placements))
                             },
                         });
                         position += duration;
@@ -270,16 +247,8 @@ pub fn complexes_from_voices<'a>(
                                     position: *position,
                                     duration,
                                     ctype: ComplexType::TwoNotes(
-                                        NoteExt {
-                                            note: note1,
-                                            dir: dir1,
-                                            placements: placements1,
-                                        },
-                                        NoteExt {
-                                            note: note2,
-                                            dir: dir2,
-                                            placements: placements2,
-                                        },
+                                        NoteExt(note1, dir1, placements1),
+                                        NoteExt(note2, dir2, placements2),
                                     ),
                                 });
                             }
@@ -289,11 +258,7 @@ pub fn complexes_from_voices<'a>(
                                 complexes.push(Complex {
                                     position: *position,
                                     duration,
-                                    ctype: ComplexType::OneNote(NoteExt {
-                                        note,
-                                        dir,
-                                        placements,
-                                    }),
+                                    ctype: ComplexType::OneNote(NoteExt(note, dir, placements)),
                                 });
                             }
                             [None, Some(note)] => {
@@ -302,11 +267,7 @@ pub fn complexes_from_voices<'a>(
                                 complexes.push(Complex {
                                     position: *position,
                                     duration,
-                                    ctype: ComplexType::OneNote(NoteExt {
-                                        note,
-                                        dir,
-                                        placements,
-                                    }),
+                                    ctype: ComplexType::OneNote(NoteExt(note, dir, placements)),
                                 });
                             }
                             [None, None] => {

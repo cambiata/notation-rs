@@ -11,7 +11,6 @@
 pub mod beaming;
 pub mod chord;
 pub mod complex;
-pub mod complexext;
 pub mod core;
 pub mod dynamic;
 pub mod error;

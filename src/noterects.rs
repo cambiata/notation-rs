@@ -1,5 +1,5 @@
 use crate::{
-    core::{DirUD, Rect},
+    core::{DirUD, NRect},
     head::Head,
     heads::Heads,
     note::NoteType,
@@ -44,7 +44,7 @@ impl NoteRects {
         // }
     }
 
-    fn get_rects(note_type: NoteType, direction: DirUD) -> Vec<Rect> {
+    fn get_rects(note_type: NoteType, direction: DirUD) -> Vec<NRect> {
         match note_type {
             NoteType::Heads(heads) => Vec::new(),
             _ => Vec::new(),

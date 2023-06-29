@@ -228,7 +228,7 @@ pub fn duration_get_headtype(duration: Duration) -> HeadType {
     }
 }
 
-pub struct Rect(f32, f32, f32, f32);
+pub struct NRect(f32, f32, f32, f32);
 
 #[cfg(test)]
 mod tests {
