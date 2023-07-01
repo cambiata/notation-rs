@@ -1,7 +1,7 @@
-use std::{sync::atomic::AtomicUsize, sync::atomic::Ordering};
+use crate::{chord::ChordItem, dynamic::DynamicItem, prelude::*};
 
-use crate::{chord::ChordItem, core::*, dynamic::DynamicItem, syllable::Syllable};
 use serde::{Deserialize, Serialize};
+use std::{sync::atomic::AtomicUsize, sync::atomic::Ordering};
 
 static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
@@ -55,11 +55,11 @@ impl Note {
         }
     }
 
-    pub fn get_heads_placements(self: &Note, dir: &DirUD) -> Option<HeadsPlacement> {
+    pub fn get_heads_placements<'a>(self: &Note, dir: &DirUD) -> Option<HeadsPlacement> {
         if let NoteType::Heads(ref heads) = self.ntype {
             let levels = heads.get_levels();
             if levels.len() == 1 {
-                return Some(vec![(levels[0], HeadPlacement::Center)]);
+                return Some(vec![(levels[0], &HeadPlacement::Center, &heads.items[0])]);
             }
             //------------------------------------------------------------
             let mut result: HeadsPlacement = Vec::new();
@@ -75,26 +75,27 @@ impl Note {
                         let lower_level = level_pair[0];
                         let upper_level = level_pair[1];
                         let diff = lower_level - upper_level;
+                        let head = &heads.items[idx];
 
                         if idx == 0 {
-                            result.push((lower_level, HeadPlacement::Center));
+                            result.push((lower_level, &HeadPlacement::Center, head));
                             if diff < 2 {
-                                result.push((upper_level, HeadPlacement::Right));
+                                result.push((upper_level, &HeadPlacement::Right, head));
                             } else {
-                                result.push((upper_level, HeadPlacement::Center));
+                                result.push((upper_level, &HeadPlacement::Center, head));
                             }
                         } else {
-                            let (current_level, current_placement) = &result[idx];
+                            let (current_level, current_placement, head) = &result[idx];
                             match diff {
                                 0 | 1 => {
                                     if let HeadPlacement::Center = current_placement {
-                                        result.push((upper_level, HeadPlacement::Right));
+                                        result.push((upper_level, &HeadPlacement::Right, head));
                                     } else {
-                                        result.push((upper_level, HeadPlacement::Center));
+                                        result.push((upper_level, &HeadPlacement::Center, head));
                                     }
                                 }
                                 _ => {
-                                    result.push((upper_level, HeadPlacement::Center));
+                                    result.push((upper_level, &HeadPlacement::Center, head));
                                 }
                             }
                         }
@@ -106,26 +107,27 @@ impl Note {
                         let upper_level = level_pair[0];
                         let lower_level = level_pair[1];
                         let diff = lower_level - upper_level;
+                        let head = &heads.items[idx];
 
                         if idx == 0 {
-                            result.push((upper_level, HeadPlacement::Center));
+                            result.push((upper_level, &HeadPlacement::Center, head));
                             if diff < 2 {
-                                result.push((lower_level, HeadPlacement::Left));
+                                result.push((lower_level, &HeadPlacement::Left, head));
                             } else {
-                                result.push((lower_level, HeadPlacement::Center));
+                                result.push((lower_level, &HeadPlacement::Center, head));
                             }
                         } else {
-                            let (current_level, current_placement) = &result[idx];
+                            let (current_level, current_placement, _) = &result[idx];
                             match diff {
                                 0 | 1 => {
                                     if let HeadPlacement::Center = current_placement {
-                                        result.push((lower_level, HeadPlacement::Left));
+                                        result.push((lower_level, &HeadPlacement::Left, head));
                                     } else {
-                                        result.push((lower_level, HeadPlacement::Center));
+                                        result.push((lower_level, &HeadPlacement::Center, head));
                                     }
                                 }
                                 _ => {
-                                    result.push((lower_level, HeadPlacement::Center));
+                                    result.push((lower_level, &HeadPlacement::Center, head));
                                 }
                             }
                         }
@@ -153,12 +155,22 @@ impl Note {
 
 #[derive(Debug, Clone)]
 pub enum HeadPlacement {
-    Left = -1,
-    Center = 0,
-    Right = 1,
+    Left,
+    Center,
+    Right,
 }
 
-pub type HeadsPlacement = Vec<(i8, HeadPlacement)>;
+impl HeadPlacement {
+    pub fn as_f32(self: &HeadPlacement) -> f32 {
+        match self {
+            HeadPlacement::Left => -1.0,
+            HeadPlacement::Center => 0.0,
+            HeadPlacement::Right => 1.0,
+        }
+    }
+}
+
+pub type HeadsPlacement<'a> = Vec<(i8, &'a HeadPlacement, &'a Head)>;
 
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub enum NoteType {

@@ -11,6 +11,7 @@
 pub mod beaming;
 pub mod chord;
 pub mod complex;
+pub mod constants;
 pub mod core;
 pub mod dynamic;
 pub mod error;
@@ -23,6 +24,7 @@ pub mod part;
 pub mod prelude;
 pub mod quick;
 pub mod render;
+pub mod spacing;
 pub mod syllable;
 pub mod utils;
 pub mod voice;

@@ -18,11 +18,15 @@ pub struct Complex<'a> {
 pub struct NoteExt2<'a> {
     note: &'a Note,
     dir: Option<DirUD>,
-    placements: Option<HeadsPlacement>,
+    placements: Option<HeadsPlacement<'a>>,
 }
 
 #[derive(Debug)]
-pub struct NoteExt<'a>(pub &'a Note, pub Option<DirUD>, pub Option<HeadsPlacement>);
+pub struct NoteExt<'a>(
+    pub &'a Note,
+    pub Option<DirUD>,
+    pub Option<HeadsPlacement<'a>>,
+);
 
 #[derive(Debug)]
 pub enum ComplexType<'a> {
@@ -64,24 +68,84 @@ impl<'a> Complex<'a> {
         }
     }
 
-    pub fn get_heads_placements(&self) -> Option<HeadsPlacement> {
-        match &self.ctype {
-            ComplexType::OneBarpause(_) => None,
-            ComplexType::TwoBarpauses(_, _) => None,
-            ComplexType::OneNote(ref note) => note.2.clone(),
-            ComplexType::TwoNotes(upper, lower) => {
-                let mut placements = upper.2.clone().unwrap();
-                placements.extend(lower.2.clone().unwrap());
-                Some(placements)
+    pub fn get_rectangles(&self) -> Option<Vec<NRectExt>> {
+        let mut rects: Vec<NRectExt> = Vec::new();
+
+        fn add_heads_rects<'a>(
+            mut rects: Vec<NRectExt<'a>>,
+            note: &NoteExt<'a>,
+            note_overlap: f32,
+        ) -> Vec<NRectExt<'a>> {
+            let note_head_type = duration_get_headtype(&note.0.duration);
+            let note_shape = duration_get_headshape(&note.0.duration);
+            let note_width = match note_shape {
+                HeadShape::BlackHead => HEAD_WIDTH_BLACK,
+                HeadShape::WhiteHead => HEAD_WIDTH_WHITE,
+                HeadShape::WholeHead => HEAD_WIDTH_WIDE,
+            };
+
+            if let Some(placements) = note.0.get_heads_placements(&note.1.unwrap()) {
+                for placement in placements {
+                    let (level, place, head) = placement;
+                    dbg!(place);
+                    let rect: NRect = NRect::new(
+                        (place.as_f32() * note_width) + (note_overlap * note_width),
+                        level as f32 * SPACE_HALF - SPACE_HALF,
+                        note_width,
+                        SPACE,
+                    );
+
+                    rects.push(NRectExt(rect, NRectType::Head(note_head_type, note_shape)));
+                }
             }
-            ComplexType::BarpauseNote(_, note) => note.2.clone(),
-            ComplexType::NoteBarpause(note, _) => note.2.clone(),
+            rects
         }
+
+        // Heads rects
+        let heads_rects = match &self.ctype {
+            ComplexType::OneBarpause(_) => rects,
+            ComplexType::TwoBarpauses(_, _) => rects,
+            ComplexType::OneNote(ref note) => {
+                rects = add_heads_rects(rects, note, 0.0);
+                rects
+            }
+            ComplexType::TwoNotes(upper, lower) => {
+                let notes_overlap = self.get_notes_overlap_type();
+                let mut upper_overlap = 0.0;
+                let mut lower_overlap = 0.0;
+                match notes_overlap {
+                    ComplexNotesOverlap::None => {}
+                    ComplexNotesOverlap::UpperRight(overlap) => {
+                        upper_overlap = overlap;
+                    }
+                    ComplexNotesOverlap::LowerRight(overlap) => {
+                        lower_overlap = overlap;
+                    }
+                }
+                dbg!(upper_overlap, lower_overlap);
+                rects = add_heads_rects(rects, upper, upper_overlap);
+                rects = add_heads_rects(rects, lower, lower_overlap);
+                rects
+                // None
+            }
+
+            ComplexType::BarpauseNote(_, note) => {
+                rects = add_heads_rects(rects, note, 0.0);
+                rects
+            }
+
+            ComplexType::NoteBarpause(note, _) => {
+                rects = add_heads_rects(rects, note, 0.0);
+                rects
+            }
+        };
+
+        Some(heads_rects)
     }
 
     const OVERLAP_NORMAL_HEAD: f32 = 1.0;
     const OVERLAP_WIDE_HEAD: f32 = 1.5;
-    const OVERLAP_SPACE: f32 = 0.2;
+    const OVERLAP_SPACE: f32 = 0.1;
     const OVERLAP_DIAGONAL_SPACE: f32 = -0.5;
     pub fn get_notes_overlap_type(&self) -> ComplexNotesOverlap {
         match &self.ctype {
@@ -95,18 +159,20 @@ impl<'a> Complex<'a> {
                     [NoteType::Heads(upper_heads), NoteType::Heads(lower_heads)] => {
                         let level_diff =
                             lower_heads.get_level_top() - upper_heads.get_level_bottom();
-                        let upper_head_width = match duration_get_headtype(upper.0.duration) {
+                        let upper_head_width = match duration_get_headtype(&upper.0.duration) {
                             crate::head::HeadType::NormalHead => Self::OVERLAP_NORMAL_HEAD,
                             crate::head::HeadType::WideHead => Self::OVERLAP_WIDE_HEAD,
                         };
-                        let lower_head_width = match duration_get_headtype(lower.0.duration) {
+                        let lower_head_width = match duration_get_headtype(&lower.0.duration) {
                             crate::head::HeadType::NormalHead => Self::OVERLAP_NORMAL_HEAD,
                             crate::head::HeadType::WideHead => Self::OVERLAP_WIDE_HEAD,
                         };
 
                         if level_diff < 0 {
+                            // upper is lower than lower
                             ComplexNotesOverlap::UpperRight(upper_head_width + Self::OVERLAP_SPACE)
                         } else if level_diff == 0 {
+                            // same level
                             let same_duration = upper.0.duration == lower.0.duration;
                             if same_duration {
                                 ComplexNotesOverlap::None
@@ -116,8 +182,10 @@ impl<'a> Complex<'a> {
                                 )
                             }
                         } else if level_diff == 1 {
+                            // lower is one lower than upper
                             ComplexNotesOverlap::LowerRight(upper_head_width)
                         } else {
+                            // level_diff > 1
                             ComplexNotesOverlap::None
                         }
                     }
@@ -375,6 +443,16 @@ pub enum ComplexNotesOverlap {
     None,
     UpperRight(f32),
     LowerRight(f32),
+}
+
+impl ComplexNotesOverlap {
+    pub fn as_f32(&self) -> f32 {
+        match self {
+            ComplexNotesOverlap::None => 0.0,
+            ComplexNotesOverlap::UpperRight(f) => *f,
+            ComplexNotesOverlap::LowerRight(f) => *f,
+        }
+    }
 }
 
 #[derive(Debug)]

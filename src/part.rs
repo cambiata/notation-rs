@@ -30,10 +30,9 @@ pub enum PartBackground {
 mod tests {
     use crate::{complex::*, note, prelude::*};
     use std::collections::HashMap;
-
     #[test]
     fn example() -> Result<()> {
-        let voices = QCode::voices("nv4 -1 0 / nv4 1 nv2 0").unwrap();
+        let voices = QCode::voices(" 0 / nv1 1").unwrap();
         let voices_beamings = beamings_from_voices(
             &voices,
             &BeamingPattern::NValues(vec![NV4]),
@@ -46,13 +45,13 @@ mod tests {
         let complexes = complexes_from_voices(&voices, &note_beamings_map)?;
 
         for complex in &complexes {
+            let rects = complex.get_rectangles();
             println!(
-                "complex:{:?} {:?} {:?} {:?}  {:?}",
+                "complex:{:?} {:?} {:?} {:?} ",
                 complex.position,
                 complex.duration,
                 complex.ctype.debug_str(),
                 complex.get_notes_overlap_type(),
-                complex.get_heads_placements()
             );
         }
         Ok(())

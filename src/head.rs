@@ -44,3 +44,10 @@ pub enum HeadType {
     NormalHead,
     WideHead,
 }
+
+#[derive(Debug)]
+pub enum HeadShape {
+    BlackHead,
+    WhiteHead,
+    WholeHead,
+}

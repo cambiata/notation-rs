@@ -221,17 +221,97 @@ pub fn duration_is_beamable(dur: usize) -> bool {
     }
 }
 
-pub fn duration_get_headtype(duration: Duration) -> HeadType {
-    match duration {
-        NV1DOT | NV1 => HeadType::WideHead,
-        _ => HeadType::NormalHead,
+pub fn duration_get_headtype(duration: &Duration) -> &HeadType {
+    match *duration {
+        NV1DOT | NV1 => &HeadType::WideHead,
+        _ => &HeadType::NormalHead,
     }
 }
 
-pub struct NRect(f32, f32, f32, f32);
+pub fn duration_get_headshape(duration: &Duration) -> &HeadShape {
+    match *duration {
+        NV1DOT | NV1 => &HeadShape::WholeHead,
+        NV2 | NV2DOT | NV2TRI => &HeadShape::WhiteHead,
+        _ => &HeadShape::BlackHead,
+    }
+}
+
+pub fn duration_get_headwidth(duration: Duration) -> f32 {
+    match duration {
+        NV1DOT | NV1 => HEAD_WIDTH_WIDE,
+        _ => HEAD_WIDTH_BLACK,
+    }
+}
+
+// pub const SPACING_FACTOR: f32 = 8.0;
+// pub const HEAD_WIDTH_NORMAL: f32 = 3.0 * SPACING_FACTOR;
+// pub const HEAD_WIDTH_WHOLE: f32 = 4.0 * SPACING_FACTOR;
+
+// #[derive(Clone, Copy, Debug)]
+// pub struct Spacing(f32);
+
+// impl Spacing {
+//     pub fn new(v: f32) -> Self {
+//         Self(v)
+//     }
+// }
+
+// impl From<f32> for Spacing {
+//     fn from(v: f32) -> Self {
+//         Self(v * SPACING_FACTOR)
+//     }
+// }
+
+// impl From<usize> for Spacing {
+//     fn from(v: usize) -> Self {
+//         Self((v as f32) * SPACING_FACTOR)
+//     }
+// }
+
+// impl From<i8> for Spacing {
+//     fn from(v: i8) -> Self {
+//         Self((v as f32) * SPACING_FACTOR)
+//     }
+// }
+// impl From<i32> for Spacing {
+//     fn from(v: i32) -> Self {
+//         Self((v as f32) * SPACING_FACTOR)
+//     }
+// }
+
+// impl From<Spacing> for f32 {
+//     fn from(v: Spacing) -> Self {
+//         println!("From<Spacing> for f32 {:?}", v);
+//         v.0 / SPACING_FACTOR
+//     }
+// }
+
+#[derive(Clone, Copy, Debug)]
+pub struct NRect(pub f32, pub f32, pub f32, pub f32);
+
+impl NRect {
+    pub fn new(x: f32, y: f32, w: f32, h: f32) -> Self {
+        Self(x, y, w, h)
+    }
+    // pub fn from_spacing(x: Spacing, y: Spacing, w: Spacing, h: Spacing) -> Self {
+    //     Self(x.0, y.0, w.0, h.0)
+    // }
+}
+
+#[derive(Debug)]
+pub struct NRectExt<'a>(pub NRect, pub NRectType<'a>);
+
+#[derive(Debug)]
+pub enum NRectType<'a> {
+    Head(&'a HeadType, &'a HeadShape),
+    Clef,
+    Accidental(&'a Accidental),
+}
 
 #[cfg(test)]
 mod tests {
+
+    use serde::__private::de;
 
     use crate::prelude::*;
 
@@ -249,4 +329,11 @@ mod tests {
     fn nvalues2() {
         let _v = duration_from(333);
     }
+
+    // #[test]
+    // fn spacing() {
+    //     let s: Spacing = Spacing::new(16.0);
+    //     let f: f32 = s.into();
+    //     dbg!(f);
+    // }
 }
