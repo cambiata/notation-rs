@@ -183,7 +183,7 @@ impl<'a> Complex<'a> {
                             } else {
                                 ComplexNotesOverlap::UpperRight(
                                     // lower_head_width + Self::OVERLAP_SPACE,
-                                    upper_head_width,
+                                    lower_head_width,
                                 )
                             }
                         } else if level_diff == 1 {

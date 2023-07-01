@@ -244,6 +244,13 @@ pub fn duration_get_headwidth(duration: &Duration) -> f32 {
     }
 }
 
+pub fn duration_get_dot(duration: &Duration) -> u8 {
+    match *duration {
+        NV1DOT | NV2DOT | NV4DOT | NV8DOT | NV16DOT => 1,
+        _ => 0,
+    }
+}
+
 // pub const SPACING_FACTOR: f32 = 8.0;
 // pub const HEAD_WIDTH_NORMAL: f32 = 3.0 * SPACING_FACTOR;
 // pub const HEAD_WIDTH_WHOLE: f32 = 4.0 * SPACING_FACTOR;

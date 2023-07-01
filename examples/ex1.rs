@@ -9,7 +9,7 @@ use graphics::item::Fill::Fillstyle;
 use graphics::prelude::*;
 
 fn main() -> notation_rs::prelude::Result<()> {
-    let voices = QCode::voices("nv1 0 / nv4 1").unwrap();
+    let voices = QCode::voices("nv2 0 / nv1 0").unwrap();
 
     let voices_beamings = beamings_from_voices(
         &voices,
@@ -55,7 +55,7 @@ fn main() -> notation_rs::prelude::Result<()> {
     }
 
     let svg = SvgBuilder::new().build(items).unwrap();
-    std::fs::write(".test.svg", svg)?;
+    std::fs::write("./examples/ex1.svg", svg)?;
 
     Ok(())
 }
