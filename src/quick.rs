@@ -80,8 +80,13 @@ impl QCode {
     }
 
     pub fn voices(code: &str) -> Result<Voices> {
-        let segments: Vec<&str> = code.trim().split('/').collect();
+        if code.contains("/") {
+            panic!("code contains /: {}", code);
+        }
+
+        let segments: Vec<&str> = code.trim().split('%').collect();
         let nr_of_voices = segments.len();
+
         match nr_of_voices {
             0 => Err(Generic("no voice in code".to_string()).into()),
             1 => {
@@ -91,6 +96,11 @@ impl QCode {
             2 => {
                 let voice1 = QCode::voice(segments[0])?;
                 let voice2 = QCode::voice(segments[1])?;
+                Ok(Voices::Two(voice1, voice2))
+            }
+            3 => {
+                let voice1 = QCode::voice(segments[1])?;
+                let voice2 = QCode::voice(segments[2])?;
                 Ok(Voices::Two(voice1, voice2))
             }
             _ => Err(Generic(format!("too many voices in code: {}", nr_of_voices)).into()),
@@ -130,7 +140,13 @@ mod tests {
 
     #[test]
     fn test_voices() {
-        let voices = QCode::voices("nv4 0 0 0 0 / bp").unwrap();
+        let voices = QCode::voices("nv4 0 0 0 0 % bp").unwrap();
+        dbg!(voices);
+    }
+
+    #[test]
+    fn test_voicetype() {
+        let voices = QCode::voices("% 1 1 % 3 3").unwrap();
         dbg!(voices);
     }
 }

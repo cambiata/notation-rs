@@ -244,7 +244,7 @@ pub fn duration_get_headwidth(duration: &Duration) -> f32 {
     }
 }
 
-pub fn duration_get_dot(duration: &Duration) -> u8 {
+pub fn duration_get_dots(duration: &Duration) -> u8 {
     match *duration {
         NV1DOT | NV2DOT | NV4DOT | NV8DOT | NV16DOT => 1,
         _ => 0,
@@ -312,14 +312,24 @@ pub struct NRectExt<'a>(pub NRect, pub NRectType<'a>);
 #[derive(Debug)]
 pub enum NRectType<'a> {
     Head(&'a HeadType, &'a HeadShape),
+    Pause(&'a PauseShape),
     Clef,
     Accidental(&'a Accidental),
+    WIP(&'a str),
+}
+
+#[derive(Debug)]
+pub enum PauseShape {
+    Whole,
+    Half,
+    Quarter,
+    Eighth,
+    Sixteenth,
+    ThirtySecond,
 }
 
 #[cfg(test)]
 mod tests {
-
-    use serde::__private::de;
 
     use crate::prelude::*;
 

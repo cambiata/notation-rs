@@ -32,7 +32,7 @@ mod tests {
     use std::collections::HashMap;
     #[test]
     fn example() -> Result<()> {
-        let voices = QCode::voices(" 0 / nv1 1").unwrap();
+        let voices = QCode::voices(" 0 % nv1 1").unwrap();
         let voices_beamings = beamings_from_voices(
             &voices,
             &BeamingPattern::NValues(vec![NV4]),

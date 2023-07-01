@@ -71,43 +71,12 @@ impl<'a> Complex<'a> {
     pub fn get_rectangles(&self) -> Option<Vec<NRectExt>> {
         let mut rects: Vec<NRectExt> = Vec::new();
 
-        fn add_heads_rects<'a>(
-            mut rects: Vec<NRectExt<'a>>,
-            note: &NoteExt<'a>,
-            note_overlap: f32,
-        ) -> Vec<NRectExt<'a>> {
-            let note_head_type = duration_get_headtype(&note.0.duration);
-            let note_shape = duration_get_headshape(&note.0.duration);
-            // let note_width = match note_shape {
-            //     HeadShape::BlackHead => HEAD_WIDTH_BLACK,
-            //     HeadShape::WhiteHead => HEAD_WIDTH_WHITE,
-            //     HeadShape::WholeHead => HEAD_WIDTH_WIDE,
-            // };
-            let note_width: f32 = duration_get_headwidth(&note.0.duration);
-
-            if let Some(placements) = note.0.get_heads_placements(&note.1.unwrap()) {
-                for placement in placements {
-                    let (level, place, head) = placement;
-
-                    let rect: NRect = NRect::new(
-                        (place.as_f32() * note_width) + (note_overlap),
-                        level as f32 * SPACE_HALF - SPACE_HALF,
-                        note_width,
-                        SPACE,
-                    );
-
-                    rects.push(NRectExt(rect, NRectType::Head(note_head_type, note_shape)));
-                }
-            }
-            rects
-        }
-
         // Heads rects
         let heads_rects = match &self.ctype {
             ComplexType::OneBarpause(_) => rects,
             ComplexType::TwoBarpauses(_, _) => rects,
             ComplexType::OneNote(ref note) => {
-                rects = add_heads_rects(rects, note, 0.0);
+                rects = add_heads_rects(rects, note, 0.0, 0.);
                 rects
             }
             ComplexType::TwoNotes(upper, lower) => {
@@ -124,19 +93,19 @@ impl<'a> Complex<'a> {
                     }
                 }
 
-                rects = add_heads_rects(rects, upper, upper_overlap);
-                rects = add_heads_rects(rects, lower, lower_overlap);
+                rects = add_heads_rects(rects, upper, upper_overlap, 2. * -SPACE_HALF);
+                rects = add_heads_rects(rects, lower, lower_overlap, 2. * SPACE_HALF);
                 rects
                 // None
             }
 
             ComplexType::BarpauseNote(_, note) => {
-                rects = add_heads_rects(rects, note, 0.0);
+                rects = add_heads_rects(rects, note, 0.0, 0.);
                 rects
             }
 
             ComplexType::NoteBarpause(note, _) => {
-                rects = add_heads_rects(rects, note, 0.0);
+                rects = add_heads_rects(rects, note, 0.0, 0.);
                 rects
             }
         };
@@ -156,6 +125,7 @@ impl<'a> Complex<'a> {
             crate::complex::ComplexType::OneNote(_) => ComplexNotesOverlap::None,
             crate::complex::ComplexType::BarpauseNote(_, _) => ComplexNotesOverlap::None,
             crate::complex::ComplexType::NoteBarpause(_, _) => ComplexNotesOverlap::None,
+
             crate::complex::ComplexType::TwoNotes(upper, lower) => {
                 let overlap = match [&upper.0.ntype, &lower.0.ntype] {
                     [NoteType::Heads(upper_heads), NoteType::Heads(lower_heads)] => {
@@ -200,6 +170,81 @@ impl<'a> Complex<'a> {
             }
         }
     }
+}
+
+fn add_heads_rects<'a>(
+    mut rects: Vec<NRectExt<'a>>,
+    note: &NoteExt<'a>,
+    note_overlap: f32,
+    avoid_y_collision: f32,
+) -> Vec<NRectExt<'a>> {
+    match note.0.ntype {
+        NoteType::Heads(_) => {
+            let note_head_type = duration_get_headtype(&note.0.duration);
+            let note_shape = duration_get_headshape(&note.0.duration);
+            let note_width: f32 = duration_get_headwidth(&note.0.duration);
+            if let Some(placements) = note.0.get_heads_placements(&note.1.unwrap()) {
+                for placement in placements {
+                    let (level, place, head) = placement;
+
+                    let rect: NRect = NRect::new(
+                        (place.as_f32() * note_width) + (note_overlap),
+                        level as f32 * SPACE_HALF - SPACE_HALF,
+                        note_width,
+                        SPACE,
+                    );
+
+                    rects.push(NRectExt(rect, NRectType::Head(note_head_type, note_shape)));
+                }
+            }
+        }
+        NoteType::Pause => {
+            match note.0.duration {
+                NV1 | NV1DOT => {
+                    let rect = NRect::new(0., -SPACE + avoid_y_collision, SPACE, SPACE_HALF);
+                    rects.push(NRectExt(rect, NRectType::Pause(&PauseShape::Whole)));
+                }
+                NV2 | NV2DOT | NV2TRI => {
+                    let rect = NRect::new(0., -SPACE_HALF + avoid_y_collision, SPACE, SPACE_HALF);
+                    rects.push(NRectExt(rect, NRectType::Pause(&PauseShape::Half)));
+                }
+                NV4 | NV4DOT | NV4TRI => {
+                    let rect = NRect::new(0., -1.4 * SPACE + avoid_y_collision, SPACE, 2.8 * SPACE);
+                    rects.push(NRectExt(rect, NRectType::Pause(&PauseShape::Quarter)));
+                }
+                NV8 | NV8DOT | NV8TRI => {
+                    let rect = NRect::new(0., -SPACE + avoid_y_collision, SPACE, 2. * SPACE);
+                    rects.push(NRectExt(rect, NRectType::Pause(&PauseShape::Eighth)));
+                }
+                NV16 | NV16DOT | NV16TRI => {
+                    let rect = NRect::new(0., -SPACE + avoid_y_collision, SPACE * 1.3, 3. * SPACE);
+                    rects.push(NRectExt(rect, NRectType::Pause(&PauseShape::Sixteenth)));
+                }
+
+                _ => {
+                    let rect = NRect::new(0., -SPACE_HALF + avoid_y_collision, SPACE, SPACE);
+                    rects.push(NRectExt(rect, NRectType::WIP("pause undefined")));
+                }
+            };
+        }
+        NoteType::Slash => {
+            //
+        }
+        NoteType::Lyric(_) => {
+            //
+        }
+        NoteType::Dynamic(_) => {
+            //
+        }
+        NoteType::Chord(_) => {
+            //
+        }
+        NoteType::Spacer => {
+            //
+        }
+    }
+
+    rects
 }
 
 pub fn complexes_from_voices<'a>(
@@ -475,7 +520,7 @@ mod tests {
 
     #[test]
     fn test1() {
-        let voices = QCode::voices("Nv4 #0 / Nv8 b1 0 0").unwrap();
+        let voices = QCode::voices("Nv4 #0 % Nv8 b1 0 0").unwrap();
         let voices_beamings = beamings_from_voices(
             &voices,
             &BeamingPattern::NValues(vec![NV4]),
@@ -493,7 +538,7 @@ mod tests {
 
     #[test]
     fn complex() {
-        let voices = QCode::voices("Nv4 0 0 / Nv8 0 0 0 0 0").unwrap();
+        let voices = QCode::voices("Nv4 0 0 % Nv8 0 0 0 0 0").unwrap();
         let voices_beamings = beamings_from_voices(
             &voices,
             &BeamingPattern::NValues(vec![NV4]),
@@ -516,7 +561,7 @@ mod tests {
     }
     #[test]
     fn complex2() {
-        let voices = QCode::voices(" Nv4 0 0 0 / bp").unwrap();
+        let voices = QCode::voices(" Nv4 0 0 0 % bp").unwrap();
         let voices_beamings = beamings_from_voices(
             &voices,
             &BeamingPattern::NValues(vec![NV4]),
@@ -539,7 +584,7 @@ mod tests {
     }
     #[test]
     fn complex3() {
-        let voices = QCode::voices(" bp nv4/ bp nv8 nv8 nv8  ").unwrap();
+        let voices = QCode::voices(" bp nv4 % bp nv8 nv8 nv8  ").unwrap();
         let voices_beamings = beamings_from_voices(
             &voices,
             &BeamingPattern::NValues(vec![NV4]),

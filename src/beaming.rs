@@ -476,7 +476,7 @@ mod tests {
 
     #[test]
     fn balance2() {
-        let voices = QCode::voices("nv8 0 0 0 0 1 / NV8 0 0 0 0").unwrap();
+        let voices = QCode::voices("nv8 0 0 0 0 1 % NV8 0 0 0 0").unwrap();
         let beams = beamings_from_voices(
             &voices,
             &BeamingPattern::NValues(vec![NV4]),
