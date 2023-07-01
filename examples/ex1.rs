@@ -9,8 +9,7 @@ use graphics::item::Fill::Fillstyle;
 use graphics::prelude::*;
 
 fn main() -> notation_rs::prelude::Result<()> {
-    let voices = QCode::voices("nv1 0 / nv4 2").unwrap();
-    dbg!(&voices);
+    let voices = QCode::voices("nv1 0 / nv4 1").unwrap();
 
     let voices_beamings = beamings_from_voices(
         &voices,
@@ -39,19 +38,21 @@ fn main() -> notation_rs::prelude::Result<()> {
         GraphicItems(vec![Path(clef, NoStroke, Fillstyle(Black))]).move_items(0.0, 25.1);
     items.extend(clef_items);
 
-    let mut note_items = GraphicItems::new();
-    for complex in complexes {
+    for (idx, complex) in complexes.into_iter().enumerate() {
+        let mut complex_items = GraphicItems::new();
+
         let nrects = complex.get_rectangles().unwrap();
         for nrect in nrects {
             let graphic_rect = nrect2rect(nrect.0, Strokestyle(1., Blue), NoFill);
-            note_items.push(graphic_rect);
+            complex_items.push(graphic_rect);
             let graphic_item = next2graphic(nrect);
-            note_items.push(graphic_item);
+            complex_items.push(graphic_item);
         }
+        let x = (idx + 1) as f32 * 80.;
+        println!("x:{}", x);
+        complex_items = complex_items.move_items(x, 0.);
+        items.extend(complex_items);
     }
-    note_items = note_items.move_items(80., 0.);
-
-    items.extend(note_items);
 
     let svg = SvgBuilder::new().build(items).unwrap();
     std::fs::write(".test.svg", svg)?;

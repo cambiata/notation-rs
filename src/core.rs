@@ -236,9 +236,10 @@ pub fn duration_get_headshape(duration: &Duration) -> &HeadShape {
     }
 }
 
-pub fn duration_get_headwidth(duration: Duration) -> f32 {
-    match duration {
+pub fn duration_get_headwidth(duration: &Duration) -> f32 {
+    match *duration {
         NV1DOT | NV1 => HEAD_WIDTH_WIDE,
+        NV2 | NV2DOT | NV2TRI => HEAD_WIDTH_WHITE,
         _ => HEAD_WIDTH_BLACK,
     }
 }

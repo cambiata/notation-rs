@@ -78,18 +78,19 @@ impl<'a> Complex<'a> {
         ) -> Vec<NRectExt<'a>> {
             let note_head_type = duration_get_headtype(&note.0.duration);
             let note_shape = duration_get_headshape(&note.0.duration);
-            let note_width = match note_shape {
-                HeadShape::BlackHead => HEAD_WIDTH_BLACK,
-                HeadShape::WhiteHead => HEAD_WIDTH_WHITE,
-                HeadShape::WholeHead => HEAD_WIDTH_WIDE,
-            };
+            // let note_width = match note_shape {
+            //     HeadShape::BlackHead => HEAD_WIDTH_BLACK,
+            //     HeadShape::WhiteHead => HEAD_WIDTH_WHITE,
+            //     HeadShape::WholeHead => HEAD_WIDTH_WIDE,
+            // };
+            let note_width: f32 = duration_get_headwidth(&note.0.duration);
 
             if let Some(placements) = note.0.get_heads_placements(&note.1.unwrap()) {
                 for placement in placements {
                     let (level, place, head) = placement;
-                    dbg!(place);
+
                     let rect: NRect = NRect::new(
-                        (place.as_f32() * note_width) + (note_overlap * note_width),
+                        (place.as_f32() * note_width) + (note_overlap),
                         level as f32 * SPACE_HALF - SPACE_HALF,
                         note_width,
                         SPACE,
@@ -122,7 +123,7 @@ impl<'a> Complex<'a> {
                         lower_overlap = overlap;
                     }
                 }
-                dbg!(upper_overlap, lower_overlap);
+
                 rects = add_heads_rects(rects, upper, upper_overlap);
                 rects = add_heads_rects(rects, lower, lower_overlap);
                 rects
@@ -147,6 +148,7 @@ impl<'a> Complex<'a> {
     const OVERLAP_WIDE_HEAD: f32 = 1.5;
     const OVERLAP_SPACE: f32 = 0.1;
     const OVERLAP_DIAGONAL_SPACE: f32 = -0.5;
+
     pub fn get_notes_overlap_type(&self) -> ComplexNotesOverlap {
         match &self.ctype {
             crate::complex::ComplexType::OneBarpause(_) => ComplexNotesOverlap::None,
@@ -159,13 +161,15 @@ impl<'a> Complex<'a> {
                     [NoteType::Heads(upper_heads), NoteType::Heads(lower_heads)] => {
                         let level_diff =
                             lower_heads.get_level_top() - upper_heads.get_level_bottom();
-                        let upper_head_width = match duration_get_headtype(&upper.0.duration) {
-                            crate::head::HeadType::NormalHead => Self::OVERLAP_NORMAL_HEAD,
-                            crate::head::HeadType::WideHead => Self::OVERLAP_WIDE_HEAD,
+                        let upper_head_width = match duration_get_headshape(&upper.0.duration) {
+                            HeadShape::BlackHead => HEAD_WIDTH_BLACK,
+                            HeadShape::WhiteHead => HEAD_WIDTH_WHITE,
+                            HeadShape::WholeHead => HEAD_WIDTH_WIDE,
                         };
-                        let lower_head_width = match duration_get_headtype(&lower.0.duration) {
-                            crate::head::HeadType::NormalHead => Self::OVERLAP_NORMAL_HEAD,
-                            crate::head::HeadType::WideHead => Self::OVERLAP_WIDE_HEAD,
+                        let lower_head_width = match duration_get_headshape(&lower.0.duration) {
+                            HeadShape::BlackHead => HEAD_WIDTH_BLACK,
+                            HeadShape::WhiteHead => HEAD_WIDTH_WHITE,
+                            HeadShape::WholeHead => HEAD_WIDTH_WIDE,
                         };
 
                         if level_diff < 0 {
@@ -178,7 +182,8 @@ impl<'a> Complex<'a> {
                                 ComplexNotesOverlap::None
                             } else {
                                 ComplexNotesOverlap::UpperRight(
-                                    lower_head_width + Self::OVERLAP_SPACE,
+                                    // lower_head_width + Self::OVERLAP_SPACE,
+                                    upper_head_width,
                                 )
                             }
                         } else if level_diff == 1 {
