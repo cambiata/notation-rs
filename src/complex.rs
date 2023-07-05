@@ -75,12 +75,13 @@ impl<'a> Complex<'a> {
         let heads_rects = match &self.ctype {
             ComplexType::OneBarpause(_) => rects,
             ComplexType::TwoBarpauses(_, _) => rects,
+
             ComplexType::OneNote(ref note) => {
-                rects = add_heads_rects(rects, note, 0.0, 0.);
+                rects = add_note_rects(rects, note, 0.0, 0.);
                 rects
             }
             ComplexType::TwoNotes(upper, lower) => {
-                let notes_overlap = self.get_notes_overlap_type();
+                let (notes_overlap, dots_type) = self.get_notes_overlap_type();
                 let mut upper_overlap = 0.0;
                 let mut lower_overlap = 0.0;
                 match notes_overlap {
@@ -93,19 +94,20 @@ impl<'a> Complex<'a> {
                     }
                 }
 
-                rects = add_heads_rects(rects, upper, upper_overlap, 2. * -SPACE_HALF);
-                rects = add_heads_rects(rects, lower, lower_overlap, 2. * SPACE_HALF);
+                // --------------------------------------------------
+                rects = add_note_rects(rects, upper, upper_overlap, 2. * -SPACE_HALF);
+                rects = add_note_rects(rects, lower, lower_overlap, 2. * SPACE_HALF);
                 rects
                 // None
             }
 
             ComplexType::BarpauseNote(_, note) => {
-                rects = add_heads_rects(rects, note, 0.0, 0.);
+                rects = add_note_rects(rects, note, 0.0, 0.);
                 rects
             }
 
             ComplexType::NoteBarpause(note, _) => {
-                rects = add_heads_rects(rects, note, 0.0, 0.);
+                rects = add_note_rects(rects, note, 0.0, 0.);
                 rects
             }
         };
@@ -118,13 +120,16 @@ impl<'a> Complex<'a> {
     // const OVERLAP_SPACE: f32 = 0.1;
     // const OVERLAP_DIAGONAL_SPACE: f32 = -0.5;
 
-    pub fn get_notes_overlap_type(&self) -> ComplexNotesOverlap {
+    pub fn get_notes_overlap_type(&self) -> (ComplexNotesOverlap, Option<DotsInfo>) {
         match &self.ctype {
-            crate::complex::ComplexType::OneBarpause(_) => ComplexNotesOverlap::None,
-            crate::complex::ComplexType::TwoBarpauses(_, _) => ComplexNotesOverlap::None,
-            crate::complex::ComplexType::OneNote(_) => ComplexNotesOverlap::None,
-            crate::complex::ComplexType::BarpauseNote(_, _) => ComplexNotesOverlap::None,
-            crate::complex::ComplexType::NoteBarpause(_, _) => ComplexNotesOverlap::None,
+            crate::complex::ComplexType::OneBarpause(_) => (ComplexNotesOverlap::None, None),
+            crate::complex::ComplexType::TwoBarpauses(_, _) => (ComplexNotesOverlap::None, None),
+            crate::complex::ComplexType::OneNote(note) => {
+                let dots_info = note.0.get_dots_info(); // TODO: use this info
+                (ComplexNotesOverlap::None, None)
+            }
+            crate::complex::ComplexType::BarpauseNote(_, _) => (ComplexNotesOverlap::None, None),
+            crate::complex::ComplexType::NoteBarpause(_, _) => (ComplexNotesOverlap::None, None),
 
             crate::complex::ComplexType::TwoNotes(upper, lower) => {
                 let overlap = match [&upper.0.ntype, &lower.0.ntype] {
@@ -138,8 +143,8 @@ impl<'a> Complex<'a> {
                             HeadShape::WholeHead => HEAD_WIDTH_WIDE,
                         };
 
-                        let upper_dots = duration_get_dots(&upper.0.duration);
-                        let upper_dots_width = upper_dots as f32 * DOT_WIDTH;
+                        let upper_dots_nr = duration_get_dots(&upper.0.duration);
+                        let upper_dots_width = upper_dots_nr as f32 * DOT_WIDTH;
 
                         let lower_head_width = match duration_get_headshape(&lower.0.duration) {
                             HeadShape::BlackHead => HEAD_WIDTH_BLACK,
@@ -147,29 +152,49 @@ impl<'a> Complex<'a> {
                             HeadShape::WholeHead => HEAD_WIDTH_WIDE,
                         };
 
-                        let lower_dots = duration_get_dots(&lower.0.duration);
-                        let lower_dots_width = lower_dots as f32 * DOT_WIDTH;
+                        let lower_dots_nr = duration_get_dots(&lower.0.duration);
+                        let lower_dots_width = lower_dots_nr as f32 * DOT_WIDTH;
+
+                        let dots_info = Some(DotsInfo::DotsOnNotes(
+                            upper.0.get_dots_info(),
+                            lower.0.get_dots_info(),
+                        ));
 
                         if level_diff < 0 {
                             // upper is lower than lower
-                            ComplexNotesOverlap::UpperRight(lower_head_width + lower_dots_width)
+                            (
+                                ComplexNotesOverlap::UpperRight(
+                                    lower_head_width + lower_dots_width,
+                                ),
+                                dots_info,
+                            )
                         } else if level_diff == 0 {
                             // same level
                             let same_duration = upper.0.duration == lower.0.duration;
                             if same_duration {
-                                ComplexNotesOverlap::None
+                                (ComplexNotesOverlap::None, dots_info)
                             } else {
-                                ComplexNotesOverlap::UpperRight(lower_head_width + lower_dots_width)
+                                (
+                                    ComplexNotesOverlap::UpperRight(
+                                        lower_head_width + lower_dots_width,
+                                    ),
+                                    dots_info,
+                                )
                             }
                         } else if level_diff == 1 {
                             // lower is one lower than upper
-                            ComplexNotesOverlap::LowerRight(upper_head_width + lower_dots_width)
+                            (
+                                ComplexNotesOverlap::LowerRight(
+                                    upper_head_width + lower_dots_width,
+                                ),
+                                dots_info,
+                            )
                         } else {
                             // level_diff > 1
-                            ComplexNotesOverlap::None
+                            (ComplexNotesOverlap::None, dots_info)
                         }
                     }
-                    _ => ComplexNotesOverlap::None,
+                    _ => (ComplexNotesOverlap::None, None),
                 };
                 overlap
             }
@@ -177,7 +202,15 @@ impl<'a> Complex<'a> {
     }
 }
 
-fn add_heads_rects<'a>(
+fn add_dots_rects<'a>(
+    mut rects: Vec<NRectExt<'a>>,
+    note: &NoteExt<'a>,
+    note_overlap: f32,
+) -> Vec<NRectExt<'a>> {
+    rects
+}
+
+fn add_note_rects<'a>(
     mut rects: Vec<NRectExt<'a>>,
     note: &NoteExt<'a>,
     note_overlap: f32,
@@ -188,8 +221,9 @@ fn add_heads_rects<'a>(
             let note_head_type = duration_get_headtype(&note.0.duration);
             let note_shape = duration_get_headshape(&note.0.duration);
             let duration = note.0.duration;
-            let dots_duration = duration_get_dots(&duration) as f32 * DOT_WIDTH;
-            let note_width: f32 = duration_get_headwidth(&note.0.duration) + dots_duration;
+            let dots_width = duration_get_dots(&duration) as f32 * DOT_WIDTH;
+            let note_width: f32 = duration_get_headwidth(&note.0.duration) + dots_width;
+
             if let Some(placements) = note.0.get_heads_placements(&note.1.unwrap()) {
                 for placement in placements {
                     let (level, place, head) = placement;
@@ -200,6 +234,7 @@ fn add_heads_rects<'a>(
                         note_width,
                         SPACE,
                     );
+
                     rects.push(NRectExt(rect, NRectType::Head(note_head_type, note_shape)));
                 }
             }

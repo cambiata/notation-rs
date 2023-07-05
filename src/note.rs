@@ -1,4 +1,4 @@
-use crate::{chord::ChordItem, dynamic::DynamicItem, prelude::*};
+use crate::{chord::ChordItem, dynamic::DynamicItem, heads, prelude::*};
 
 use serde::{Deserialize, Serialize};
 use std::{sync::atomic::AtomicUsize, sync::atomic::Ordering};
@@ -136,6 +136,26 @@ impl Note {
                 }
             };
         }
+        None
+    }
+
+    pub fn get_dots_info(self: &Note) -> Option<DotsInfoItems> {
+        let dots = duration_get_dots(&self.duration);
+        if dots == 0 {
+            return None;
+        }
+
+        match &self.ntype {
+            NoteType::Heads(heads) => {
+                let mut result: Vec<(i8, u8)> = Vec::new();
+                for head in heads {
+                    result.push((head.level, dots));
+                }
+                return Some(result);
+            }
+            _ => {}
+        }
+
         None
     }
 

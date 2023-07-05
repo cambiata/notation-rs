@@ -6,18 +6,16 @@
 #![allow(clippy::uninlined_format_args)]
 #![allow(clippy::useless_format)]
 
-use std::collections::HashMap;
-
-use notation_rs::prelude::*;
-use notation_rs::quick::QCode;
-
 use graphics::item::Fill::Fillstyle;
 use graphics::prelude::*;
+use notation_rs::prelude::*;
+use notation_rs::quick::QCode;
+use std::collections::HashMap;
 
 fn main() -> notation_rs::prelude::Result<()> {
     const COMPLEX_WIDTH: f32 = 100.;
 
-    let voices = QCode::voices("nv1 0 % nv4 0 ").unwrap();
+    let voices = QCode::voices("nv4dot 0 % nv2dot 1 ").unwrap();
 
     let voices_beamings = beamings_from_voices(
         &voices,

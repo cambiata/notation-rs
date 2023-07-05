@@ -328,6 +328,18 @@ pub enum PauseShape {
     ThirtySecond,
 }
 
+// #[derive(Debug)]
+pub type DotsInfoItem = (i8, u8);
+
+// #[derive(Debug)]
+pub type DotsInfoItems = Vec<DotsInfoItem>;
+
+#[derive(Debug)]
+pub enum DotsInfo {
+    DotsOnNote(Option<DotsInfoItems>),
+    DotsOnNotes(Option<DotsInfoItems>, Option<DotsInfoItems>),
+}
+
 #[cfg(test)]
 mod tests {
 

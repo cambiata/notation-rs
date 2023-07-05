@@ -34,6 +34,7 @@ impl Heads {
     pub fn get_levels(&self) -> Vec<i8> {
         self.items.iter().map(|item| item.level).collect()
     }
+  
 }
 
 impl<'a> IntoIterator for &'a Heads {
