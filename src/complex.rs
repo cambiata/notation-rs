@@ -113,10 +113,10 @@ impl<'a> Complex<'a> {
         Some(heads_rects)
     }
 
-    const OVERLAP_NORMAL_HEAD: f32 = 1.0;
-    const OVERLAP_WIDE_HEAD: f32 = 1.5;
-    const OVERLAP_SPACE: f32 = 0.1;
-    const OVERLAP_DIAGONAL_SPACE: f32 = -0.5;
+    // const OVERLAP_NORMAL_HEAD: f32 = 1.0;
+    // const OVERLAP_WIDE_HEAD: f32 = 1.5;
+    // const OVERLAP_SPACE: f32 = 0.1;
+    // const OVERLAP_DIAGONAL_SPACE: f32 = -0.5;
 
     pub fn get_notes_overlap_type(&self) -> ComplexNotesOverlap {
         match &self.ctype {
@@ -131,34 +131,39 @@ impl<'a> Complex<'a> {
                     [NoteType::Heads(upper_heads), NoteType::Heads(lower_heads)] => {
                         let level_diff =
                             lower_heads.get_level_top() - upper_heads.get_level_bottom();
+
                         let upper_head_width = match duration_get_headshape(&upper.0.duration) {
                             HeadShape::BlackHead => HEAD_WIDTH_BLACK,
                             HeadShape::WhiteHead => HEAD_WIDTH_WHITE,
                             HeadShape::WholeHead => HEAD_WIDTH_WIDE,
                         };
+
+                        let upper_dots = duration_get_dots(&upper.0.duration);
+                        let upper_dots_width = upper_dots as f32 * DOT_WIDTH;
+
                         let lower_head_width = match duration_get_headshape(&lower.0.duration) {
                             HeadShape::BlackHead => HEAD_WIDTH_BLACK,
                             HeadShape::WhiteHead => HEAD_WIDTH_WHITE,
                             HeadShape::WholeHead => HEAD_WIDTH_WIDE,
                         };
 
+                        let lower_dots = duration_get_dots(&lower.0.duration);
+                        let lower_dots_width = lower_dots as f32 * DOT_WIDTH;
+
                         if level_diff < 0 {
                             // upper is lower than lower
-                            ComplexNotesOverlap::UpperRight(upper_head_width + Self::OVERLAP_SPACE)
+                            ComplexNotesOverlap::UpperRight(lower_head_width + lower_dots_width)
                         } else if level_diff == 0 {
                             // same level
                             let same_duration = upper.0.duration == lower.0.duration;
                             if same_duration {
                                 ComplexNotesOverlap::None
                             } else {
-                                ComplexNotesOverlap::UpperRight(
-                                    // lower_head_width + Self::OVERLAP_SPACE,
-                                    lower_head_width,
-                                )
+                                ComplexNotesOverlap::UpperRight(lower_head_width + lower_dots_width)
                             }
                         } else if level_diff == 1 {
                             // lower is one lower than upper
-                            ComplexNotesOverlap::LowerRight(upper_head_width)
+                            ComplexNotesOverlap::LowerRight(upper_head_width + lower_dots_width)
                         } else {
                             // level_diff > 1
                             ComplexNotesOverlap::None
@@ -182,7 +187,9 @@ fn add_heads_rects<'a>(
         NoteType::Heads(_) => {
             let note_head_type = duration_get_headtype(&note.0.duration);
             let note_shape = duration_get_headshape(&note.0.duration);
-            let note_width: f32 = duration_get_headwidth(&note.0.duration);
+            let duration = note.0.duration;
+            let dots_duration = duration_get_dots(&duration) as f32 * DOT_WIDTH;
+            let note_width: f32 = duration_get_headwidth(&note.0.duration) + dots_duration;
             if let Some(placements) = note.0.get_heads_placements(&note.1.unwrap()) {
                 for placement in placements {
                     let (level, place, head) = placement;
@@ -193,7 +200,6 @@ fn add_heads_rects<'a>(
                         note_width,
                         SPACE,
                     );
-
                     rects.push(NRectExt(rect, NRectType::Head(note_head_type, note_shape)));
                 }
             }
