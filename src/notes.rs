@@ -16,7 +16,7 @@ impl Notes {
         }
     }
 
-    pub fn get_note_positions(&self) -> Vec<(&Note, usize, usize)> {
+    pub fn get_notes_info(&self) -> Vec<(&Note, usize, usize)> {
         // note, pos, endpos
         let mut pos: usize = 0;
         let mut end: usize = 0;
@@ -37,12 +37,11 @@ impl Notes {
         self.into_iter()
     }
 
-    pub fn get_note_idx(&self, idx: usize) -> Result<&Note> {
+    pub fn get_note_at_idx(&self, idx: usize) -> Result<&Note> {
         self.items
             .get(idx)
             .ok_or(Generic(format!("Note index {} out fo bounds", idx)).into())
     }
-
 }
 
 impl<'a> IntoIterator for &'a Notes {
@@ -157,7 +156,7 @@ mod tests {
     fn notes_positions() {
         let notes = QCode::notes("0 1 2 3").unwrap();
 
-        for n in notes.get_note_positions() {
+        for n in notes.get_notes_info() {
             println!("v:{:?}", n);
         }
     }

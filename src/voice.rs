@@ -30,7 +30,7 @@ impl Voice {
                 "Can not get note from VoiceType::VBarpause".to_string(),
             )
             .into()),
-            VoiceType::VNotes(ref notes) => notes.get_note_idx(idx),
+            VoiceType::VNotes(ref notes) => notes.get_note_at_idx(idx),
         }
     }
 }

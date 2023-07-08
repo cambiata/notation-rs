@@ -195,9 +195,9 @@ pub type HeadsPlacement<'a> = Vec<(i8, &'a HeadPlacement, &'a Head)>;
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub enum NoteType {
     Heads(Heads),
-    Pause,
+    Pause,get_note_at_idx
     Slash,
-    Lyric(Syllable),
+    Lyric(Syllable),get_note_at_idx
     Dynamic(DynamicItem),
     Chord(ChordItem),
     Spacer,

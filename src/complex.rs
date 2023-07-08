@@ -368,11 +368,11 @@ pub fn complexes_from_voices<'a>(
                     let min_duration = notes1.duration.min(notes2.duration);
 
                     let mut map1: HashMap<usize, &Note> = HashMap::new();
-                    for np in notes1.get_note_positions() {
+                    for np in notes1.get_notes_info() {
                         map1.insert(np.1, np.0);
                     }
                     let mut map2: HashMap<usize, &Note> = HashMap::new();
-                    for np in notes2.get_note_positions() {
+                    for np in notes2.get_notes_info() {
                         map2.insert(np.1, np.0);
                     }
 

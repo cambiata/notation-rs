@@ -169,7 +169,7 @@ pub fn beamings_from_notes<'a>(
         BeamingPattern::NoBeams => {
             let mut beaming_items: BeamingItems = vec![];
             // let mut items: Vec<BeamingItem> = vec![];
-            for (note, pos, endpos) in notes.get_note_positions() {
+            for (note, pos, endpos) in notes.get_notes_info() {
                 let btype: BeamingItemType = match note.ntype {
                     NoteType::Heads(_) => BeamingItemType::None(note),
                     NoteType::Pause => BeamingItemType::None(note),
@@ -217,7 +217,7 @@ pub fn beamings_from_notes<'a>(
             let mut note_group: Vec<&Note> = vec![];
             let mut note_group_start: usize = 0;
 
-            for note_pos in notes.get_note_positions() {
+            for note_pos in notes.get_notes_info() {
                 let (note, note_start, note_end) = note_pos;
                 if note_end <= cycle_end {
                     // println!("note fits in cycle");

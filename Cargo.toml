@@ -13,4 +13,5 @@ thiserror = "1.0.40"
 
 
 [dev-dependencies]
-graphics = { path = "../../GRAPHICS/graphics" }
+# graphics = { path = "../../GRAPHICS/graphics" }
+graphics = { path = "../graphics" }
