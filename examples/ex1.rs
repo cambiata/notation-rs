@@ -15,7 +15,7 @@ use std::collections::HashMap;
 fn main() -> notation_rs::prelude::Result<()> {
     const COMPLEX_WIDTH: f32 = 100.;
 
-    let voices = QCode::voices("nv4dot 0 % nv2dot 1 ").unwrap();
+    let voices = QCode::voices("nv4dot 0,-1,-3 % nv2dot 1,0 ").unwrap();
 
     let voices_beamings = beamings_from_voices(
         &voices,
@@ -81,6 +81,17 @@ fn next2graphic(n: NRectExt) -> GraphicItem {
                 Fillstyle(Black),
             )
         }
+        NRectType::Dotted(dots_nr) => {
+            let p = CADENZA_DOT.to_vec();
+            Path(
+                PathSegments(p)
+                    .inv01()
+                    .move_path(r.0 + SPACE_QUARTER, r.1 + SPACE_QUARTER),
+                NoStroke,
+                Fillstyle(Black),
+            )
+        }
+
         NRectType::Pause(pause_type) => {
             //
             let p = match pause_type {

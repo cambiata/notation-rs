@@ -97,8 +97,37 @@ impl<'a> Complex<'a> {
                 // --------------------------------------------------
                 rects = add_note_rects(rects, upper, upper_overlap, 2. * -SPACE_HALF);
                 rects = add_note_rects(rects, lower, lower_overlap, 2. * SPACE_HALF);
+
+                // dots ---------------------------------------------
+                // let upper_dots_info: Option<DotsInfoItems> = upper.0.get_dots_info();
+                // let lower_dots_info: Option<DotsInfoItems> = lower.0.get_dots_info();
+                // let same_duration = upper.0.duration == lower.0.duration;
+                // match [&upper_dots_info, &lower_dots_info] {
+                //     [None, None] => {
+                //         println!("No dots")
+                //     }
+                //     [None, Some(dots)] => {
+                //         println!("Dots on lower")
+                //     }
+                //     [Some(dots), None] => {
+                //         println!("Dots on upper")
+                //     }
+                //     [Some(upper_dots), Some(lower_dots)] => {
+                //         for dot in upper_dots {
+                //             let (dot_level, nr_of_dots) = dot;
+                //             rects = add_dots_rects(rects, *dot_level, *nr_of_dots, upper_overlap);
+                //         }
+                //         for dot in lower_dots {
+                //             let (dot_level, nr_of_dots) = dot;
+                //             rects = add_dots_rects(rects, *dot_level, *nr_of_dots, lower_overlap);
+                //         }
+
+                //         println!("Dots on both")
+                //     }
+                // }
+                // dbg!(&upper_dots_info, &lower_dots_info, &same_duration);
+                //----------------------------------------------------
                 rects
-                // None
             }
 
             ComplexType::BarpauseNote(_, note) => {
@@ -162,30 +191,25 @@ impl<'a> Complex<'a> {
 
                         if level_diff < 0 {
                             // upper is lower than lower
-                            (
-                                ComplexNotesOverlap::UpperRight(
-                                    lower_head_width + lower_dots_width,
-                                ),
-                                dots_info,
-                            )
+                            (ComplexNotesOverlap::UpperRight(lower_head_width), dots_info)
                         } else if level_diff == 0 {
                             // same level
                             let same_duration = upper.0.duration == lower.0.duration;
                             if same_duration {
                                 (ComplexNotesOverlap::None, dots_info)
                             } else {
-                                (
-                                    ComplexNotesOverlap::UpperRight(
-                                        lower_head_width + lower_dots_width,
-                                    ),
-                                    dots_info,
-                                )
+                                (ComplexNotesOverlap::UpperRight(lower_head_width), dots_info)
                             }
                         } else if level_diff == 1 {
+                            // let lower_adjust_x = match duration_get_headtype(&upper.0.duration) {
+                            //     HeadType::NormalHead => -SPACE_QUARTER,
+                            //     HeadType::WideHead => 0.0,
+                            // };
+
                             // lower is one lower than upper
                             (
                                 ComplexNotesOverlap::LowerRight(
-                                    upper_head_width + lower_dots_width,
+                                    upper_head_width + upper_dots_width,
                                 ),
                                 dots_info,
                             )
@@ -204,9 +228,14 @@ impl<'a> Complex<'a> {
 
 fn add_dots_rects<'a>(
     mut rects: Vec<NRectExt<'a>>,
-    note: &NoteExt<'a>,
+    dot_level: i8,
+    nr_of_dots: u8,
     note_overlap: f32,
 ) -> Vec<NRectExt<'a>> {
+    println!(
+        "add dots rects: dot_level:{}, nr_of_dots:{}, overlap:{}",
+        dot_level, nr_of_dots, note_overlap
+    );
     rects
 }
 
@@ -221,8 +250,9 @@ fn add_note_rects<'a>(
             let note_head_type = duration_get_headtype(&note.0.duration);
             let note_shape = duration_get_headshape(&note.0.duration);
             let duration = note.0.duration;
-            let dots_width = duration_get_dots(&duration) as f32 * DOT_WIDTH;
-            let note_width: f32 = duration_get_headwidth(&note.0.duration) + dots_width;
+            let dots_nr: u8 = duration_get_dots(&duration);
+            let dots_width = dots_nr as f32 * DOT_WIDTH;
+            let note_width: f32 = duration_get_headwidth(&note.0.duration);
 
             if let Some(placements) = note.0.get_heads_placements(&note.1.unwrap()) {
                 for placement in placements {
@@ -236,6 +266,16 @@ fn add_note_rects<'a>(
                     );
 
                     rects.push(NRectExt(rect, NRectType::Head(note_head_type, note_shape)));
+
+                    if dots_nr > 0 {
+                        let rect: NRect = NRect::new(
+                            (place.as_f32() * note_width) + note_width + note_overlap,
+                            level as f32 * SPACE_HALF - SPACE_QUARTER,
+                            SPACE,
+                            SPACE_HALF,
+                        );
+                        rects.push(NRectExt(rect, NRectType::Dotted(dots_nr)));
+                    }
                 }
             }
         }

@@ -312,6 +312,7 @@ pub struct NRectExt<'a>(pub NRect, pub NRectType<'a>);
 #[derive(Debug)]
 pub enum NRectType<'a> {
     Head(&'a HeadType, &'a HeadShape),
+    Dotted(u8),
     Pause(&'a PauseShape),
     Clef,
     Accidental(&'a Accidental),
