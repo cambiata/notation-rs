@@ -17,7 +17,8 @@ fn main() -> notation_rs::prelude::Result<()> {
     // let voices =
     //     QCode::voices("nv2 p p p p p p p -3# -2 -1 0 1 2 3 % nv2 -3 -2 -1 0 1 2 3 p p p p p p p")
     //         .unwrap();
-    let voices = QCode::voices("0 $lyr:abc").unwrap();
+
+    let voices = QCode::voices("#3,0n $lyr:abc").unwrap();
     let mut part = Part::new(PartType::Voices(voices));
     part.set_voice_notes_references();
     part.create_beamgroups(BeamingPattern::NValues(vec![NV4]));

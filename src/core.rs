@@ -192,9 +192,11 @@ impl NRect {
         let mut result = 0.0;
         for nrect in nrects {
             let overlap = self.overlap_x(&nrect.0);
-            let overlap_value = overlap.unwrap();
-            if overlap.is_some() && overlap_value > result {
-                result = overlap.unwrap();
+
+            if let Some(overlap_value) = overlap {
+                if overlap_value > result {
+                    result = overlap_value;
+                };
             }
         }
         result
