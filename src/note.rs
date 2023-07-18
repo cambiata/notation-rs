@@ -1,223 +1,186 @@
-use crate::{chord::ChordItem, dynamic::DynamicItem, heads, prelude::*};
+use std::fmt::Formatter;
 
-use serde::{Deserialize, Serialize};
-use std::{sync::atomic::AtomicUsize, sync::atomic::Ordering};
+use crate::prelude::*;
 
-static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
+#[derive(Debug, PartialEq, Eq)]
+pub enum NoteType {
+    Heads(crate::head::Heads),
+    Pause,
+    // Slash,
+    Lyric(Syllable),
+    // Dynamic(DynamicItem),
+    // Chord(ChordItem),
+    // Spacer,
+}
 
-use crate::heads::Heads;
-
-#[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
+#[derive(PartialEq, Eq)]
 pub struct Note {
-    pub id: usize,
-    pub duration: Duration,
     pub ntype: NoteType,
+    pub duration: Duration,
     pub attr: NoteAttributes,
+
+    pub id: usize,
+    //-------------------------------------------
+    // calculated
+    pub position: Position,
+    pub end_position: Position,
+
+    pub voice: Option<Rc<RefCell<Voice>>>,
+
+    pub beamgroup: Option<Rc<RefCell<Beamgroup>>>,
+
+    pub direction: Option<DirUD>,
 }
 
 impl Note {
-    pub fn from_heads(duration: usize, heads: Heads) -> Note {
-        Note::new(
+    pub fn new(mut ntype: NoteType, duration: Duration) -> Self {
+        Self {
+            id: ID_COUNTER.fetch_add(1, Ordering::Relaxed),
+            ntype,
             duration,
-            NoteType::Heads(heads),
-            NoteAttributes { color: None },
-        )
+            attr: NoteAttributes { color: None },
+            position: 0,
+            end_position: 0,
+            beamgroup: None,
+            voice: None,
+            direction: None,
+        }
     }
 
-    pub fn new(duration: usize, ntype: NoteType, attr: NoteAttributes) -> Note {
-        Note {
-            id: ID_COUNTER.fetch_add(1, Ordering::Relaxed),
-            duration,
-            ntype,
-            attr,
+    pub fn has_stem(&self) -> bool {
+        match &self.ntype {
+            NoteType::Heads(heads) => duration_has_stem(&self.duration),
+            _ => false,
         }
     }
 
     pub fn is_beamable(self: &Note) -> bool {
         match self.ntype {
-            // normal note
-            NoteType::Heads(_) => duration_is_beamable(self.duration),
+            NoteType::Heads(_) => duration_is_beamable(&self.duration),
             _ => false,
         }
     }
 
-    pub fn get_heads_top(self: &Note) -> i8 {
-        match self.ntype {
-            NoteType::Heads(ref heads) => heads.get_level_top(),
+    pub fn head_levels(&self) -> Vec<i8> {
+        match &self.ntype {
+            NoteType::Heads(heads) => heads.levels(),
+            _ => Vec::new(),
+        }
+    }
+
+    pub fn top_level(&self) -> i8 {
+        match &self.ntype {
+            NoteType::Heads(heads) => heads.top,
             _ => 0,
         }
     }
 
-    pub fn get_heads_bottom(self: &Note) -> i8 {
-        match self.ntype {
-            NoteType::Heads(ref heads) => heads.get_level_bottom(),
+    pub fn bottom_level(&self) -> i8 {
+        match &self.ntype {
+            NoteType::Heads(heads) => heads.bottom,
             _ => 0,
         }
     }
 
-    pub fn get_heads_placements<'a>(self: &Note, dir: &DirUD) -> Option<HeadsPlacement> {
-        if let NoteType::Heads(ref heads) = self.ntype {
-            let levels = heads.get_levels();
-            if levels.len() == 1 {
-                return Some(vec![(levels[0], &HeadPlacement::Center, &heads.items[0])]);
-            }
-            //------------------------------------------------------------
-            let mut result: HeadsPlacement = Vec::new();
-            return match dir {
-                DirUD::Up => {
-                    for (idx, level_pair) in levels
-                        .into_iter()
-                        .rev()
-                        .collect::<Vec<i8>>()
-                        .windows(2)
-                        .enumerate()
-                    {
-                        let lower_level = level_pair[0];
-                        let upper_level = level_pair[1];
-                        let diff = lower_level - upper_level;
-                        let head = &heads.items[idx];
-
-                        if idx == 0 {
-                            result.push((lower_level, &HeadPlacement::Center, head));
-                            if diff < 2 {
-                                result.push((upper_level, &HeadPlacement::Right, head));
-                            } else {
-                                result.push((upper_level, &HeadPlacement::Center, head));
-                            }
-                        } else {
-                            let (current_level, current_placement, head) = &result[idx];
-                            match diff {
-                                0 | 1 => {
-                                    if let HeadPlacement::Center = current_placement {
-                                        result.push((upper_level, &HeadPlacement::Right, head));
-                                    } else {
-                                        result.push((upper_level, &HeadPlacement::Center, head));
-                                    }
-                                }
-                                _ => {
-                                    result.push((upper_level, &HeadPlacement::Center, head));
-                                }
-                            }
-                        }
-                    }
-                    Some(result)
-                }
-                DirUD::Down => {
-                    for (idx, level_pair) in levels.windows(2).enumerate() {
-                        let upper_level = level_pair[0];
-                        let lower_level = level_pair[1];
-                        let diff = lower_level - upper_level;
-                        let head = &heads.items[idx];
-
-                        if idx == 0 {
-                            result.push((upper_level, &HeadPlacement::Center, head));
-                            if diff < 2 {
-                                result.push((lower_level, &HeadPlacement::Left, head));
-                            } else {
-                                result.push((lower_level, &HeadPlacement::Center, head));
-                            }
-                        } else {
-                            let (current_level, current_placement, _) = &result[idx];
-                            match diff {
-                                0 | 1 => {
-                                    if let HeadPlacement::Center = current_placement {
-                                        result.push((lower_level, &HeadPlacement::Left, head));
-                                    } else {
-                                        result.push((lower_level, &HeadPlacement::Center, head));
-                                    }
-                                }
-                                _ => {
-                                    result.push((lower_level, &HeadPlacement::Center, head));
-                                }
-                            }
-                        }
-                    }
-                    Some(result)
-                }
-            };
+    pub fn levels_accidentals(&self) -> Vec<(i8, Accidental)> {
+        match &self.ntype {
+            NoteType::Heads(heads) => heads.levels_accidentals(),
+            _ => Vec::new(),
         }
-        None
     }
+}
 
-    pub fn get_dots_info(self: &Note) -> Option<DotsInfoItems> {
-        let dots = duration_get_dots(&self.duration);
-        if dots == 0 {
-            return None;
-        }
+#[derive(Debug, PartialEq, Eq, Hash)]
+pub enum SyllableType {
+    Text(String),
+    TextWithHyphen(String),
+    Hyphen,
+    Extension(i32), // length
+}
 
+#[derive(Debug, PartialEq, Eq, Hash)]
+pub struct Syllable {
+    pub syllable_type: SyllableType,
+}
+
+impl Syllable {
+    pub fn new(syllable_type: SyllableType) -> Self {
+        Self { syllable_type }
+    }
+}
+
+impl Debug for Note {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match &self.ntype {
             NoteType::Heads(heads) => {
-                let mut result: Vec<(i8, u8)> = Vec::new();
-                for head in heads {
-                    result.push((head.level, dots));
-                }
-                return Some(result);
+                write!(
+                    f,
+                    "Note id:{} pos:{} end:{} dur:{} heads:{:?}",
+                    self.id, self.position, self.end_position, self.duration, heads
+                )
             }
-            _ => {}
-        }
-
-        None
-    }
-
-    pub fn get_accidentals(self: &Note) -> Option<Vec<(i8, &Accidental)>> {
-        if let NoteType::Heads(ref heads) = self.ntype {
-            let mut result: Vec<(i8, &Accidental)> = Vec::new();
-            for head in heads {
-                if let Some(accidental) = &head.accidental {
-                    result.push((head.level, accidental));
-                }
+            NoteType::Pause => {
+                write!(
+                    f,
+                    "Note PAUSE id:{} pos:{} end:{} dur:{} pause",
+                    self.id, self.position, self.end_position, self.duration
+                )
             }
-            return Some(result);
-        }
-        None
-    }
-}
-
-#[derive(Debug, Clone)]
-pub enum HeadPlacement {
-    Left,
-    Center,
-    Right,
-}
-
-impl HeadPlacement {
-    pub fn as_f32(self: &HeadPlacement) -> f32 {
-        match self {
-            HeadPlacement::Left => -1.0,
-            HeadPlacement::Center => 0.0,
-            HeadPlacement::Right => 1.0,
+            // NoteType::Lyric(syllable) => {
+            //     write!(
+            //         f,
+            //         "Note LYRIC id:{} pos:{} end:{} dur:{} lyric:{:?}",
+            //         self.id, self.position, self.end_position, self.duration, syllable
+            //     )
+            // }
+            _ => {
+                write!(
+                    f,
+                    "Note OTHER TYPE id:{} pos:{} end:{} dur:{}",
+                    self.id, self.position, self.end_position, self.duration
+                )
+            }
         }
     }
 }
 
-pub type HeadsPlacement<'a> = Vec<(i8, &'a HeadPlacement, &'a Head)>;
-
-#[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
-pub enum NoteType {
-    Heads(Heads),
-    Pause,
-    Slash,
-    Lyric(Syllable),
-    Dynamic(DynamicItem),
-    Chord(ChordItem),
-    Spacer,
+#[derive(Debug, PartialEq, Eq)]
+pub struct Notes {
+    pub items: Vec<Rc<RefCell<Note>>>,
+    pub duration: Duration,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
+impl Notes {
+    pub fn new(items: Vec<Note>) -> Self {
+        let items: Vec<Rc<RefCell<Note>>> = items
+            .into_iter()
+            .map(|item| Rc::new(RefCell::new(item)))
+            .collect();
+
+        let duration = items.iter().fold(0, |acc, item| {
+            let mut item_mut = item.borrow_mut();
+            item_mut.position = acc;
+            item_mut.end_position = acc + item_mut.duration;
+            acc + item_mut.duration
+        });
+
+        Self { items, duration }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub struct NoteAttributes {
     pub color: Option<u16>,
 }
 
 #[cfg(test)]
-mod tests {
+mod tests2 {
     use crate::prelude::*;
-
     #[test]
     fn example() {
-        let notes = QCode::notes("4,3,0,-2 -2,-3,0,2").unwrap();
-        let note0 = notes.get_note_idx(0).unwrap();
-        dbg!(note0.get_heads_placements(&DirUD::Up));
-        let note1 = notes.get_note_idx(1).unwrap();
-        dbg!(note1.get_heads_placements(&DirUD::Down));
+        let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3").unwrap();
+        // let json = serde_json::to_string_pretty(&notes).unwrap();
+        // println!("{}", json);
+        // let notes2 = serde_json::from_str::<Notes>(&json).unwrap();
     }
 }

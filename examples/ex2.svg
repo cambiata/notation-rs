@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 161 121">
+    <rect x="0.5" y="0.5" width="10" height="20" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="0.5" y="50.5" width="10" height="20" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="0.5" y="100.5" width="10" height="20" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="50.5" y="0.5" width="10" height="10" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="50.5" y="50.5" width="10" height="10" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="50.5" y="100.5" width="10" height="10" stroke="blue" stroke-width="1" fill="none"/>
+    <ellipse cx="105.5" cy="5.5" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="100.5" y="50.5" width="10" height="10" stroke="blue" stroke-width="1" fill="none"/>
+    <ellipse cx="105.5" cy="105.5" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
+    <ellipse cx="155.5" cy="5.5" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
+    <ellipse cx="155.5" cy="55.5" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="150.5" y="100.5" width="10" height="10" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="0" y="0" width="161" height="121" stroke="black" stroke-width="1" fill="none"/>
+</svg>

@@ -1,6 +1,6 @@
 use std::num::ParseIntError;
 
-use crate::{core::Accidental, prelude::*};
+use crate::prelude::*;
 
 pub fn parse_string_to_int(s: &str) -> Result<isize> {
     let mut s2 = "".to_string();
@@ -36,16 +36,23 @@ pub fn parse_accidental(s: &str) -> Option<Accidental> {
     if s.contains('#') {
         return Some(Accidental::Sharp);
     }
+    if s.contains('n') {
+        return Some(Accidental::Natural);
+    }
     None
 }
 
-#[allow(unused_imports)]
-#[cfg(test)]
-mod tests {
-    use super::parse_string_to_int;
-    #[test]
-    fn test() {
-        let i = parse_string_to_int("abc 3 21 xyz").unwrap();
-        assert_eq!(i, 321);
+pub fn parse_tie(s: &str) -> Option<Tie> {
+    if s.contains("_") {
+        return Some(Tie::Standard);
     }
+    None
+}
+
+pub fn rect_x(rect: &NRect, nrects: Vec<NRectExt>) -> f32 {
+    for nrect in &nrects {
+        let cmp: NRect = nrect.0;
+    }
+
+    0.0
 }

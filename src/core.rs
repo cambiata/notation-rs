@@ -1,160 +1,58 @@
-use crate::{head::HeadType, prelude::*};
-use serde::{Deserialize, Serialize};
+use crate::prelude::*;
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Hash)]
+pub const SPACE: f32 = 25.0;
+pub const SPACE_HALF: f32 = SPACE / 2.0;
+pub const SPACE_QUARTER: f32 = SPACE / 4.0;
+pub const HEAD_WIDTH_BLACK: f32 = 1.3 * SPACE;
+pub const HEAD_WIDTH_WHITE: f32 = 1.35 * SPACE;
+pub const HEAD_WIDTH_WIDE: f32 = 1.65 * SPACE;
+pub const DOT_WIDTH: f32 = 0.8 * SPACE;
+pub const STEM_WIDTH: f32 = 2.5;
+pub const FONT_SCALE_LYRICS: f32 = 0.08;
+
+pub const RELATIVE_SPCACING_FACTOR: f32 = 30.0;
+pub const LINEAR_SPACING_FACTOR: f32 = 10.0;
+pub const SAME_SPACING_FACTOR: f32 = 10.0;
+
+//------------------------------------------------------------
+pub const LINE: f32 = 2.7;
+//------------------------------------------------------------
+pub const NOTELINES_WIDTH: f32 = 1.0 * LINE;
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub enum Accidental {
     DblSharp,
     Sharp,
-    Neutral,
+    Natural,
     Flat,
     DblFlat,
 }
 
-// #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq, Hash)]
-// pub enum Duration {
-//     Nv1dot = 144,
-//     Nv1 = 96,
-//     Nv2dot = 72,
-//     Nv2 = 48,
-//     Nv4dot = 36,
-//     Nv2tri = 32,
-//     Nv4 = 24,
-//     Nv8dot = 18,
-//     Nv4tri = 16,
-//     Nv8 = 12,
-//     Nv16dot = 9,
-//     Nv8tri = 8,
-//     Nv16 = 6,
-//     Nv32 = 3,
-// }
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub enum Tie {
+    Standard,
+    LetRing,
+}
 
-// impl Duration {
-//     pub fn from_str(s: &str) -> Option<Duration> {
-//         match s.to_lowercase().as_str() {
-//             "nv1dot" => Some(Self::Nv1dot),
-//             "nv1." => Some(Self::Nv1dot),
-//             "nv1" => Some(Self::Nv1),
-//             "nv2dot" => Some(Self::Nv2dot),
-//             "nv2." => Some(Self::Nv2dot),
-//             "nv2" => Some(Self::Nv2),
-//             "nv2tri" => Some(Self::Nv2tri),
-//             "nv4dot" => Some(Self::Nv4dot),
-//             "nv4." => Some(Self::Nv4dot),
-//             "nv4" => Some(Self::Nv4),
-//             "nv8dot" => Some(Self::Nv8dot),
-//             "nv8." => Some(Self::Nv8dot),
-//             "nv4tri" => Some(Self::Nv4tri),
-//             "nv8" => Some(Self::Nv8),
-//             "nv16dot" => Some(Self::Nv16dot),
-//             "nv16." => Some(Self::Nv16dot),
-//             "nv8tri" => Some(Self::Nv8tri),
-//             "nv16" => Some(Self::Nv16),
-//             "nv32" => Some(Self::Nv32),
-//             _ => {
-//                 println!("Unimplemented note value:{}", s);
-//                 None
-//             }
-//         }
-//     }
+//============================================================
 
-//     pub fn is_beamable(self: Duration) -> bool {
-//         match self {
-//             Self::Nv8 | Self::Nv8dot | Self::Nv8tri | Self::Nv16 | Self::Nv16dot | Self::Nv32 => {
-//                 true
-//             }
-//             _ => false,
-//         }
-//     }
-// }
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
+pub enum DirUD {
+    Up,
+    Down,
+}
 
-// impl From<usize> for Duration {
-//     fn from(val: usize) -> Self {
-//         match val {
-//             144 => Self::Nv1dot,
-//             96 => Self::Nv1,
-//             72 => Self::Nv2dot,
-//             48 => Self::Nv2,
-//             36 => Self::Nv4dot,
-//             32 => Self::Nv2tri,
-//             24 => Self::Nv4,
-//             18 => Self::Nv8dot,
-//             16 => Self::Nv4tri,
-//             12 => Self::Nv8,
-//             9 => Self::Nv16dot,
-//             6 => Self::Nv16,
-//             8 => Self::Nv8tri,
-//             3 => Self::Nv32,
-//             _ => {
-//                 panic!("Unimplemented note value:{}", val);
-//             }
-//         }
-//     }
-// }
-
-// impl From<Duration> for usize {
-//     fn from(val: Duration) -> Self {
-//         match val {
-//             Duration::Nv1dot => 144,
-//             Duration::Nv1 => 96,
-//             Duration::Nv2dot => 72,
-//             Duration::Nv2 => 48,
-//             Duration::Nv4dot => 36,
-//             Duration::Nv2tri => 32,
-//             Duration::Nv4 => 24,
-//             Duration::Nv8dot => 18,
-//             Duration::Nv4tri => 16,
-//             Duration::Nv8 => 12,
-//             Duration::Nv16dot => 9,
-//             Duration::Nv8tri => 8,
-//             Duration::Nv16 => 6,
-//             Duration::Nv32 => 3,
-//         }
-//     }
-// }
-
-// pub trait NValueItem {
-//     fn val(&self) -> u32;
-// }
-
-// struct NValueIterator<'a> {
-//     pos: usize,
-//     idx: usize,
-//     items: Vec<&'a dyn NValueItem>,
-// }
-
-// impl<'a> NValueIterator<'a> {
-//     fn new(items: Vec<&'a dyn NValueItem>) -> Self {
-//         Self {
-//             pos: 0,
-//             idx: 0,
-//             items,
-//         }
-//     }
-// }
-
-// impl<'a> Iterator for NValueIterator<'a> {
-//     type Item = &'a dyn NValueItem;
-//     fn next(&mut self) -> Option<Self::Item> {
-//         if self.idx < self.items.len() - 1 {
-//             let item = self.items[self.idx];
-//             self.idx += 1;
-//             return Some(item);
-//         }
-//         None
-//     }
-// }
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug)]
 pub enum DirUAD {
     Up,
     Auto,
     Down,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub enum DirUD {
-    Up,
-    Down,
-}
+//============================================================
+
+pub type Duration = usize;
+pub type Position = usize;
 
 pub const NV1DOT: usize = 144;
 pub const NV1: usize = 96;
@@ -172,9 +70,21 @@ pub const NV16: usize = 6;
 pub const NV16TRI: usize = 4;
 pub const NV32: usize = 3;
 
-pub type Duration = usize;
-
-pub type Position = usize;
+// 144
+// 96
+// 72
+// 48
+// 36
+// 32
+// 24
+// 18
+// 16
+// 12
+// 9
+// 8
+// 6
+// 4
+// 3
 
 pub fn duration_from_str(s: &str) -> Result<Duration> {
     match s.to_lowercase().as_str() {
@@ -214,10 +124,17 @@ pub fn duration_from(v: usize) -> Result<Duration> {
     }
 }
 
-pub fn duration_is_beamable(dur: usize) -> bool {
-    match dur {
+pub fn duration_is_beamable(duration: &Duration) -> bool {
+    match *duration {
         NV8 | NV8DOT | NV8TRI | NV16 | NV16DOT | NV32 => true,
         _ => false,
+    }
+}
+
+pub fn duration_has_stem(duration: &Duration) -> bool {
+    match *duration {
+        NV1DOT | NV1 => false,
+        _ => true,
     }
 }
 
@@ -251,48 +168,7 @@ pub fn duration_get_dots(duration: &Duration) -> u8 {
     }
 }
 
-// pub const SPACING_FACTOR: f32 = 8.0;
-// pub const HEAD_WIDTH_NORMAL: f32 = 3.0 * SPACING_FACTOR;
-// pub const HEAD_WIDTH_WHOLE: f32 = 4.0 * SPACING_FACTOR;
-
-// #[derive(Clone, Copy, Debug)]
-// pub struct Spacing(f32);
-
-// impl Spacing {
-//     pub fn new(v: f32) -> Self {
-//         Self(v)
-//     }
-// }
-
-// impl From<f32> for Spacing {
-//     fn from(v: f32) -> Self {
-//         Self(v * SPACING_FACTOR)
-//     }
-// }
-
-// impl From<usize> for Spacing {
-//     fn from(v: usize) -> Self {
-//         Self((v as f32) * SPACING_FACTOR)
-//     }
-// }
-
-// impl From<i8> for Spacing {
-//     fn from(v: i8) -> Self {
-//         Self((v as f32) * SPACING_FACTOR)
-//     }
-// }
-// impl From<i32> for Spacing {
-//     fn from(v: i32) -> Self {
-//         Self((v as f32) * SPACING_FACTOR)
-//     }
-// }
-
-// impl From<Spacing> for f32 {
-//     fn from(v: Spacing) -> Self {
-//         println!("From<Spacing> for f32 {:?}", v);
-//         v.0 / SPACING_FACTOR
-//     }
-// }
+//============================================================
 
 #[derive(Clone, Copy, Debug)]
 pub struct NRect(pub f32, pub f32, pub f32, pub f32);
@@ -301,22 +177,157 @@ impl NRect {
     pub fn new(x: f32, y: f32, w: f32, h: f32) -> Self {
         Self(x, y, w, h)
     }
-    // pub fn from_spacing(x: Spacing, y: Spacing, w: Spacing, h: Spacing) -> Self {
-    //     Self(x.0, y.0, w.0, h.0)
+
+    // pub fn overlap_x(&self, right: &Self) -> f32 {
+    //     if self.1 + self.3 <= right.1 {
+    //         return 0.0;
+    //     }
+    //     if self.1 >= right.1 + right.3 {
+    //         return 0.0;
+    //     }
+    //     return (self.0 + self.2) - right.0;
     // }
+
+    pub fn overlap_multi_nrectexts_x(&self, nrects: &Vec<NRectExt>) -> f32 {
+        let mut result = 0.0;
+        for nrect in nrects {
+            let overlap = self.overlap_x(&nrect.0);
+            let overlap_value = overlap.unwrap();
+            if overlap.is_some() && overlap_value > result {
+                result = overlap.unwrap();
+            }
+        }
+        result
+    }
+
+    pub fn overlap_x(&self, right: &Self) -> Option<f32> {
+        if self.1 + self.3 <= right.1 {
+            return None;
+        }
+        if self.1 >= right.1 + right.3 {
+            return None;
+        }
+        return Some(self.0 + self.2 - right.0);
+    }
+
+    pub fn move_rect(&self, x: f32, y: f32) -> Self {
+        Self(self.0 + x, self.1 + y, self.2, self.3)
+    }
+}
+pub struct NRects(pub Vec<NRect>);
+
+impl NRects {
+    pub fn new(nrects: Vec<NRect>) -> Self {
+        Self(nrects)
+    }
+
+    pub fn move_nrects(&self, x: f32, y: f32) -> Self {
+        let mut result = Vec::new();
+        for nrect in self.0.iter() {
+            result.push(nrect.move_rect(x, y));
+        }
+        Self(result)
+    }
+
+    pub fn overlap_x(&self, rights: &Self) -> Option<f32> {
+        let mut result: Option<f32> = None;
+        for left in self.0.iter() {
+            for right in rights.0.iter() {
+                let overlap = left.overlap_x(&right);
+                dbg!(overlap);
+                match [overlap.is_some(), result.is_some()] {
+                    [true, true] => {
+                        if overlap.unwrap() > result.unwrap() {
+                            result = overlap;
+                        }
+                    }
+                    [true, false] => {
+                        result = overlap;
+                    }
+                    _ => {}
+                }
+            }
+        }
+        dbg!(result);
+        result
+    }
 }
 
 #[derive(Debug)]
-pub struct NRectExt<'a>(pub NRect, pub NRectType<'a>);
+pub struct NRectExt(pub NRect, pub NRectType);
+
+impl NRectExt {
+    pub fn new(nrect: NRect, nrect_type: NRectType) -> Self {
+        Self(nrect, nrect_type)
+    }
+}
+
+//============================================================
+
+pub trait Spacing {
+    fn duration(duration: &Duration) -> f32;
+}
+
+pub struct SpacingLinear {}
+
+impl Spacing for SpacingLinear {
+    fn duration(duration: &Duration) -> f32 {
+        *duration as f32 * LINEAR_SPACING_FACTOR
+    }
+}
+
+pub struct SpacingRelative {}
+
+impl Spacing for SpacingRelative {
+    fn duration(duration: &Duration) -> f32 {
+        let v = match duration {
+            0 => 0.0,
+            144 => 8.0, //NV1DOT
+            96 => 7.0,  // NV1 =>
+            72 => 6.0,  // NV2DOT =>
+            48 => 5.0,  // NV2 =>
+            36 => 4.0,  // NV4DOT =>
+            32 => 2.75, // NV2TRI =>
+            24 => 3.5,  // NV4 =>
+            18 => 3.0,  // NV8DOT =>
+            16 => 2.75, // NV4TRI =>
+            12 => 2.5,  // NV8 =>
+            9 => 2.35,  // NV16DOT =>
+            8 => 2.15,  // NV8TRI =>
+            6 => 2.0,   // NV16 =>
+            4 => 1.75,  // NV16TRI =>
+            3 => 1.5,   // NV32 =>
+            _ => {
+                todo!("Unknown spacing duration: {}", duration);
+            }
+        };
+        v * RELATIVE_SPCACING_FACTOR
+    }
+}
+
+pub struct SpacingEqual {}
+
+impl Spacing for SpacingEqual {
+    fn duration(duration: &Duration) -> f32 {
+        4.0 * SAME_SPACING_FACTOR
+    }
+}
 
 #[derive(Debug)]
-pub enum NRectType<'a> {
-    Head(&'a HeadType, &'a HeadShape),
+pub enum NRectType {
+    Head(HeadType, HeadShape),
     Dotted(u8),
-    Pause(&'a PauseShape),
+    Pause(PauseShape),
     Clef,
-    Accidental(&'a Accidental),
-    WIP(&'a str),
+    Accidental(Accidental),
+    Tie(Tie),
+    LyricChar(char),
+    WIP(String),
+    DevStem,
+    DUMMY,
+    Dev(bool, String),
+    // DevRectRed,
+    // DevRectBlue,
 }
 
 #[derive(Debug)]
@@ -329,42 +340,35 @@ pub enum PauseShape {
     ThirtySecond,
 }
 
-// #[derive(Debug)]
-pub type DotsInfoItem = (i8, u8);
+#[cfg(test)]
+mod tests2 {
+    use super::*;
+    use crate::prelude::*;
+    #[test]
+    fn overlap() {
+        let left = NRect::new(0.0, 0.0, 10.0, 10.0);
+        let right = NRect::new(5.0, 0.0, 10.0, 10.0);
+        let overlap_x = left.overlap_x(&right);
+        dbg!(overlap_x);
+    }
 
-// #[derive(Debug)]
-pub type DotsInfoItems = Vec<DotsInfoItem>;
+    #[test]
+    fn overlap2() {
+        let lefts = NRects(vec![
+            NRect::new(0.0, 0.0, 10.0, 10.0),
+            NRect::new(0.0, 10.0, 10.0, 10.0),
+        ]);
 
-#[derive(Debug)]
-pub enum DotsInfo {
-    DotsOnNote(Option<DotsInfoItems>),
-    DotsOnNotes(Option<DotsInfoItems>, Option<DotsInfoItems>),
+        let rights = NRects(vec![
+            NRect::new(20.0, 0.0, 10.0, 10.0),
+            NRect::new(5.0, 10.0, 10.0, 10.0),
+        ]);
+
+        let overlap_x = lefts.overlap_x(&rights);
+        // dbg!(overlap_x);
+    }
 }
 
-#[cfg(test)]
-mod tests {
-
-    use crate::prelude::*;
-
-    #[test]
-    fn example() {
-        let _notes = QCode::notes("nv4 0 nv8 1 nv2 2");
-    }
-
-    #[test]
-    fn nvalues() {
-        assert_eq!(NV4, 24);
-    }
-
-    #[test]
-    fn nvalues2() {
-        let _v = duration_from(333);
-    }
-
-    // #[test]
-    // fn spacing() {
-    //     let s: Spacing = Spacing::new(16.0);
-    //     let f: f32 = s.into();
-    //     dbg!(f);
-    // }
+fn r10() -> NRect {
+    NRect(0.0, 0.0, 10.0, 10.0)
 }

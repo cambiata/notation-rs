@@ -1,97 +1,72 @@
-use crate::{error::NotationError, prelude::*};
+use std::collections::HashMap;
 
-#[derive(Debug)]
+use crate::prelude::*;
+
+#[derive(Debug, PartialEq, Eq)]
 pub struct Voice {
     pub duration: Duration,
     pub vtype: VoiceType,
-    pub attr: VoiceAttributes,
+    // pub attr: VoiceAttributes,
+    pub beamgroups: Option<Beamgroups>,
 }
 
 impl Voice {
-    pub fn new(vtype: VoiceType, attr: VoiceAttributes) -> Self {
-        let duration: Duration = match vtype {
-            VoiceType::VBarpause(ref bp) => match bp {
-                BarPause(Some(val)) => *val,
-                BarPause(None) => 0,
-            },
-            VoiceType::VNotes(ref notes) => notes.duration,
+    pub fn new(vtype: VoiceType) -> Self {
+        let duration: Duration = match &vtype {
+            VoiceType::Barpause(v) => v.unwrap_or(0),
+            VoiceType::Notes(notes) => notes.duration,
         };
-
         Self {
             duration,
             vtype,
-            attr,
+            beamgroups: None,
         }
     }
 
-    pub fn get_note_idx(&self, idx: usize) -> Result<&Note> {
-        match self.vtype {
-            VoiceType::VBarpause(_) => Err(NotationError::Generic(
-                "Can not get note from VoiceType::VBarpause".to_string(),
-            )
-            .into()),
-            VoiceType::VNotes(ref notes) => notes.get_note_at_idx(idx),
+    pub fn create_beamgroups(&mut self, pattern: &BeamingPattern) {
+        match &self.vtype {
+            VoiceType::Notes(notes) => {
+                let beamgroups = get_beamgroups(&notes, pattern).unwrap();
+
+                for (beamgroup_idx, beamgroup) in beamgroups.iter().enumerate() {
+                    for note in beamgroup.borrow().notes.iter() {
+                        note.borrow_mut().beamgroup = Some(beamgroup.clone());
+                    }
+                }
+                self.beamgroups = Some(beamgroups);
+            }
+            VoiceType::Barpause(_) => {}
         }
     }
 }
 
-// pub type Voices = Vec<Voice>;
-
-#[derive(Debug)]
-pub struct BarPause(pub Option<usize>);
-
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum VoiceType {
-    VBarpause(BarPause), // val
-    VNotes(Notes),
+    Barpause(Option<Duration>), // val
+    Notes(Notes),
 }
 
 #[derive(Debug)]
 pub struct VoiceAttributes {}
 
-// pub type Voices = (Option<Voice>, Option<Voice>);
-#[derive(Debug)]
-pub enum Voices {
-    Two(Voice, Voice),
-    One(Voice),
-}
-
-impl Voices {
-    pub fn get_note(&self, voice_idx: usize, note_idx: usize) -> Result<&Note> {
-        match self {
-            Voices::Two(upper, lower) => match voice_idx {
-                0 => upper.get_note_idx(note_idx as usize),
-                1 => lower.get_note_idx(note_idx as usize),
-                _ => Err(NotationError::Generic("Voice index out of bounds".to_string()).into()),
-            },
-            Voices::One(voice) => {
-                if voice_idx > 0 {
-                    return Err(
-                        NotationError::Generic("Voice index out of bounds".to_string()).into(),
-                    );
-                }
-                voice.get_note_idx(note_idx as usize)
-            }
-        }
-    }
-}
-
 #[cfg(test)]
-mod tests {
-    use super::VoiceType::{VBarpause, VNotes};
-    use super::*;
-    use crate::quick::QCode;
+mod tests2 {
+    use crate::prelude::*;
 
     #[test]
-    fn voice() {
+    fn example() {
         let notes = QCode::notes("nv8 0 1 2 nv16 3 2 0 1 0 1 nv8dot 2 3").unwrap();
-        let voice = Voice::new(VNotes(notes), VoiceAttributes {});
-        println!("voice:{:?}", voice);
+        let voice = Voice::new(VoiceType::Notes(notes)); // VoiceAttributes
     }
-
     #[test]
     fn voice2() {
-        let voice = Voice::new(VBarpause(BarPause(Some(NV1))), VoiceAttributes {});
+        let voice = Voice::new(VoiceType::Barpause(Some(NV1))); // VoiceAttributes
         println!("voice:{:?}", voice);
+    }
+
+    #[test]
+    fn voice3() {
+        let mut voice = QCode::voice("nv8 0 0 0").unwrap();
+        voice.create_beamgroups(&BeamingPattern::NValues(vec![NV4]));
     }
 }
