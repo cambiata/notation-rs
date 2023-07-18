@@ -4,7 +4,7 @@ pub struct SomeCloneables<T>
 where
     T: Clone,
 {
-    items: Vec<Option<T>>,
+    pub items: Vec<Option<T>>,
 }
 
 //----------------------------------------------------------------
