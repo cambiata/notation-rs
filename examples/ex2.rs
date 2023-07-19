@@ -24,12 +24,9 @@ fn main() {
     //---------------------------------------------------------------------
 
     let mut items = GraphicItems::new();
-
     let mut x = 0.0;
     for col in &matrix.cols {
         let col = col.borrow();
-        dbg!(&col.duration, &col.spacing);
-
         let mut y = 0.0;
         let mut rowidx = 0;
         for item in &col.items {
@@ -52,10 +49,10 @@ fn main() {
                 items.push(graphic_item);
             }
             let row = &matrix.get_row(rowidx).unwrap().borrow();
-            y += row.spacing_y;
+            y += row.distance_y;
             rowidx += 1;
         }
-        x += col.spacing;
+        x += col.distance_x;
     }
 
     let svg = SvgBuilder::new().build(items).unwrap();

@@ -56,7 +56,7 @@ pub fn matrix_test2() -> RMatrix {
     let col1 = RCol::new(
         vec![
             Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(0.0, 0.0, 10.0, 30.0)],
+                vec![NRect::new(-10.0, 0.0, 20.0, 10.0)],
                 NV2,
             )))),
             Some(Rc::new(RefCell::new(RItem::new(r10(), NV4)))),
@@ -89,7 +89,7 @@ pub fn matrix_test2() -> RMatrix {
     let col4 = RCol::new(
         vec![
             Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(0.0, 0.0, 10.0, 50.0)],
+                vec![NRect::new(0.0, 0.0, 10.0, 40.0)],
                 NV2,
             )))),
             Some(Rc::new(RefCell::new(RItem::new(
@@ -124,15 +124,11 @@ pub fn matrix_test2() -> RMatrix {
 
 //----------------------------------------------------------------
 
-// use graphics::item;
-
-// use graphics::{glyphs::ebgaramond::*, prelude::*};
 use crate::{
     prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT, types::some_cloneables::SomeCloneablePairs,
 };
 
 use crate::prelude::NRect;
-// use render_notation::render::dev::*;
 
 pub fn r10() -> Vec<NRect> {
     vec![NRect::new(0.0, 0.0, 10.0, 10.0)]
@@ -169,8 +165,8 @@ impl RItem {
 pub struct RCol {
     pub duration: Duration,
     pub items: Vec<Option<Rc<RefCell<RItem>>>>,
-    pub spacing: f32,
-    pub col_idx: usize,
+    pub distance_x: f32,
+    // pub col_idx: usize,
 }
 
 impl RCol {
@@ -178,8 +174,8 @@ impl RCol {
         Self {
             items,
             duration: duration.unwrap_or(0),
-            spacing: 0.0,
-            col_idx: 0,
+            distance_x: 0.0,
+            // col_idx: 0,
         }
     }
 }
@@ -187,16 +183,12 @@ impl RCol {
 #[derive(Debug)]
 pub struct RRow {
     pub items: Vec<Option<Rc<RefCell<RItem>>>>,
-    pub row_idx: usize,
-    pub spacing_y: f32,
+    // pub row_idx: usize,
+    pub distance_y: f32,
 }
 impl RRow {
-    fn new(items: Vec<Option<Rc<RefCell<RItem>>>>, spacing_y: f32, row_idx: usize) -> Self {
-        Self {
-            items,
-            spacing_y,
-            row_idx,
-        }
+    fn new(items: Vec<Option<Rc<RefCell<RItem>>>>, distance_y: f32) -> Self {
+        Self { items, distance_y }
     }
 }
 
@@ -223,8 +215,7 @@ impl RMatrix {
         let mut colidx = 0;
         for col in &colitems {
             let col: &RefCell<RCol> = col;
-            // set column index
-            col.borrow_mut().col_idx = colidx;
+
             // check for rows integrity
             if col.borrow().items.len() != *row_count {
                 panic!("part_count mismatch");
@@ -253,14 +244,10 @@ impl RMatrix {
             colidx += 1;
         }
 
-        let mut rowidx = 0;
         for ritems in rowitems {
-            let row = RRow::new(ritems, 0.0, rowidx);
+            let row = RRow::new(ritems, 0.0);
             rows.push(Rc::new(RefCell::new(row)));
-            rowidx += 1;
         }
-
-        dbg!(rows.len());
 
         Self {
             cols: colitems,
@@ -287,7 +274,7 @@ impl RMatrix {
         // spacing based on duration
         for col in self.cols.iter() {
             let mut col = col.borrow_mut();
-            col.spacing = spacing_fn(&col.duration);
+            col.distance_x = spacing_fn(&col.duration);
         }
 
         // spacing correction based on overlap
@@ -312,11 +299,11 @@ impl RMatrix {
 
                         let spacing = if (right_idx - 1) != left_idx.unwrap() {
                             let mut prev_col = self.get_column(right.col_idx - 1).unwrap().borrow();
-                            overlap_spacing - prev_col.spacing
+                            overlap_spacing - prev_col.distance_x
                         } else {
                             overlap_spacing
                         };
-                        left_col.spacing = left_col.spacing.max(spacing);
+                        left_col.distance_x = left_col.distance_x.max(spacing);
                     }
 
                     [Some(left), None] => {
@@ -345,7 +332,6 @@ impl RMatrix {
             let mut colx = 0.0;
             let row = row.borrow();
             let mut itemrects: Vec<NRect> = Vec::new();
-            println!("==========================");
             for (colidx, item) in row.items.iter().enumerate() {
                 let col = self.get_column(colidx).unwrap().borrow();
                 if let Some(item) = item {
@@ -355,9 +341,8 @@ impl RMatrix {
                         itemrects.push(rect);
                     }
                 };
-                colx += col.spacing;
+                colx += col.distance_x;
             }
-            dbg!(&itemrects);
             rowrects.push(itemrects);
         }
 
@@ -365,12 +350,9 @@ impl RMatrix {
         for pair in rowrects.windows(2) {
             let (uppers, lowers) = (&pair[0], &pair[1]);
 
-            dbg!(uppers);
-            dbg!(lowers);
-
             let overlap = nrects_overlap_y(uppers, lowers).unwrap_or(0.0);
             let mut row = self.get_row(rowidx).unwrap().borrow_mut();
-            row.spacing_y = row.spacing_y.max(overlap);
+            row.distance_y = row.distance_y.max(overlap);
             rowidx += 1;
         }
     }
