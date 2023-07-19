@@ -3,7 +3,7 @@ use crate::prelude::*;
 use crate::beamgroup::calc::*;
 mod calc;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq)]
 pub struct Beamgroup {
     pub notes: Vec<Rc<RefCell<Note>>>,
     pub duration: usize,

@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use crate::prelude::{fonts::ebgaramond::GLYPH_HEIGHT, *};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Part {
     pub ptype: PartType,
     pub duration: Duration,
@@ -696,7 +696,8 @@ fn create_lyric_rectangles(
                     let mut char_widths = Vec::new();
 
                     for char in s.chars() {
-                        let char_width = crate::render::fonts::ebgaramond::glyph_widths(char) * FONT_SCALE_LYRICS; // use the width of the current character
+                        let char_width = crate::render::fonts::ebgaramond::glyph_widths(char)
+                            * FONT_SCALE_LYRICS; // use the width of the current character
                         char_widths.push(char_width);
                         total_width += char_width;
                     }
@@ -736,14 +737,14 @@ fn create_lyric_rectangles(
     Ok(rects)
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum PartType {
     Voices(Voices),
     RepeatBar(u8),
     Other,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Voices {
     One(Rc<RefCell<Voice>>),
     Two(Rc<RefCell<Voice>>, Rc<RefCell<Voice>>),

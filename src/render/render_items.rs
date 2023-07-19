@@ -87,7 +87,7 @@ pub fn matrix_test2() -> RMatrix {
         vec![
             Some(Rc::new(RefCell::new(RItem::new(r10(), NV2)))),
             Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(-20.0, 0.0, 40.0, 5.0)],
+                vec![NRect::new(-20.0, 10.0, 40.0, 5.0)],
                 NV4,
             )))),
             //
@@ -119,9 +119,11 @@ pub fn matrix_test2() -> RMatrix {
 //----------------------------------------------------------------
 
 // use graphics::{glyphs::ebgaramond::*, prelude::*};
-use notation_rs::{
+use crate::{
     prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT, types::some_cloneables::SomeCloneablePairs,
 };
+
+use crate::prelude::NRect;
 // use render_notation::render::dev::*;
 
 pub fn r10() -> Vec<NRect> {
@@ -259,7 +261,7 @@ impl RMatrix {
                         let overlap_spacing: f32 =
                             nrects_overlap_x(&left.rects, &right.rects).unwrap_or(0.0);
 
-                        let spacing = if ((right_idx - 1) != left_idx.unwrap()) {
+                        let spacing = if (right_idx - 1) != left_idx.unwrap() {
                             let mut prev_col = self.get_column(right.col_idx - 1).unwrap().borrow();
                             overlap_spacing - prev_col.spacing
                         } else {
@@ -287,5 +289,3 @@ impl RMatrix {
         }
     }
 }
-
-fn main() {}

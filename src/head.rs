@@ -162,13 +162,13 @@ pub struct HeadAttributes {
     // pub accidental: Option<Accidental>,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum HeadType {
     NormalHead,
     WideHead,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum HeadShape {
     BlackHead,
     WhiteHead,

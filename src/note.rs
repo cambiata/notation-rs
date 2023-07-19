@@ -2,7 +2,7 @@ use std::fmt::Formatter;
 
 use crate::prelude::*;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq)]
 pub enum NoteType {
     Heads(crate::head::Heads),
     Pause,
@@ -13,7 +13,7 @@ pub enum NoteType {
     // Spacer,
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq)]
 pub struct Note {
     pub ntype: NoteType,
     pub duration: Duration,
@@ -98,7 +98,7 @@ pub enum SyllableType {
     Extension(i32), // length
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq)]
 pub struct Syllable {
     pub syllable_type: SyllableType,
 }
@@ -144,7 +144,7 @@ impl Debug for Note {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq)]
 pub struct Notes {
     pub items: Vec<Rc<RefCell<Note>>>,
     pub duration: Duration,

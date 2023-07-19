@@ -7,6 +7,7 @@
 #![allow(clippy::useless_format)]
 
 use crate::prelude::*;
+pub mod bar;
 pub mod beamgroup;
 pub mod calc;
 pub mod complex;

@@ -170,7 +170,7 @@ pub fn duration_get_dots(duration: &Duration) -> u8 {
 
 //============================================================
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct NRect(pub f32, pub f32, pub f32, pub f32);
 
 impl NRect {
@@ -278,7 +278,7 @@ pub fn nrects_overlap_x(lefts: &Vec<NRect>, rights: &Vec<NRect>) -> Option<f32> 
     result
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct NRectExt(pub NRect, pub NRectType);
 
 impl NRectExt {
@@ -332,7 +332,7 @@ pub fn duration_equal(duration: &Duration) -> f32 {
 
 //============================================================
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum NRectType {
     Head(HeadType, HeadShape),
     Dotted(u8),
@@ -349,7 +349,7 @@ pub enum NRectType {
     // DevRectBlue,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum PauseShape {
     Whole,
     Half,

@@ -2,7 +2,7 @@ use std::fmt::Formatter;
 
 use crate::prelude::*;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Complex {
     // pub notes: Vec<Rc<RefCell<Note>>>,
     pub ctype: ComplexType,
@@ -82,7 +82,7 @@ impl Complex {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum ComplexType {
     Single(Rc<RefCell<Note>>),
     //
@@ -95,7 +95,7 @@ pub enum ComplexType {
     Lower(Rc<RefCell<Note>>, bool),
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum ComplexXAdjustment {
     UpperRight(f32),
     LowerRight(f32),

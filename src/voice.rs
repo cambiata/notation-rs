@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::prelude::*;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq)]
 pub struct Voice {
     pub duration: Duration,
     pub vtype: VoiceType,
@@ -40,7 +40,7 @@ impl Voice {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq)]
 pub enum VoiceType {
     Barpause(Option<Duration>), // val
     Notes(Notes),
