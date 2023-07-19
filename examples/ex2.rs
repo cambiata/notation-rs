@@ -16,7 +16,8 @@ use notation_rs::{
 use render_notation::render::dev::*;
 
 fn main() {
-    let matrix = matrix_test1();
+    let matrix = matrix_test2();
+    matrix.calculate_col_spacing(SPACING_RELATIVE);
 
     //---------------------------------------------------------------------
 
@@ -49,7 +50,7 @@ fn main() {
             }
             y += 30.0;
         }
-        x += 30.0;
+        x += col.spacing;
     }
 
     let svg = SvgBuilder::new().build(items).unwrap();
@@ -60,6 +61,8 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
+    use core::panic;
+
     use crate::testdata::*;
     use graphics::{glyphs::ebgaramond::*, prelude::*};
     use notation_rs::{
@@ -70,33 +73,94 @@ mod tests {
 
     #[test]
     fn example() {
-        let matrix = matrix_test1();
+        let matrix = matrix_test2();
+        matrix.calculate_col_spacing(SPACING_LINEAR);
+        // for row in &matrix.rowitems {
+        //     // dbg!(row);
+        //     let pairs = SomeCloneablePairs { items: row.clone() };
+        //     for (left, left_idx, right, right_idx) in pairs.into_iter() {
+        //         //println!("==========================");
+        //         match [&left, &right] {
+        //             [Some(left), Some(right)] => {
+        //                 let left = left.borrow_mut();
+        //                 let right = right.borrow_mut();
+        //                 // let right_col = &matrix.get_column_clone(right.col_idx);
+        //                 let spacing_overlap: f32 =
+        //                     nrects_overlap_x(&left.rects, &right.rects).unwrap_or(0.0);
+        //                 let spacing_duration = SPACING_LINEAR(&left.duration);
 
-        let row0 = &matrix.rowitems[0];
-        let pairs = SomeCloneablePairs {
-            items: row0.clone(),
-        };
+        //                 let mut left_col =
+        //                     matrix.get_column_clone(left.col_idx).unwrap().borrow_mut();
+        //                 let max: f32 = f32::max(spacing_overlap, spacing_duration);
+        //                 left_col.spacing = max;
+        //             }
 
-        for (left, left_idx, right, right_idx) in pairs.into_iter() {
-            // dbg!(&right.unwrap().borrow_mut());
+        //             [Some(left), None] => {
+        //                 panic!("Should not happen - right should always be Some(T)");
+        //             }
+        //             [None, Some(right)] => {
+        //                 let right = right.borrow();
+        //                 let right_col = &matrix.get_column_clone(right.col_idx);
+        //                 if let Some(right_col) = right_col {
+        //                     let right_col_mut = right_col.borrow_mut();
+        //                 }
+        //             }
 
-            match [&left, &right] {
-                [Some(left), Some(right)] => {
-                    let left = left.borrow();
-                    let right = right.borrow();
-                    dbg!(&left.row_idx, &left.col_idx);
-                    dbg!(&right.row_idx, &right.col_idx);
-                }
-                [Some(left), None] => {
-                    let left = left.borrow();
-                    dbg!(&left.row_idx, &left.col_idx);
-                }
-                [None, Some(right)] => {
-                    let right = right.borrow();
-                    dbg!(&right.row_idx, &right.col_idx);
-                }
-                [None, None] => {}
-            }
+        //             [None, None] => {
+        //                 panic!("Should not happen - right should always be Some(T)");
+        //             }
+        //         }
+        //     }
+        // }
+    }
+
+    // fn calculate_col_spacing(matrix: &RMatrix, spacing_fn: SpacingFn) {
+    //     for row in &matrix.rowitems {
+    //         // dbg!(row);
+    //         let pairs = SomeCloneablePairs { items: row.clone() };
+    //         for (left, left_idx, right, right_idx) in pairs.into_iter() {
+    //             //println!("==========================");
+    //             match [&left, &right] {
+    //                 [Some(left), Some(right)] => {
+    //                     let left = left.borrow_mut();
+    //                     let right = right.borrow_mut();
+    //                     // let left_col = &matrix.get_column_clone(left.col_idx);
+    //                     // let right_col = &matrix.get_column_clone(right.col_idx);
+    //                     let spacing_overlap: f32 =
+    //                         nrects_overlap_x(&left.rects, &right.rects).unwrap_or(0.0);
+    //                     let spacing_duration = SPACING_LINEAR(&left.duration);
+
+    //                     let mut left_col =
+    //                         matrix.get_column_clone(left.col_idx).unwrap().borrow_mut();
+    //                     let max: f32 = f32::max(spacing_overlap, spacing_duration);
+    //                     left_col.spacing = max;
+    //                 }
+
+    //                 [Some(left), None] => {
+    //                     panic!("Should not happen - right should always be Some(T)");
+    //                 }
+    //                 [None, Some(right)] => {
+    //                     let right = right.borrow();
+    //                     let right_col = &matrix.get_column_clone(right.col_idx);
+    //                     if let Some(right_col) = right_col {
+    //                         let right_col_mut = right_col.borrow_mut();
+    //                     }
+    //                 }
+
+    //                 [None, None] => {
+    //                     panic!("Should not happen - right should always be Some(T)");
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    #[test]
+    fn signature() {
+        fn test(dur: usize) -> f32 {
+            10.0
         }
+
+        let t: fn(usize) -> f32 = test;
     }
 }

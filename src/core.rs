@@ -10,9 +10,9 @@ pub const DOT_WIDTH: f32 = 0.8 * SPACE;
 pub const STEM_WIDTH: f32 = 2.5;
 pub const FONT_SCALE_LYRICS: f32 = 0.08;
 
-pub const RELATIVE_SPCACING_FACTOR: f32 = 30.0;
-pub const LINEAR_SPACING_FACTOR: f32 = 10.0;
-pub const SAME_SPACING_FACTOR: f32 = 10.0;
+pub const RELATIVE_SPCACING_FACTOR: f32 = 8.0;
+pub const LINEAR_SPACING_FACTOR: f32 = 1.0;
+pub const SAME_SPACING_FACTOR: f32 = 1.0;
 
 //------------------------------------------------------------
 pub const LINE: f32 = 2.7;
@@ -255,6 +255,29 @@ impl NRects {
     }
 }
 
+pub fn nrects_overlap_x(lefts: &Vec<NRect>, rights: &Vec<NRect>) -> Option<f32> {
+    let mut result: Option<f32> = None;
+    for left in lefts.iter() {
+        for right in rights.iter() {
+            let overlap = left.overlap_x(&right);
+            // dbg!(overlap);
+            match [overlap.is_some(), result.is_some()] {
+                [true, true] => {
+                    if overlap.unwrap() > result.unwrap() {
+                        result = overlap;
+                    }
+                }
+                [true, false] => {
+                    result = overlap;
+                }
+                _ => {}
+            }
+        }
+    }
+    // dbg!(result);
+    result
+}
+
 #[derive(Debug)]
 pub struct NRectExt(pub NRect, pub NRectType);
 
@@ -266,54 +289,48 @@ impl NRectExt {
 
 //============================================================
 
-pub trait Spacing {
-    fn duration(duration: &Duration) -> f32;
+pub type SpacingFn = fn(duration: &Duration) -> f32;
+
+pub const SPACING_LINEAR: SpacingFn = duration_linear;
+
+pub fn duration_linear(duration: &Duration) -> f32 {
+    *duration as f32 * LINEAR_SPACING_FACTOR
 }
 
-pub struct SpacingLinear {}
+pub const SPACING_RELATIVE: SpacingFn = duration_relative;
 
-impl Spacing for SpacingLinear {
-    fn duration(duration: &Duration) -> f32 {
-        *duration as f32 * LINEAR_SPACING_FACTOR
-    }
+pub fn duration_relative(duration: &Duration) -> f32 {
+    let v = match duration {
+        0 => 0.0,
+        144 => 8.0, //NV1DOT
+        96 => 7.0,  // NV1 =>
+        72 => 6.0,  // NV2DOT =>
+        48 => 5.0,  // NV2 =>
+        36 => 4.0,  // NV4DOT =>
+        32 => 2.75, // NV2TRI =>
+        24 => 3.5,  // NV4 =>
+        18 => 3.0,  // NV8DOT =>
+        16 => 2.75, // NV4TRI =>
+        12 => 2.5,  // NV8 =>
+        9 => 2.35,  // NV16DOT =>
+        8 => 2.15,  // NV8TRI =>
+        6 => 2.0,   // NV16 =>
+        4 => 1.75,  // NV16TRI =>
+        3 => 1.5,   // NV32 =>
+        _ => {
+            todo!("Unknown spacing duration: {}", duration);
+        }
+    };
+    v * RELATIVE_SPCACING_FACTOR
 }
 
-pub struct SpacingRelative {}
+pub const SPACEING_EQUAL: SpacingFn = duration_equal;
 
-impl Spacing for SpacingRelative {
-    fn duration(duration: &Duration) -> f32 {
-        let v = match duration {
-            0 => 0.0,
-            144 => 8.0, //NV1DOT
-            96 => 7.0,  // NV1 =>
-            72 => 6.0,  // NV2DOT =>
-            48 => 5.0,  // NV2 =>
-            36 => 4.0,  // NV4DOT =>
-            32 => 2.75, // NV2TRI =>
-            24 => 3.5,  // NV4 =>
-            18 => 3.0,  // NV8DOT =>
-            16 => 2.75, // NV4TRI =>
-            12 => 2.5,  // NV8 =>
-            9 => 2.35,  // NV16DOT =>
-            8 => 2.15,  // NV8TRI =>
-            6 => 2.0,   // NV16 =>
-            4 => 1.75,  // NV16TRI =>
-            3 => 1.5,   // NV32 =>
-            _ => {
-                todo!("Unknown spacing duration: {}", duration);
-            }
-        };
-        v * RELATIVE_SPCACING_FACTOR
-    }
+pub fn duration_equal(duration: &Duration) -> f32 {
+    4.0 * SAME_SPACING_FACTOR
 }
 
-pub struct SpacingEqual {}
-
-impl Spacing for SpacingEqual {
-    fn duration(duration: &Duration) -> f32 {
-        4.0 * SAME_SPACING_FACTOR
-    }
-}
+//============================================================
 
 #[derive(Debug)]
 pub enum NRectType {

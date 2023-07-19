@@ -44,6 +44,78 @@ pub fn matrix_test1() -> RMatrix {
     matrix
 }
 
+pub fn matrix_test2() -> RMatrix {
+    let col0 = RCol::new(
+        vec![
+            Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
+            Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
+            //
+        ],
+        None,
+    );
+    let col1 = RCol::new(
+        vec![
+            Some(Rc::new(RefCell::new(RItem::new(r10(), NV2)))),
+            Some(Rc::new(RefCell::new(RItem::new(r10(), NV4)))),
+            //
+        ],
+        Some(NV4),
+    );
+    let col2 = RCol::new(
+        vec![
+            None, //
+            Some(Rc::new(RefCell::new(RItem::new(
+                vec![NRect::new(0.0, 0.0, 40.0, 5.0)],
+                NV4,
+            )))),
+        ],
+        Some(NV4),
+    );
+    let col3 = RCol::new(
+        vec![
+            Some(Rc::new(RefCell::new(RItem::new(
+                vec![NRect::new(-0.0, 0.0, 20.0, 20.0)],
+                0,
+            )))),
+            // Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
+            None, //
+        ],
+        None,
+    );
+
+    let col4 = RCol::new(
+        vec![
+            Some(Rc::new(RefCell::new(RItem::new(r10(), NV2)))),
+            Some(Rc::new(RefCell::new(RItem::new(
+                vec![NRect::new(-20.0, 0.0, 40.0, 5.0)],
+                NV4,
+            )))),
+            //
+        ],
+        Some(NV2),
+    );
+
+    let col5 = RCol::new(
+        vec![
+            Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
+            // Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
+            None, //
+        ],
+        None,
+    );
+
+    let matrix = RMatrix::new(vec![
+        Rc::new(RefCell::new(col0)),
+        Rc::new(RefCell::new(col1)),
+        Rc::new(RefCell::new(col2)),
+        Rc::new(RefCell::new(col3)),
+        Rc::new(RefCell::new(col4)),
+        Rc::new(RefCell::new(col5)),
+    ]);
+
+    matrix
+}
+
 //----------------------------------------------------------------
 
 // use graphics::{glyphs::ebgaramond::*, prelude::*};
@@ -124,10 +196,8 @@ impl RMatrix {
         let mut colidx = 0;
         for col in &colitems {
             let col: &RefCell<RCol> = col;
-
             // set column index
             col.borrow_mut().col_idx = colidx;
-
             // check for rows integrity
             if col.borrow().rowitems.len() != *row_count {
                 panic!("part_count mismatch");
@@ -157,6 +227,64 @@ impl RMatrix {
             colidx += 1;
         }
         Self { colitems, rowitems }
+    }
+
+    pub fn get_column(&self, idx: usize) -> Option<&Rc<RefCell<RCol>>> {
+        if idx < self.colitems.len() {
+            return Some(&self.colitems[idx]);
+        }
+        None
+    }
+
+    pub fn calculate_col_spacing(&self, spacing_fn: SpacingFn) {
+        // spacing based on duration
+        for col in self.colitems.iter() {
+            let mut col = col.borrow_mut();
+            col.spacing = spacing_fn(&col.duration);
+        }
+
+        // spacing correction based on overlap
+        for row in self.rowitems.iter() {
+            let pairs = SomeCloneablePairs { items: row.clone() };
+            for (left, left_idx, right, right_idx) in pairs.into_iter() {
+                //println!("==========================");
+                match [&left, &right] {
+                    [Some(left), Some(right)] => {
+                        let left = left.borrow_mut();
+                        let right = right.borrow_mut();
+                        let mut left_col = self.get_column(left.col_idx).unwrap().borrow_mut();
+                        let mut right_col = self.get_column(right.col_idx).unwrap().borrow_mut();
+
+                        // calculate spacings...
+                        let overlap_spacing: f32 =
+                            nrects_overlap_x(&left.rects, &right.rects).unwrap_or(0.0);
+
+                        let spacing = if ((right_idx - 1) != left_idx.unwrap()) {
+                            let mut prev_col = self.get_column(right.col_idx - 1).unwrap().borrow();
+                            overlap_spacing - prev_col.spacing
+                        } else {
+                            overlap_spacing
+                        };
+                        left_col.spacing = left_col.spacing.max(spacing);
+                    }
+
+                    [Some(left), None] => {
+                        panic!("Should not happen - right should always be Some(T)");
+                    }
+                    [None, Some(right)] => {
+                        let right = right.borrow();
+                        let right_col = self.get_column(right.col_idx);
+                        if let Some(right_col) = right_col {
+                            let right_col_mut = right_col.borrow_mut();
+                        }
+                    }
+
+                    [None, None] => {
+                        panic!("Should not happen - right should always be Some(T)");
+                    }
+                }
+            }
+        }
     }
 }
 
