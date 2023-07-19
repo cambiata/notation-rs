@@ -11,12 +11,14 @@ use crate::testdata::*;
 
 use graphics::{glyphs::ebgaramond::*, prelude::*};
 use notation_rs::{
-    prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT, types::some_cloneables::SomeCloneables,
+    prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT, types::some_cloneables::SomeCloneablePairs,
 };
 use render_notation::render::dev::*;
 
 fn main() {
     let matrix = matrix_test1();
+
+    //---------------------------------------------------------------------
 
     let mut items = GraphicItems::new();
 
@@ -54,13 +56,47 @@ fn main() {
     std::fs::write("./examples/ex2.svg", svg).unwrap();
 
     //-----------------------------------------------------------------------
+}
 
-    // let row0 = &matrix.rowitems[0];
-    // let pairs = SomeCloneables {
-    //     items: row0.clone(),
-    // };
+#[cfg(test)]
+mod tests {
+    use crate::testdata::*;
+    use graphics::{glyphs::ebgaramond::*, prelude::*};
+    use notation_rs::{
+        prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT,
+        types::some_cloneables::SomeCloneablePairs,
+    };
+    use render_notation::render::dev::*;
 
-    // for (left, left_idx, right, right_idx) in pairs.into_iter() {
-    //     dbg!(left, right);
-    // }
+    #[test]
+    fn example() {
+        let matrix = matrix_test1();
+
+        let row0 = &matrix.rowitems[0];
+        let pairs = SomeCloneablePairs {
+            items: row0.clone(),
+        };
+
+        for (left, left_idx, right, right_idx) in pairs.into_iter() {
+            // dbg!(&right.unwrap().borrow_mut());
+
+            match [&left, &right] {
+                [Some(left), Some(right)] => {
+                    let left = left.borrow();
+                    let right = right.borrow();
+                    dbg!(&left.row_idx, &left.col_idx);
+                    dbg!(&right.row_idx, &right.col_idx);
+                }
+                [Some(left), None] => {
+                    let left = left.borrow();
+                    dbg!(&left.row_idx, &left.col_idx);
+                }
+                [None, Some(right)] => {
+                    let right = right.borrow();
+                    dbg!(&right.row_idx, &right.col_idx);
+                }
+                [None, None] => {}
+            }
+        }
+    }
 }

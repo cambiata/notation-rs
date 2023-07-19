@@ -48,7 +48,7 @@ pub fn matrix_test1() -> RMatrix {
 
 // use graphics::{glyphs::ebgaramond::*, prelude::*};
 use notation_rs::{
-    prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT, types::some_cloneables::SomeCloneables,
+    prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT, types::some_cloneables::SomeCloneablePairs,
 };
 // use render_notation::render::dev::*;
 

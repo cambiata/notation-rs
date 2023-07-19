@@ -1,6 +1,6 @@
 //================================================================
 #[derive(Debug)]
-pub struct SomeCloneables<T>
+pub struct SomeCloneablePairs<T>
 where
     T: Clone,
 {
@@ -12,7 +12,7 @@ pub struct SomeCloneablesRefsIter<'a, T>
 where
     T: Clone,
 {
-    holder: &'a SomeCloneables<T>,
+    holder: &'a SomeCloneablePairs<T>,
     idx: usize,
     prev_idx: Option<usize>,
 }
@@ -21,7 +21,7 @@ pub struct SomeCloneablesOwnedIter<T>
 where
     T: Clone,
 {
-    holder: SomeCloneables<T>,
+    holder: SomeCloneablePairs<T>,
     idx: usize,
     prev_idx: Option<usize>,
 }
@@ -33,7 +33,7 @@ where
     T: Clone,
 {
     // type Item = (&'a Option<Rc<Test>>, usize, Option<usize>);
-    type Item = (Option<T>, usize, Option<T>, Option<usize>);
+    type Item = (Option<T>, Option<usize>, Option<T>, usize);
     fn next(&mut self) -> Option<Self::Item> {
         if self.idx >= self.holder.items.len() {
             None
@@ -58,7 +58,7 @@ where
             // let item = &self.test_holder.tests[self.idx - 1];
             let item = self.holder.items[self.idx - 1].clone();
 
-            let result = Some((item, self.idx - 1, prev, self.prev_idx));
+            let result = Some((prev, self.prev_idx, item, self.idx - 1));
             self.prev_idx = Some(self.idx - 1);
 
             result
@@ -70,7 +70,7 @@ impl<T> Iterator for SomeCloneablesOwnedIter<T>
 where
     T: Clone,
 {
-    type Item = (Option<T>, usize, Option<T>, Option<usize>);
+    type Item = (Option<T>, Option<usize>, Option<T>, usize);
     fn next(&mut self) -> Option<Self::Item> {
         if self.idx >= self.holder.items.len() {
             None
@@ -94,8 +94,9 @@ where
 
             let item = self.holder.items[self.idx - 1].clone();
 
-            let result = Some((item, self.idx - 1, prev, self.prev_idx));
+            let result = Some((prev, self.prev_idx, item, self.idx - 1));
             self.prev_idx = Some(self.idx - 1);
+
             result
         }
     }
@@ -103,12 +104,12 @@ where
 
 //----------------------------------------------------------------
 
-impl<'a, T> IntoIterator for &'a SomeCloneables<T>
+impl<'a, T> IntoIterator for &'a SomeCloneablePairs<T>
 where
     T: Clone,
 {
     // type Item = (&'a Option<Rc<Test>>, usize, Option<usize>);
-    type Item = (Option<T>, usize, Option<T>, Option<usize>);
+    type Item = (Option<T>, Option<usize>, Option<T>, usize);
     type IntoIter = SomeCloneablesRefsIter<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
         SomeCloneablesRefsIter {
@@ -119,11 +120,11 @@ where
     }
 }
 
-impl<T> IntoIterator for SomeCloneables<T>
+impl<T> IntoIterator for SomeCloneablePairs<T>
 where
     T: Clone,
 {
-    type Item = (Option<T>, usize, Option<T>, Option<usize>);
+    type Item = (Option<T>, Option<usize>, Option<T>, usize);
     type IntoIter = SomeCloneablesOwnedIter<T>;
     fn into_iter(self) -> Self::IntoIter {
         SomeCloneablesOwnedIter {
@@ -148,7 +149,7 @@ mod tests3 {
 
     #[test]
     fn example5() {
-        let items: SomeCloneables<Rc<Test>> = SomeCloneables {
+        let items: SomeCloneablePairs<Rc<Test>> = SomeCloneablePairs {
             items: vec![
                 None,
                 Some(Rc::new(Test { val: 11 })), //
