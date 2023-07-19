@@ -17,20 +17,22 @@ use notation_rs::{
 use render_notation::render::dev::*;
 
 fn main() {
-    let matrix = matrix_test1();
+    let matrix = matrix_test2();
     matrix.calculate_col_spacing(SPACING_RELATIVE);
+    matrix.calculate_row_spacing();
 
     //---------------------------------------------------------------------
 
     let mut items = GraphicItems::new();
 
     let mut x = 0.0;
-    for col in &matrix.colitems {
+    for col in &matrix.cols {
         let col = col.borrow();
         dbg!(&col.duration, &col.spacing);
 
         let mut y = 0.0;
-        for item in &col.rowitems {
+        let mut rowidx = 0;
+        for item in &col.items {
             if let Some(row) = item {
                 let item = row.borrow();
                 let rects = &item.rects;
@@ -49,7 +51,9 @@ fn main() {
                 let graphic_item = next2graphic(&nrect).unwrap();
                 items.push(graphic_item);
             }
-            y += 30.0;
+            let row = &matrix.get_row(rowidx).unwrap().borrow();
+            y += row.spacing_y;
+            rowidx += 1;
         }
         x += col.spacing;
     }

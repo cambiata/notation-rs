@@ -211,6 +211,15 @@ impl NRect {
         }
         return Some(self.0 + self.2 - right.0);
     }
+    pub fn overlap_y(&self, lower: &Self) -> Option<f32> {
+        if self.0 + self.2 <= lower.0 {
+            return None;
+        }
+        if self.0 >= lower.0 + lower.2 {
+            return None;
+        }
+        return Some(self.1 + self.3 - lower.1);
+    }
 
     pub fn move_rect(&self, x: f32, y: f32) -> Self {
         Self(self.0 + x, self.1 + y, self.2, self.3)
@@ -260,6 +269,29 @@ pub fn nrects_overlap_x(lefts: &Vec<NRect>, rights: &Vec<NRect>) -> Option<f32> 
     for left in lefts.iter() {
         for right in rights.iter() {
             let overlap = left.overlap_x(&right);
+            // dbg!(overlap);
+            match [overlap.is_some(), result.is_some()] {
+                [true, true] => {
+                    if overlap.unwrap() > result.unwrap() {
+                        result = overlap;
+                    }
+                }
+                [true, false] => {
+                    result = overlap;
+                }
+                _ => {}
+            }
+        }
+    }
+    // dbg!(result);
+    result
+}
+
+pub fn nrects_overlap_y(uppers: &Vec<NRect>, lowers: &Vec<NRect>) -> Option<f32> {
+    let mut result: Option<f32> = None;
+    for left in uppers.iter() {
+        for right in lowers.iter() {
+            let overlap = left.overlap_y(&right);
             // dbg!(overlap);
             match [overlap.is_some(), result.is_some()] {
                 [true, true] => {
@@ -390,4 +422,24 @@ mod tests2 {
 
 fn r10() -> NRect {
     NRect(0.0, 0.0, 10.0, 10.0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn overlap_y() {
+        let upper = NRect::new(0.0, 0.0, 10.0, 10.0);
+        let lower = NRect::new(0.0, 12.0, 10.0, 10.0);
+        let overlap_y = upper.overlap_y(&lower);
+        dbg!(overlap_y);
+
+        let uppers = vec![
+            NRect::new(0.0, 0.0, 10.0, 10.0),
+            NRect::new(0.0, 5.0, 10.0, 10.0),
+        ];
+        let lowers = vec![NRect::new(0.0, 10.0, 10.0, 10.0)];
+        let overlap_y = nrects_overlap_y(&uppers, &lowers);
+        dbg!(overlap_y);
+    }
 }
