@@ -19,18 +19,16 @@ use notation_rs::{
 use render_notation::render::dev::*;
 
 fn main() {
-    let mut matrix = matrix_test3();
+    let mut matrix = matrix_test2();
     matrix.calculate_col_spacing(SPACING_RELATIVE);
     matrix.calculate_row_spacing();
-    matrix.calculate_items_coords();
-    matrix.calculate_size();
-    dbg!(&matrix.width, &matrix.height);
-    matrix_to_svg(&matrix, "./examples/ex2.svg");
-    
-    matrix.add_space(96.0);
-    matrix.calculate_items_coords_after_allot();
-    matrix.calculate_size();
+    matrix.calculate_measurements();
 
+    matrix_to_svg(&matrix, "./examples/ex2.svg");
+
+    matrix.add_horizontal_space(50.0);
+    // matrix.add_vertical_space(10.0);
+    matrix.calculate_measurements();
     matrix_to_svg(&matrix, "./examples/ex2b.svg");
 }
 

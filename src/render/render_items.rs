@@ -256,7 +256,7 @@ pub struct RCol {
     pub spacing_overlap: f32,
     pub overlap_overshoot: f32,
     pub alloted_duration: f32,
-    pub distance_x_after_allot: f32,
+    // pub distance_x_after_allot: f32,
 }
 
 impl RCol {
@@ -271,7 +271,7 @@ impl RCol {
             spacing_overlap: 0.0,
             overlap_overshoot: 0.0,
             alloted_duration: 0.0,
-            distance_x_after_allot: 0.0,
+            // distance_x_after_allot: 0.0,
         }
     }
 }
@@ -467,7 +467,8 @@ impl RMatrix {
         }
     }
 
-    pub fn calculate_items_coords(&self) {
+    pub fn calculate_measurements(&mut self) {
+        // cols, rows, items
         let mut x = 0.0;
         for col in &self.cols {
             let mut col = col.borrow_mut();
@@ -480,16 +481,15 @@ impl RMatrix {
                 }
                 let mut row = self.get_row(rowidx).unwrap().borrow_mut();
                 row.y = y;
-                y += row.distance_y;
+                y += row.distance_y.round();
                 rowidx += 1;
             }
             col.x = x;
-            x += col.distance_x;
+            x += col.distance_x.round();
             //x += col.distance_x_after_allot;
         }
-    }
 
-    pub fn calculate_size(&mut self) {
+        // matrix size
         let last_col: Ref<RCol> = self.cols.last().unwrap().borrow();
         let mut item_w: f32 = -1000.0;
         for item in &last_col.items {
@@ -515,40 +515,45 @@ impl RMatrix {
         self.height = last_row.y + item_h;
     }
 
-    pub fn add_space(&self, arg: f64) {
-        //----------------------------------------------
-        for col in self.cols.iter() {
-            let mut col = col.borrow_mut();
-            col.distance_x_after_allot = col.distance_x;
+    pub fn add_vertical_space(&self, add_space: f32) {
+        if add_space <= 1.0 {
+            return;
+        }
+
+        let current_height = self.height;
+
+        let sum_distance_y = self.rows.iter().fold(0.0, |acc, row| {
+            let row = row.borrow();
+            acc + row.distance_y
+        });
+
+        for row in self.rows.iter() {
+            let mut row = row.borrow_mut();
+            let factor = row.distance_y / sum_distance_y;
+            row.distance_y += add_space * factor;
+            // println!("row.distance_y:{} {}", row.distance_y, factor);
+        }
+    }
+
+    pub fn add_horizontal_space(&self, add_space: f32) {
+        if add_space <= 1.0 {
+            return;
         }
 
         let mut sum_allotment_duration = 0.0;
-        let mut sum_overflow = 0.0;
-
         for col in self.cols.iter() {
             let col = col.borrow();
             if col.duration == 0 {
                 continue;
             };
-
             sum_allotment_duration += col.alloted_duration;
-            sum_overflow += col.overlap_overshoot;
-            // durcol_count += 1;
         }
 
-        dbg!(sum_allotment_duration, sum_overflow);
-
-        let total_add = 20.0;
-        let mut current_add = total_add;
+        let mut current_add = add_space;
         let mut loopcount = 0;
 
         while current_add > 0.5 && loopcount < 5 {
-            // loop
-            println!("=========================================================");
-            dbg!(current_add);
             let current_factor = current_add / sum_allotment_duration as f32;
-            dbg!(current_factor);
-
             for col in self.cols.iter() {
                 let mut col = col.borrow_mut();
                 if col.duration == 0 {
@@ -558,65 +563,43 @@ impl RMatrix {
                 let mut increase = current_factor * col.alloted_duration;
 
                 if col.overlap_overshoot > 0.0 {
-                    println!("------------");
-
                     if increase > col.overlap_overshoot {
-                        println!(
-                            "A: increase0 > col.overlap_overshoot: {} {}",
-                            increase, col.overlap_overshoot
-                        );
                         let new_increase = increase - col.overlap_overshoot;
                         current_add = (current_add - new_increase).max(0.0);
-                        col.distance_x_after_allot =
-                            (col.distance_x_after_allot + new_increase).max(0.0);
-
+                        col.distance_x = (col.distance_x + new_increase).max(0.0);
                         col.overlap_overshoot = 0.0;
                     } else {
-                        println!(
-                            "B: increase0 <= col.overlap_overshoot: {} {}",
-                            increase, col.overlap_overshoot
-                        );
-
                         col.overlap_overshoot = col.overlap_overshoot - increase;
                     };
                 } else {
                     current_add = (current_add - increase).max(0.0);
-                    col.distance_x_after_allot = (col.distance_x_after_allot + increase).max(0.0);
+                    col.distance_x = (col.distance_x + increase).max(0.0);
                 };
-
-                // println!(
-                //     "{}\t{}\t{}\t{}",
-                //     increase0, col.distance_x, col.distance_x_after_allot, col.overlap_overshoot
-                // );
             }
-
-            // current_add = current_add.max(0.0);
-            // dbg!(current_add, leftover);
-            dbg!(current_add);
             loopcount += 1;
-            println!("---------------------------------------------------------");
         }
+        println!("add_horizontal_count passes:{}", loopcount);
     }
 
-    pub fn calculate_items_coords_after_allot(&self) {
-        let mut x = 0.0;
-        for col in &self.cols {
-            let mut col = col.borrow_mut();
-            let mut y = 0.0;
-            let mut rowidx = 0;
-            for item in &col.items {
-                if let Some(item) = item {
-                    let mut item: RefMut<RItem> = item.borrow_mut();
-                    item.coords = Some(NPoint::new(x, y));
-                }
-                let mut row = self.get_row(rowidx).unwrap().borrow_mut();
-                row.y = y;
-                y += row.distance_y.round();
-                rowidx += 1;
-            }
-            col.x = x;
-            // x += col.distance_x;
-            x += col.distance_x_after_allot.round();
-        }
-    }
+    // pub fn calculate_items_coords_after_allot(&self) {
+    //     let mut x = 0.0;
+    //     for col in &self.cols {
+    //         let mut col = col.borrow_mut();
+    //         let mut y = 0.0;
+    //         let mut rowidx = 0;
+    //         for item in &col.items {
+    //             if let Some(item) = item {
+    //                 let mut item: RefMut<RItem> = item.borrow_mut();
+    //                 item.coords = Some(NPoint::new(x, y));
+    //             }
+    //             let mut row = self.get_row(rowidx).unwrap().borrow_mut();
+    //             row.y = y;
+    //             y += row.distance_y.round();
+    //             rowidx += 1;
+    //         }
+    //         col.x = x;
+    //         // x += col.distance_x;
+    //         x += col.distance_x.round();
+    //     }
+    // }
 }
