@@ -6,6 +6,8 @@
 #![allow(clippy::uninlined_format_args)]
 #![allow(clippy::useless_format)]
 
+use std::cell::RefMut;
+
 use graphics::{glyphs::ebgaramond::*, prelude::*};
 use notation_rs::{
     //
@@ -20,9 +22,9 @@ fn main() {
     let matrix = matrix_test2();
     matrix.calculate_col_spacing(SPACING_RELATIVE);
     matrix.calculate_row_spacing();
+    matrix.calculate_items_coords();
 
     //---------------------------------------------------------------------
-
     let mut items = GraphicItems::new();
     let mut x = 0.0;
     for col in &matrix.cols {
@@ -30,8 +32,10 @@ fn main() {
         let mut y = 0.0;
         let mut rowidx = 0;
         for item in &col.items {
-            if let Some(row) = item {
-                let item = row.borrow();
+            if let Some(item) = item {
+                let mut item: RefMut<RItem> = item.borrow_mut();
+                item.coords = Some(NPoint::new(x, y));
+
                 let rects = &item.rects;
                 for rect in rects {
                     let color = if col.duration == 0 { "orange" } else { "blue" };
@@ -54,6 +58,8 @@ fn main() {
         }
         x += col.distance_x;
     }
+
+    // let width = matrix.get_width();
 
     let svg = SvgBuilder::new().build(items).unwrap();
     std::fs::write("./examples/ex2.svg", svg).unwrap();

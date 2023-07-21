@@ -93,7 +93,7 @@ pub fn matrix_test2() -> RMatrix {
                 NV2,
             )))),
             Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(-20.0, 0.0, 40.0, 5.0)],
+                vec![NRect::new(-20.0, 0.0, 50.0, 5.0)],
                 NV4,
             )))),
             //
@@ -104,8 +104,7 @@ pub fn matrix_test2() -> RMatrix {
     let col5 = RCol::new(
         vec![
             Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
-            // Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
-            None, //
+            Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
         ],
         None,
     );
@@ -123,6 +122,8 @@ pub fn matrix_test2() -> RMatrix {
 }
 
 //----------------------------------------------------------------
+
+use std::cell::RefMut;
 
 use crate::{
     prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT, types::some_cloneables::SomeCloneablePairs,
@@ -144,9 +145,10 @@ pub fn r20() -> Vec<NRect> {
 pub struct RItem {
     pub rects: Vec<NRect>,
     pub duration: Duration,
-    pub position: Position,
+    // pub position: Position,
     pub col_idx: usize,
     pub row_idx: usize,
+    pub coords: Option<NPoint>,
 }
 
 impl RItem {
@@ -154,9 +156,10 @@ impl RItem {
         Self {
             rects,
             duration: dur,
-            position: 0,
+            // position: 0,
             col_idx: 0,
             row_idx: 0,
+            coords: None,
         }
     }
 }
@@ -354,6 +357,41 @@ impl RMatrix {
             let mut row = self.get_row(rowidx).unwrap().borrow_mut();
             row.distance_y = row.distance_y.max(overlap);
             rowidx += 1;
+        }
+    }
+
+    pub fn calculate_items_coords(&self) {
+        let mut x = 0.0;
+        for col in &self.cols {
+            let col = col.borrow();
+            let mut y = 0.0;
+            let mut rowidx = 0;
+            for item in &col.items {
+                if let Some(item) = item {
+                    let mut item: RefMut<RItem> = item.borrow_mut();
+                    item.coords = Some(NPoint::new(x, y));
+
+                    // let rects = &item.rects;
+                    // for rect in rects {
+                    //     let color = if col.duration == 0 { "orange" } else { "blue" };
+                    //     let nrect = NRectExt::new(
+                    //         rect.move_rect(x, y),
+                    //         NRectType::Dev(false, color.to_string()),
+                    //     );
+                    //     let graphic_item = next2graphic(&nrect).unwrap();
+                    //     items.push(graphic_item);
+                    // }
+                    // } else {
+                    //     let rect = NRect::new(x, y, 10.0, 10.0);
+                    //     let nrect = NRectExt::new(rect, NRectType::Dev(true, "gray".to_string()));
+                    //     let graphic_item = next2graphic(&nrect).unwrap();
+                    //     items.push(graphic_item);
+                }
+                let row = self.get_row(rowidx).unwrap().borrow();
+                y += row.distance_y;
+                rowidx += 1;
+            }
+            x += col.distance_x;
         }
     }
 }

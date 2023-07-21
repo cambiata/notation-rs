@@ -8,8 +8,8 @@
     <rect x="88.5" y="0.5" width="20" height="20" stroke="orange" stroke-width="1" fill="none"/>
     <ellipse cx="93.5" cy="45.5" rx="5" ry="5" stroke="gray" stroke-width="1" fill="none"/>
     <rect x="108.5" y="0.5" width="10" height="40" stroke="blue" stroke-width="1" fill="none"/>
-    <rect x="88.5" y="40.5" width="40" height="5" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="88.5" y="40.5" width="50" height="5" stroke="blue" stroke-width="1" fill="none"/>
     <rect x="148.5" y="0.5" width="10" height="20" stroke="orange" stroke-width="1" fill="none"/>
-    <ellipse cx="153.5" cy="45.5" rx="5" ry="5" stroke="gray" stroke-width="1" fill="none"/>
+    <rect x="148.5" y="40.5" width="10" height="20" stroke="orange" stroke-width="1" fill="none"/>
     <rect x="0" y="0" width="159" height="61" stroke="black" stroke-width="1" fill="none"/>
 </svg>

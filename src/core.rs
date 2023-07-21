@@ -171,22 +171,21 @@ pub fn duration_get_dots(duration: &Duration) -> u8 {
 //============================================================
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+pub struct NPoint(pub f32, pub f32);
+
+impl NPoint {
+    pub fn new(x: f32, y: f32) -> Self {
+        Self(x, y)
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct NRect(pub f32, pub f32, pub f32, pub f32);
 
 impl NRect {
     pub fn new(x: f32, y: f32, w: f32, h: f32) -> Self {
         Self(x, y, w, h)
     }
-
-    // pub fn overlap_x(&self, right: &Self) -> f32 {
-    //     if self.1 + self.3 <= right.1 {
-    //         return 0.0;
-    //     }
-    //     if self.1 >= right.1 + right.3 {
-    //         return 0.0;
-    //     }
-    //     return (self.0 + self.2) - right.0;
-    // }
 
     pub fn overlap_multi_nrectexts_x(&self, nrects: &Vec<NRectExt>) -> f32 {
         let mut result = 0.0;
