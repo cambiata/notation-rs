@@ -14,6 +14,7 @@ use notation_rs::{
     prelude::*,
     render::fonts::ebgaramond::GLYPH_HEIGHT,
     render::render_items::*,
+    render::testdata::*,
     types::some_cloneables::SomeCloneablePairs,
 };
 use render_notation::render::dev::*;
@@ -27,8 +28,9 @@ fn main() {
     matrix_to_svg(&matrix, "./examples/ex2.svg");
 
     matrix.add_horizontal_space(50.0);
-    // matrix.add_vertical_space(10.0);
+    matrix.add_vertical_space(10.0);
     matrix.calculate_measurements();
+
     matrix_to_svg(&matrix, "./examples/ex2b.svg");
 }
 
