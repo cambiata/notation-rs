@@ -1,3 +1,69 @@
+pub fn matrix_test3() -> RMatrix {
+    let col0 = RCol::new(
+        vec![
+            Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
+            Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
+            //
+        ],
+        None,
+    );
+
+    let col1 = RCol::new(
+        vec![
+            qitem(0.0, 10.0, NV4),
+            qitem(0.0, 10.0, NV4),
+            //
+        ],
+        Some(NV4),
+    );
+
+    let col2 = RCol::new(
+        vec![
+            qitem(0.0, 10.0, NV4),
+            qitem(0.0, 38.0, NV4),
+            //
+        ],
+        Some(NV4),
+    );
+
+    let col3 = RCol::new(
+        vec![
+            qitem(0.0, 10.0, NV8),
+            qitem(0.0, 10.0, NV8),
+            //
+        ],
+        Some(NV8),
+    );
+    let col4 = RCol::new(
+        vec![
+            qitem(0.0, 10.0, NV8),
+            qitem(0.0, 10.0, NV8),
+            //
+        ],
+        Some(NV8),
+    );
+
+    let col5 = RCol::new(
+        vec![
+            xitem(0.0, 10.0, 20.0, 0),
+            Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
+            //
+        ],
+        None,
+    );
+
+    let matrix = RMatrix::new(vec![
+        Rc::new(RefCell::new(col0)),
+        Rc::new(RefCell::new(col1)),
+        Rc::new(RefCell::new(col2)),
+        Rc::new(RefCell::new(col3)),
+        Rc::new(RefCell::new(col4)),
+        Rc::new(RefCell::new(col5)),
+    ]);
+
+    matrix
+}
+
 pub fn matrix_test1() -> RMatrix {
     let col0 = RCol::new(
         vec![
@@ -56,7 +122,7 @@ pub fn matrix_test2() -> RMatrix {
     let col1 = RCol::new(
         vec![
             Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(-10.0, 0.0, 20.0, 10.0)],
+                vec![NRect::new(0.0, 0.0, 10.0, 10.0)],
                 NV2,
             )))),
             Some(Rc::new(RefCell::new(RItem::new(r10(), NV4)))),
@@ -68,7 +134,7 @@ pub fn matrix_test2() -> RMatrix {
         vec![
             None, //
             Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(0.0, 0.0, 40.0, 5.0)],
+                vec![NRect::new(0.0, 0.0, 10.0, 5.0)],
                 NV4,
             )))),
         ],
@@ -89,11 +155,11 @@ pub fn matrix_test2() -> RMatrix {
     let col4 = RCol::new(
         vec![
             Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(0.0, 0.0, 10.0, 40.0)],
+                vec![NRect::new(0.0, 0.0, 10.0, 30.0)],
                 NV2,
             )))),
             Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(-20.0, 0.0, 50.0, 5.0)],
+                vec![NRect::new(0.0, 0.0, 10.0, 5.0)],
                 NV4,
             )))),
             //
@@ -103,7 +169,10 @@ pub fn matrix_test2() -> RMatrix {
 
     let col5 = RCol::new(
         vec![
-            Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
+            Some(Rc::new(RefCell::new(RItem::new(
+                vec![NRect::new(0.0, 0.0, 5.0, 20.0)],
+                0,
+            )))),
             Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
         ],
         None,
@@ -123,13 +192,27 @@ pub fn matrix_test2() -> RMatrix {
 
 //----------------------------------------------------------------
 
-use std::cell::RefMut;
+use std::cell::{Ref, RefMut};
 
 use crate::{
     prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT, types::some_cloneables::SomeCloneablePairs,
 };
 
 use crate::prelude::NRect;
+
+pub fn qitem(x: f32, w: f32, dur: Duration) -> Option<Rc<RefCell<RItem>>> {
+    Some(Rc::new(RefCell::new(RItem::new(
+        vec![NRect::new(x, 0.0, w, 10.0)],
+        dur,
+    ))))
+}
+
+pub fn xitem(x: f32, w: f32, h: f32, dur: Duration) -> Option<Rc<RefCell<RItem>>> {
+    Some(Rc::new(RefCell::new(RItem::new(
+        vec![NRect::new(x, 0.0, w, h)],
+        dur,
+    ))))
+}
 
 pub fn r10() -> Vec<NRect> {
     vec![NRect::new(0.0, 0.0, 10.0, 10.0)]
@@ -145,7 +228,6 @@ pub fn r20() -> Vec<NRect> {
 pub struct RItem {
     pub rects: Vec<NRect>,
     pub duration: Duration,
-    // pub position: Position,
     pub col_idx: usize,
     pub row_idx: usize,
     pub coords: Option<NPoint>,
@@ -156,7 +238,6 @@ impl RItem {
         Self {
             rects,
             duration: dur,
-            // position: 0,
             col_idx: 0,
             row_idx: 0,
             coords: None,
@@ -169,7 +250,13 @@ pub struct RCol {
     pub duration: Duration,
     pub items: Vec<Option<Rc<RefCell<RItem>>>>,
     pub distance_x: f32,
-    // pub col_idx: usize,
+    pub x: f32,
+
+    pub spacing_duration: f32,
+    pub spacing_overlap: f32,
+    pub overlap_overshoot: f32,
+    pub alloted_duration: f32,
+    pub distance_x_after_allot: f32,
 }
 
 impl RCol {
@@ -178,7 +265,13 @@ impl RCol {
             items,
             duration: duration.unwrap_or(0),
             distance_x: 0.0,
-            // col_idx: 0,
+            x: 0.0,
+
+            spacing_duration: 0.0,
+            spacing_overlap: 0.0,
+            overlap_overshoot: 0.0,
+            alloted_duration: 0.0,
+            distance_x_after_allot: 0.0,
         }
     }
 }
@@ -186,20 +279,25 @@ impl RCol {
 #[derive(Debug)]
 pub struct RRow {
     pub items: Vec<Option<Rc<RefCell<RItem>>>>,
-    // pub row_idx: usize,
     pub distance_y: f32,
+    pub y: f32,
 }
 impl RRow {
     fn new(items: Vec<Option<Rc<RefCell<RItem>>>>, distance_y: f32) -> Self {
-        Self { items, distance_y }
+        Self {
+            items,
+            distance_y,
+            y: 0.0,
+        }
     }
 }
 
 #[derive(Debug)]
 pub struct RMatrix {
     pub cols: Vec<Rc<RefCell<RCol>>>,
-    // pub xrowitems: Vec<Vec<Option<Rc<RefCell<RItem>>>>>,
     pub rows: Vec<Rc<RefCell<RRow>>>,
+    pub width: f32,
+    pub height: f32,
 }
 
 impl RMatrix {
@@ -254,8 +352,9 @@ impl RMatrix {
 
         Self {
             cols: colitems,
-            // xrowitems: Vec::new(),
             rows: rows,
+            width: 0.0,
+            height: 0.0,
         }
     }
 
@@ -277,7 +376,10 @@ impl RMatrix {
         // spacing based on duration
         for col in self.cols.iter() {
             let mut col = col.borrow_mut();
-            col.distance_x = spacing_fn(&col.duration);
+            let allotment_w = spacing_fn(&col.duration);
+            col.distance_x = allotment_w;
+            col.spacing_duration = col.distance_x;
+            col.alloted_duration = allotment_w;
         }
 
         // spacing correction based on overlap
@@ -307,6 +409,12 @@ impl RMatrix {
                             overlap_spacing
                         };
                         left_col.distance_x = left_col.distance_x.max(spacing);
+                        //
+
+                        left_col.spacing_overlap = left_col.spacing_overlap.max(overlap_spacing);
+                        left_col.overlap_overshoot = left_col
+                            .overlap_overshoot
+                            .max(left_col.spacing_overlap - left_col.spacing_duration);
                     }
 
                     [Some(left), None] => {
@@ -319,7 +427,6 @@ impl RMatrix {
                             let right_col_mut = right_col.borrow_mut();
                         }
                     }
-
                     [None, None] => {
                         panic!("Should not happen - right should always be Some(T)");
                     }
@@ -363,35 +470,153 @@ impl RMatrix {
     pub fn calculate_items_coords(&self) {
         let mut x = 0.0;
         for col in &self.cols {
-            let col = col.borrow();
+            let mut col = col.borrow_mut();
             let mut y = 0.0;
             let mut rowidx = 0;
             for item in &col.items {
                 if let Some(item) = item {
                     let mut item: RefMut<RItem> = item.borrow_mut();
                     item.coords = Some(NPoint::new(x, y));
-
-                    // let rects = &item.rects;
-                    // for rect in rects {
-                    //     let color = if col.duration == 0 { "orange" } else { "blue" };
-                    //     let nrect = NRectExt::new(
-                    //         rect.move_rect(x, y),
-                    //         NRectType::Dev(false, color.to_string()),
-                    //     );
-                    //     let graphic_item = next2graphic(&nrect).unwrap();
-                    //     items.push(graphic_item);
-                    // }
-                    // } else {
-                    //     let rect = NRect::new(x, y, 10.0, 10.0);
-                    //     let nrect = NRectExt::new(rect, NRectType::Dev(true, "gray".to_string()));
-                    //     let graphic_item = next2graphic(&nrect).unwrap();
-                    //     items.push(graphic_item);
                 }
-                let row = self.get_row(rowidx).unwrap().borrow();
+                let mut row = self.get_row(rowidx).unwrap().borrow_mut();
+                row.y = y;
                 y += row.distance_y;
                 rowidx += 1;
             }
+            col.x = x;
             x += col.distance_x;
+            //x += col.distance_x_after_allot;
+        }
+    }
+
+    pub fn calculate_size(&mut self) {
+        let last_col: Ref<RCol> = self.cols.last().unwrap().borrow();
+        let mut item_w: f32 = -1000.0;
+        for item in &last_col.items {
+            if let Some(item) = item {
+                let item: Ref<RItem> = item.borrow();
+                for rect in item.rects.iter() {
+                    item_w = item_w.max(rect.0 + rect.2);
+                }
+            }
+        }
+        self.width = last_col.x + item_w;
+
+        let last_row: Ref<RRow> = self.rows.last().unwrap().borrow();
+        let mut item_h: f32 = -1000.0;
+        for item in &last_row.items {
+            if let Some(item) = item {
+                let item: Ref<RItem> = item.borrow();
+                for rect in item.rects.iter() {
+                    item_h = item_h.max(rect.1 + rect.3);
+                }
+            }
+        }
+        self.height = last_row.y + item_h;
+    }
+
+    pub fn add_space(&self, arg: f64) {
+        //----------------------------------------------
+        for col in self.cols.iter() {
+            let mut col = col.borrow_mut();
+            col.distance_x_after_allot = col.distance_x;
+        }
+
+        let mut sum_allotment_duration = 0.0;
+        let mut sum_overflow = 0.0;
+
+        for col in self.cols.iter() {
+            let col = col.borrow();
+            if col.duration == 0 {
+                continue;
+            };
+
+            sum_allotment_duration += col.alloted_duration;
+            sum_overflow += col.overlap_overshoot;
+            // durcol_count += 1;
+        }
+
+        dbg!(sum_allotment_duration, sum_overflow);
+
+        let total_add = 20.0;
+        let mut current_add = total_add;
+        let mut loopcount = 0;
+
+        while current_add > 0.5 && loopcount < 5 {
+            // loop
+            println!("=========================================================");
+            dbg!(current_add);
+            let current_factor = current_add / sum_allotment_duration as f32;
+            dbg!(current_factor);
+
+            for col in self.cols.iter() {
+                let mut col = col.borrow_mut();
+                if col.duration == 0 {
+                    continue;
+                };
+
+                let mut increase = current_factor * col.alloted_duration;
+
+                if col.overlap_overshoot > 0.0 {
+                    println!("------------");
+
+                    if increase > col.overlap_overshoot {
+                        println!(
+                            "A: increase0 > col.overlap_overshoot: {} {}",
+                            increase, col.overlap_overshoot
+                        );
+                        let new_increase = increase - col.overlap_overshoot;
+                        current_add = (current_add - new_increase).max(0.0);
+                        col.distance_x_after_allot =
+                            (col.distance_x_after_allot + new_increase).max(0.0);
+
+                        col.overlap_overshoot = 0.0;
+                    } else {
+                        println!(
+                            "B: increase0 <= col.overlap_overshoot: {} {}",
+                            increase, col.overlap_overshoot
+                        );
+
+                        col.overlap_overshoot = col.overlap_overshoot - increase;
+                    };
+                } else {
+                    current_add = (current_add - increase).max(0.0);
+                    col.distance_x_after_allot = (col.distance_x_after_allot + increase).max(0.0);
+                };
+
+                // println!(
+                //     "{}\t{}\t{}\t{}",
+                //     increase0, col.distance_x, col.distance_x_after_allot, col.overlap_overshoot
+                // );
+            }
+
+            // current_add = current_add.max(0.0);
+            // dbg!(current_add, leftover);
+            dbg!(current_add);
+            loopcount += 1;
+            println!("---------------------------------------------------------");
+        }
+    }
+
+    pub fn calculate_items_coords_after_allot(&self) {
+        let mut x = 0.0;
+        for col in &self.cols {
+            let mut col = col.borrow_mut();
+            let mut y = 0.0;
+            let mut rowidx = 0;
+            for item in &col.items {
+                if let Some(item) = item {
+                    let mut item: RefMut<RItem> = item.borrow_mut();
+                    item.coords = Some(NPoint::new(x, y));
+                }
+                let mut row = self.get_row(rowidx).unwrap().borrow_mut();
+                row.y = y;
+                y += row.distance_y.round();
+                rowidx += 1;
+            }
+            col.x = x;
+            // x += col.distance_x;
+            x += col.distance_x_after_allot.round();
         }
     }
 }
