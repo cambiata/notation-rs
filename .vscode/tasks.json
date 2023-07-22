@@ -72,5 +72,30 @@
 				"clear": true
 			}
 		},
+		{
+			"type": "cargo",
+			"command": "run",
+			"args": [
+				"--example",
+				"ex3"
+			],
+			"problemMatcher": [
+				"$rustc",
+				"$rust-panic"
+			],
+			"label": "rust: cargo run ex 3",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": true
+			}
+		},
 	]
 }

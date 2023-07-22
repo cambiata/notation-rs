@@ -39,6 +39,7 @@ pub struct RItem {
     pub col_idx: usize,
     pub row_idx: usize,
     pub coords: Option<NPoint>,
+    pub nrects: Option<Rc<RefCell<Vec<NRectExt>>>>,
 }
 
 impl RItem {
@@ -49,6 +50,7 @@ impl RItem {
             col_idx: 0,
             row_idx: 0,
             coords: None,
+            nrects: None,
         }
     }
 }
