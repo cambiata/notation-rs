@@ -8,11 +8,12 @@ use crate::{complex, prelude::*};
 pub struct Bars(pub Vec<Rc<RefCell<Bar>>>);
 
 impl Bars {
-    pub fn to_matrix(&self) -> Result<RMatrix> {
+    pub fn to_matrix(&self, bartemplate: &BarTemplate) -> Result<RMatrix> {
         // pub fn to_matrix(&self) -> Result<()> {
         let mut matrix_cols: Vec<Rc<RefCell<RCol>>> = vec![];
         for (baridx, bar) in self.0.iter().enumerate() {
             let bar = bar.borrow();
+
             match &bar.btype {
                 BarType::Standard(parts) => {
                     for part in parts {
@@ -20,7 +21,6 @@ impl Bars {
                         part.setup_complexes()?;
                     }
 
-                    // let mut complexpositions = vec![];
                     let mut positions = vec![];
                     let mut parts_positions: Vec<HashMap<usize, usize>> = vec![];
 
@@ -96,8 +96,64 @@ impl Bars {
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
                 }
+
                 BarType::MultiRest(_) => todo!(),
-                BarType::NonContent(nctype) => {}
+                BarType::NonContent(nctype) => match nctype {
+                    NonContentType::VerticalLine => {
+                        let mut colitems = vec![];
+                        for parttemplate in bartemplate.0.iter() {
+                            let item = Some(Rc::new(RefCell::new(RItem::new(
+                                vec![NRect::new(0., -40.0, 5., 80.)],
+                                0,
+                            ))));
+                            colitems.push(item);
+                        }
+                        let rcol: RCol = RCol::new(colitems, None);
+                        matrix_cols.push(Rc::new(RefCell::new(rcol)));
+                    }
+                    NonContentType::Barline => {
+                        let mut colitems = vec![];
+                        for parttemplate in bartemplate.0.iter() {
+                            colitems.push(match parttemplate {
+                                PartTemplate::Music => Some(Rc::new(RefCell::new(RItem::new(
+                                    vec![NRect::new(0., -30.0, 5., 60.)],
+                                    0,
+                                )))),
+                                PartTemplate::Nonmusic => None,
+                            });
+                        }
+                        let rcol: RCol = RCol::new(colitems, None);
+                        matrix_cols.push(Rc::new(RefCell::new(rcol)));
+                    }
+
+                    NonContentType::Clefs(clefs) => {
+                        let mut colitems = vec![];
+                        for (clefidx, clefsig) in clefs.iter().enumerate() {
+                            let mut item: Option<Rc<RefCell<RItem>>> = None;
+                            let mut item_rects: Vec<NRect> = vec![];
+                            if let Some(clefsig) = clefsig {
+                                match clefsig {
+                                    Some(clef) => {
+                                        match clef {
+                                            _ => {
+                                                item_rects.push(NRect::new(0., -30.0, 30., 60.));
+                                            }
+                                        }
+                                        item =
+                                            Some(Rc::new(RefCell::new(RItem::new(item_rects, 0))));
+                                    }
+                                    None => {
+                                        item_rects.push(NRect::new(0., -5.0, 10., 10.));
+                                    }
+                                }
+                            } else {
+                            }
+                            colitems.push(item);
+                        }
+                        let rcol: RCol = RCol::new(colitems, None);
+                        matrix_cols.push(Rc::new(RefCell::new(rcol)));
+                    }
+                },
             }
         }
 
@@ -160,6 +216,7 @@ pub enum BarType {
 #[derive(Debug, PartialEq)]
 pub enum NonContentType {
     Barline,
+    VerticalLine,
     Clefs(Vec<Option<ClefSignature>>),
 }
 

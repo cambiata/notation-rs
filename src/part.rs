@@ -64,8 +64,6 @@ impl Part {
                     self.create_beamgroups(BeamingPattern::NValues(vec![NV4]));
                     self.create_complexes();
                     self.set_complex_durations();
-                    self.set_beamgroups_directions(DirUAD::Auto);
-                    self.set_note_directions();
                     self.create_complex_rects()?;
                 }
                 PartNonmusicType::Other => todo!(),
@@ -91,140 +89,151 @@ impl Part {
                 },
                 PartMusicType::RepeatBar(_) => todo!(),
             },
-            PartType::Nonmusic(_) => todo!(),
+            PartType::Nonmusic(_) => {}
         }
     }
 
     pub fn create_complexes(&mut self) {
         let mut complexes: Vec<Complex> = Vec::new();
 
-        match &self.ptype {
-            PartType::Music(mtype) => match mtype {
-                PartMusicType::Voices(voices) => match voices {
-                    Voices::One(v) => match v.borrow().vtype {
-                        VoiceType::Notes(ref notes) => {
-                            //println!("One voice, notes");
+        fn do_voices(voices: &Voices) -> Vec<Complex> {
+            let mut complexes: Vec<Complex> = Vec::new();
+            match voices {
+                Voices::One(v) => match v.borrow().vtype {
+                    VoiceType::Notes(ref notes) => {
+                        //println!("One voice, notes");
+                        for note in notes.items.iter() {
+                            let complex = Complex::new(
+                                ComplexType::Single(note.clone()),
+                                note.borrow().position,
+                            );
+                            complexes.push(complex);
+                        }
+                    }
+                    VoiceType::Barpause(_) => {
+                        //println!("One voice, barpause");
+                    }
+                },
+                Voices::Two(v1, v2) => {
+                    match [&v1.borrow().vtype, &v2.borrow().vtype] {
+                        [VoiceType::Barpause(_), VoiceType::Barpause(_)] => {
+                            //
+                            //println!("Two voices, barpause, barpause");
+                        }
+
+                        [VoiceType::Barpause(_), VoiceType::Notes(notes)] => {
+                            //println!("Two voices, barpause, notes");
                             for note in notes.items.iter() {
                                 let complex = Complex::new(
-                                    ComplexType::Single(note.clone()),
+                                    ComplexType::Lower(note.clone(), false),
                                     note.borrow().position,
                                 );
                                 complexes.push(complex);
                             }
+                            //
                         }
-                        VoiceType::Barpause(_) => {
-                            //println!("One voice, barpause");
+
+                        [VoiceType::Notes(notes), VoiceType::Barpause(_)] => {
+                            //println!("Two voices, notes, barpause");
+                            for note in notes.items.iter() {
+                                let complex = Complex::new(
+                                    ComplexType::Upper(note.clone(), false),
+                                    note.borrow().position,
+                                );
+                                complexes.push(complex);
+                            }
+                            //
                         }
-                    },
-                    Voices::Two(v1, v2) => {
-                        match [&v1.borrow().vtype, &v2.borrow().vtype] {
-                            [VoiceType::Barpause(_), VoiceType::Barpause(_)] => {
-                                //
-                                //println!("Two voices, barpause, barpause");
+
+                        [VoiceType::Notes(notes_upper), VoiceType::Notes(notes_lower)] => {
+                            //println!("Two voices, notes, notes");
+
+                            let max_duration = notes_upper.duration.max(notes_lower.duration);
+                            let min_duration = notes_upper.duration.min(notes_lower.duration);
+
+                            let mut map_upper: HashMap<usize, Rc<RefCell<Note>>> = HashMap::new();
+                            for np in notes_upper.items.iter() {
+                                map_upper.insert(np.borrow().position, np.clone());
                             }
-
-                            [VoiceType::Barpause(_), VoiceType::Notes(notes)] => {
-                                //println!("Two voices, barpause, notes");
-                                for note in notes.items.iter() {
-                                    let complex = Complex::new(
-                                        ComplexType::Lower(note.clone(), false),
-                                        note.borrow().position,
-                                    );
-                                    complexes.push(complex);
-                                }
-                                //
+                            let mut map_lower: HashMap<usize, Rc<RefCell<Note>>> = HashMap::new();
+                            for np in notes_lower.items.iter() {
+                                map_lower.insert(np.borrow().position, np.clone());
                             }
+                            let mut positions_hash: HashSet<usize> = HashSet::new();
+                            map_upper.keys().for_each(|f| {
+                                positions_hash.insert(*f);
+                            });
+                            map_lower.keys().for_each(|f| {
+                                positions_hash.insert(*f);
+                            });
+                            let mut positions: Vec<usize> = positions_hash.into_iter().collect();
+                            positions.sort();
+                            let mut durations: Vec<usize> =
+                                positions.windows(2).map(|f| f[1] - f[0]).collect();
+                            durations.push(max_duration - positions[positions.len() - 1]);
 
-                            [VoiceType::Notes(notes), VoiceType::Barpause(_)] => {
-                                //println!("Two voices, notes, barpause");
-                                for note in notes.items.iter() {
-                                    let complex = Complex::new(
-                                        ComplexType::Upper(note.clone(), false),
-                                        note.borrow().position,
-                                    );
-                                    complexes.push(complex);
-                                }
-                                //
-                            }
+                            for (idx, position) in positions.iter().enumerate() {
+                                let duration = durations[idx];
 
-                            [VoiceType::Notes(notes_upper), VoiceType::Notes(notes_lower)] => {
-                                //println!("Two voices, notes, notes");
-
-                                let max_duration = notes_upper.duration.max(notes_lower.duration);
-                                let min_duration = notes_upper.duration.min(notes_lower.duration);
-
-                                let mut map_upper: HashMap<usize, Rc<RefCell<Note>>> =
-                                    HashMap::new();
-                                for np in notes_upper.items.iter() {
-                                    map_upper.insert(np.borrow().position, np.clone());
-                                }
-                                let mut map_lower: HashMap<usize, Rc<RefCell<Note>>> =
-                                    HashMap::new();
-                                for np in notes_lower.items.iter() {
-                                    map_lower.insert(np.borrow().position, np.clone());
-                                }
-                                let mut positions_hash: HashSet<usize> = HashSet::new();
-                                map_upper.keys().for_each(|f| {
-                                    positions_hash.insert(*f);
-                                });
-                                map_lower.keys().for_each(|f| {
-                                    positions_hash.insert(*f);
-                                });
-                                let mut positions: Vec<usize> =
-                                    positions_hash.into_iter().collect();
-                                positions.sort();
-                                let mut durations: Vec<usize> =
-                                    positions.windows(2).map(|f| f[1] - f[0]).collect();
-                                durations.push(max_duration - positions[positions.len() - 1]);
-
-                                for (idx, position) in positions.iter().enumerate() {
-                                    let duration = durations[idx];
-
-                                    match [map_upper.get(position), map_lower.get(position)] {
-                                        [Some(note1), Some(note2)] => {
-                                            let complex = Complex::new(
-                                                ComplexType::Two(
-                                                    note1.clone(),
-                                                    note2.clone(),
-                                                    crate::calc::complex_calculate_x_adjustment(
-                                                        note1, note2,
-                                                    ),
+                                match [map_upper.get(position), map_lower.get(position)] {
+                                    [Some(note1), Some(note2)] => {
+                                        let complex = Complex::new(
+                                            ComplexType::Two(
+                                                note1.clone(),
+                                                note2.clone(),
+                                                crate::calc::complex_calculate_x_adjustment(
+                                                    note1, note2,
                                                 ),
-                                                *position,
-                                            );
-                                            complexes.push(complex);
-                                        }
-                                        [Some(note), None] => {
-                                            let complex = Complex::new(
-                                                ComplexType::Upper(
-                                                    note.clone(),
-                                                    position >= &min_duration,
-                                                ),
-                                                note.borrow().position,
-                                            );
-                                            complexes.push(complex);
-                                        }
-                                        [None, Some(note)] => {
-                                            let complex = Complex::new(
-                                                ComplexType::Lower(
-                                                    note.clone(),
-                                                    position >= &min_duration,
-                                                ),
-                                                note.borrow().position,
-                                            );
-                                            complexes.push(complex);
-                                        }
-
-                                        [None, None] => {}
+                                            ),
+                                            *position,
+                                        );
+                                        complexes.push(complex);
                                     }
+                                    [Some(note), None] => {
+                                        let complex = Complex::new(
+                                            ComplexType::Upper(
+                                                note.clone(),
+                                                position >= &min_duration,
+                                            ),
+                                            note.borrow().position,
+                                        );
+                                        complexes.push(complex);
+                                    }
+                                    [None, Some(note)] => {
+                                        let complex = Complex::new(
+                                            ComplexType::Lower(
+                                                note.clone(),
+                                                position >= &min_duration,
+                                            ),
+                                            note.borrow().position,
+                                        );
+                                        complexes.push(complex);
+                                    }
+
+                                    [None, None] => {}
                                 }
                             }
                         }
                     }
-                },
+                }
+            }
+            complexes
+        }
+
+        match &self.ptype {
+            PartType::Music(mtype) => match mtype {
+                PartMusicType::Voices(voices) => {
+                    complexes = do_voices(voices);
+                }
                 PartMusicType::RepeatBar(_) => todo!(),
             },
-            PartType::Nonmusic(_) => todo!(),
+
+            PartType::Nonmusic(nmtype) => match nmtype {
+                PartNonmusicType::Lyrics(voices) => {
+                    complexes = do_voices(voices);
+                }
+                PartNonmusicType::Other => todo!(),
+            },
         }
 
         if !complexes.is_empty() {
@@ -317,6 +326,37 @@ impl Part {
     }
 
     pub fn set_voice_notes_references(&self) -> Option<()> {
+        fn do_voices(voices: &Voices) {
+            match voices {
+                Voices::One(v) => match v.borrow().vtype {
+                    VoiceType::Barpause(_) => {}
+                    VoiceType::Notes(ref notes) => {
+                        for note in notes.items.iter() {
+                            note.borrow_mut().voice = Some(v.clone());
+                        }
+                    }
+                },
+                Voices::Two(v1, v2) => {
+                    match v1.borrow().vtype {
+                        VoiceType::Barpause(_) => {}
+                        VoiceType::Notes(ref notes) => {
+                            for note in notes.items.iter() {
+                                note.borrow_mut().voice = Some(v1.clone());
+                            }
+                        }
+                    }
+                    match v2.borrow().vtype {
+                        VoiceType::Barpause(_) => {}
+                        VoiceType::Notes(ref notes) => {
+                            for note in notes.items.iter() {
+                                note.borrow_mut().voice = Some(v1.clone());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         match &self.ptype {
             PartType::Music(mtype) => match mtype {
                 PartMusicType::Voices(voices) => match voices {
@@ -349,7 +389,10 @@ impl Part {
                 },
                 PartMusicType::RepeatBar(_) => todo!(),
             },
-            PartType::Nonmusic(_) => todo!(),
+            PartType::Nonmusic(nmtype) => match nmtype {
+                PartNonmusicType::Lyrics(voices) => do_voices(voices),
+                PartNonmusicType::Other => todo!(),
+            },
         }
         None
     }

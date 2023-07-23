@@ -11,7 +11,7 @@ pub const STEM_WIDTH: f32 = 2.5;
 pub const FONT_SCALE_LYRICS: f32 = 0.08;
 
 pub const RELATIVE_SPCACING_FACTOR: f32 = 30.0;
-pub const LINEAR_SPACING_FACTOR: f32 = 1.0;
+pub const LINEAR_SPACING_FACTOR: f32 = 4.0;
 pub const SAME_SPACING_FACTOR: f32 = 1.0;
 
 //------------------------------------------------------------

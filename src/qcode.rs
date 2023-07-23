@@ -173,7 +173,7 @@ impl QCode {
             let (bartemplate, bar) = bar_data;
 
             if let Some(first_bar_template) = &first_bar_template {
-                if bartemplate != *first_bar_template {
+                if bartemplate.0.len() > 0 && bartemplate != *first_bar_template {
                     return Err(Generic(format!(
                         "bar template mismatch: {:?} != {:?}",
                         bartemplate, first_bar_template
@@ -181,7 +181,9 @@ impl QCode {
                     .into());
                 }
             } else {
-                first_bar_template = Some(bartemplate);
+                if !(bartemplate.0.is_empty()) {
+                    first_bar_template = Some(bartemplate);
+                }
             }
 
             bars.push(Rc::new(RefCell::new(bar)));
@@ -191,6 +193,20 @@ impl QCode {
             return Err(Generic(format!("no bars in code: {}", code)).into());
         }
 
+        //======================================================================
+        // include vertical line first
+        bars.insert(
+            0,
+            Rc::new(RefCell::new(Bar::new(BarType::NonContent(
+                NonContentType::VerticalLine,
+            )))),
+        );
+        // add vertical line to end
+        bars.push(Rc::new(RefCell::new(Bar::new(BarType::NonContent(
+            NonContentType::VerticalLine,
+        )))));
+        //======================================================================
+
         Ok((first_bar_template.unwrap(), Bars(bars)))
     }
 
@@ -198,16 +214,17 @@ impl QCode {
         // pub fn bar(mut code: &str) -> Result<()> {
         code = code.trim();
 
-        if code.starts_with("mul") {
+        if code.starts_with("bl") {
+            let code = code.split(' ').skip(1).collect::<Vec<_>>().join(" ");
+            let bar = Bar::new(BarType::NonContent(NonContentType::Barline));
+            return Ok((BarTemplate(vec![]), bar));
+        } else if code.starts_with("mul") {
             todo!("multi rest");
         } else if code.starts_with("cle") {
             let code = code.split(' ').skip(1).collect::<Vec<_>>().join(" ");
-
             let segments = code.split(' ').collect::<Vec<_>>();
-
             let mut clefs = vec![];
             let mut parttemplates = vec![];
-
             for segment in segments {
                 match segment.to_uppercase().as_str() {
                     "G" => clefs.push(Some(Some(Clef::G))),
@@ -216,16 +233,13 @@ impl QCode {
                     "-" => clefs.push(None),
                     _ => todo!("other clefs {}", segment),
                 }
-
                 match segment.to_uppercase().as_str() {
                     "-" => parttemplates.push(PartTemplate::Nonmusic),
                     "G" | "F" | "C" => parttemplates.push(PartTemplate::Music),
                     _ => todo!("other clefs {}", segment),
                 }
             }
-
             let bar = Bar::from_clefs(clefs);
-
             return Ok((BarTemplate(parttemplates), bar));
         } else {
             let parts_data = QCode::parts(code)?;
@@ -233,7 +247,7 @@ impl QCode {
             let bar = Bar::from_parts(parts);
             return Ok((template, bar));
         }
-        Err(Generic(format!("unknown bar code: {}", code)).into())
+        // Err(Generic(format!("unknown bar code: {}", code)).into())
     }
 }
 
