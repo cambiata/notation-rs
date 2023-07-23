@@ -69,8 +69,12 @@ impl Bars {
                                         [*complexidx]
                                         .borrow();
 
-                                let item_rects: Vec<NRect> =
-                                    complex.rects.borrow().iter().map(|nrect| nrect.0).collect();
+                                let item_rects: Vec<NRect> = complex
+                                    .rects
+                                    .borrow()
+                                    .iter()
+                                    .map(|nrect| nrect.borrow().0)
+                                    .collect();
 
                                 let item_nrects = complex.rects.clone();
 

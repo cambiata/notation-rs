@@ -556,7 +556,13 @@ impl Part {
             };
 
             if !rects.is_empty() {
-                complex.rects.as_ref().borrow_mut().extend(rects);
+                for nrect in rects {
+                    complex
+                        .rects
+                        .as_ref()
+                        .borrow_mut()
+                        .push(Rc::new(RefCell::new(nrect)));
+                }
             }
         }
 

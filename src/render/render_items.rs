@@ -48,7 +48,7 @@ pub struct RItem {
     pub col_idx: usize,
     pub row_idx: usize,
     pub coords: Option<NPoint>,
-    pub nrects: Option<Rc<RefCell<Vec<NRectExt>>>>,
+    pub nrects: Option<Rc<RefCell<Vec<Rc<RefCell<NRectExt>>>>>>,
 }
 
 impl RItem {
@@ -69,9 +69,14 @@ impl RItem {
     }
 
     pub fn new_with_nrectsext(rects: Vec<NRect>, dur: Duration) -> Self {
-        let nrects = rects
+        let nrects: Vec<Rc<RefCell<NRectExt>>> = rects
             .iter()
-            .map(|r| NRectExt::new(*r, NRectType::WIP("hoho".to_string())))
+            .map(|r| {
+                Rc::new(RefCell::new(NRectExt::new(
+                    *r,
+                    NRectType::WIP("hoho".to_string()),
+                )))
+            })
             .collect::<Vec<_>>();
 
         Self {
@@ -84,14 +89,19 @@ impl RItem {
         }
     }
 
-    pub fn new_from_nrects(nrects: Rc<RefCell<Vec<NRectExt>>>, dur: Duration) -> Self {
-        let rects: Vec<NRect> = nrects
+    pub fn new_from_nrects(nrects: Rc<RefCell<Vec<Rc<RefCell<NRectExt>>>>>, dur: Duration) -> Self {
+        let mut rects: Vec<NRect> = vec![];
+
+        for nrect in nrects.borrow().iter() {
+            let nrect: Ref<NRectExt> = nrect.borrow();
+            rects.push(nrect.0.clone());
+        }
+
+        let nrects_clones: Vec<Rc<RefCell<NRectExt>>> = nrects
             .borrow()
             .iter()
-            .map(|nrect| nrect.0)
+            .map(|nrect| nrect.clone())
             .collect::<Vec<_>>();
-
-        let nrects_clone = nrects.clone();
 
         Self {
             rects,
@@ -99,7 +109,7 @@ impl RItem {
             col_idx: 0,
             row_idx: 0,
             coords: None,
-            nrects: Some(nrects_clone),
+            nrects: Some(Rc::new(RefCell::new(nrects_clones))),
         }
     }
 }
@@ -305,9 +315,18 @@ impl RMatrix {
                 let col = self.get_column(colidx).unwrap().borrow();
                 if let Some(item) = item {
                     let item = item.borrow();
-                    for rect in item.rects.iter() {
-                        let rect = rect.move_rect(colx, 0.0);
-                        itemrects.push(rect);
+                    // for rect in item.rects.iter() {
+                    //     let rect = rect.move_rect(colx, 0.0);
+                    //     itemrects.push(rect);
+                    // }
+
+                    if let Some(nrects) = &item.nrects {
+                        let nrects: Ref<Vec<Rc<RefCell<NRectExt>>>> = nrects.borrow();
+                        for nrect in nrects.iter() {
+                            let mut nrect = nrect.borrow();
+                            let rect = nrect.0.move_rect(colx, 0.0);
+                            itemrects.push(rect);
+                        }
                     }
                 };
                 colx += col.distance_x;
