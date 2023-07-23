@@ -82,16 +82,8 @@ impl Bars {
                                 //
                             }
 
-                            // // dbg!(&complex_positions);
-                            // let mut part = part.borrow_mut();
-                            // let mut item: Option<Rc<RefCell<RItem>>> = None;
-
                             colitems.push(item);
                         }
-
-                        println!("column:{} =====================================", position);
-                        dbg!(&colitems);
-
                         let rcol: RCol = RCol::new(colitems, colduration);
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
@@ -136,7 +128,7 @@ impl Bars {
                                     Some(clef) => {
                                         match clef {
                                             _ => {
-                                                item_rects.push(NRect::new(0., -30.0, 30., 60.));
+                                                item_rects.push(NRect::new(0.0, -50.0, 40., 100.));
                                             }
                                         }
                                         item =
@@ -167,7 +159,6 @@ impl Bars {
 #[derive(Debug, PartialEq)]
 pub struct Bar {
     pub btype: BarType,
-
     pub rects: Option<Vec<Rc<RefCell<Vec<NRectExt>>>>>,
 }
 
@@ -232,6 +223,6 @@ mod testsbars {
         let bar_data = QCode::bars(" 0 ").unwrap();
         // QCode::bars("|clefs G F - | 0 % 1 / 0 /lyr $lyr:aaa | 0 / 0 /lyr $lyr:bbb").unwrap();
         let (bartemplate, bars) = bar_data;
-        bars.to_matrix().unwrap();
+        bars.to_matrix(&bartemplate).unwrap();
     }
 }
