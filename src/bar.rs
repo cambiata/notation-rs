@@ -72,8 +72,15 @@ impl Bars {
                                 let item_rects: Vec<NRect> =
                                     complex.rects.borrow().iter().map(|nrect| nrect.0).collect();
 
-                                item = Some(Rc::new(RefCell::new(RItem::new(
-                                    item_rects,
+                                let item_nrects = complex.rects.clone();
+
+                                // item = Some(Rc::new(RefCell::new(RItem::new(
+                                //     item_rects,
+                                //     complex.duration,
+                                // ))));
+
+                                item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                    item_nrects,
                                     complex.duration,
                                 ))));
 

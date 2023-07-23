@@ -20,8 +20,8 @@ use notation_rs::{
 use render_notation::render::dev::*;
 
 fn main() {
-    let mut matrix = matrix_test2();
-    matrix.calculate_col_spacing(SPACING_RELATIVE);
+    let mut matrix = matrix_test3();
+    matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);
     matrix.calculate_row_spacing();
     matrix.calculate_measurements();
 
@@ -34,42 +34,42 @@ fn main() {
     matrix_to_svg(&matrix, "./examples/ex2b.svg");
 }
 
-fn matrix_to_svg(matrix: &RMatrix, svg_filename: &str) {
-    let mut items = GraphicItems::new();
-    for col in matrix.cols.iter() {
-        let col = col.borrow();
-        let mut rowidx = 0;
-        for item in &col.items {
-            if let Some(item) = item {
-                let item = item.borrow();
-                let coords = item
-                    .coords
-                    .expect("RItem coords should always be calculated!");
-                let rects = &item.rects;
-                for rect in rects {
-                    let color = if col.duration == 0 { "orange" } else { "blue" };
-                    let nrect = NRectExt::new(
-                        rect.move_rect(coords.0, coords.1),
-                        NRectType::Dev(false, color.to_string()),
-                    );
-                    let graphic_item = next2graphic(&nrect).unwrap();
-                    items.push(graphic_item);
-                }
-            } else {
-                let y = matrix.get_row(rowidx).unwrap().borrow().y;
-                let x = col.x;
-                let rect = NRect::new(x, y, 10.0, 10.0);
-                let nrect = NRectExt::new(rect, NRectType::Dev(true, "gray".to_string()));
-                let graphic_item = next2graphic(&nrect).unwrap();
-                items.push(graphic_item);
-            }
-            rowidx += 1;
-        }
-    }
-    dbg!(matrix.width, matrix.height);
-    let svg = SvgBuilder::new().build(items).unwrap();
-    std::fs::write(svg_filename, svg).unwrap();
-}
+// fn matrix_to_svg(matrix: &RMatrix, svg_filename: &str) {
+//     let mut items = GraphicItems::new();
+//     for col in matrix.cols.iter() {
+//         let col = col.borrow();
+//         let mut rowidx = 0;
+//         for item in &col.items {
+//             if let Some(item) = item {
+//                 let item = item.borrow();
+//                 let coords = item
+//                     .coords
+//                     .expect("RItem coords should always be calculated!");
+//                 let rects = &item.rects;
+//                 for rect in rects {
+//                     let color = if col.duration == 0 { "orange" } else { "blue" };
+//                     let nrect = NRectExt::new(
+//                         rect.move_rect(coords.0, coords.1),
+//                         NRectType::Dev(false, color.to_string()),
+//                     );
+//                     let graphic_item = next2graphic(&nrect).unwrap();
+//                     items.push(graphic_item);
+//                 }
+//             } else {
+//                 let y = matrix.get_row(rowidx).unwrap().borrow().y;
+//                 let x = col.x;
+//                 let rect = NRect::new(x, y, 10.0, 10.0);
+//                 let nrect = NRectExt::new(rect, NRectType::Dev(true, "gray".to_string()));
+//                 let graphic_item = next2graphic(&nrect).unwrap();
+//                 items.push(graphic_item);
+//             }
+//             rowidx += 1;
+//         }
+//     }
+//     dbg!(matrix.width, matrix.height);
+//     let svg = SvgBuilder::new().build(items).unwrap();
+//     std::fs::write(svg_filename, svg).unwrap();
+// }
 
 #[cfg(test)]
 mod tests {

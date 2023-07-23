@@ -9,14 +9,23 @@ use crate::{
 use crate::prelude::NRect;
 
 pub fn qitem(x: f32, w: f32, dur: Duration) -> Option<Rc<RefCell<RItem>>> {
-    Some(Rc::new(RefCell::new(RItem::new(
+    // Some(Rc::new(RefCell::new(RItem::new(
+    //     vec![NRect::new(x, 0.0, w, 10.0)],
+    //     dur,
+    // ))))
+
+    Some(Rc::new(RefCell::new(RItem::new_with_nrectsext(
         vec![NRect::new(x, 0.0, w, 10.0)],
         dur,
     ))))
 }
 
 pub fn xitem(x: f32, w: f32, h: f32, dur: Duration) -> Option<Rc<RefCell<RItem>>> {
-    Some(Rc::new(RefCell::new(RItem::new(
+    // Some(Rc::new(RefCell::new(RItem::new(
+    //     vec![NRect::new(x, 0.0, w, h)],
+    //     dur,
+    // ))))
+    Some(Rc::new(RefCell::new(RItem::new_with_nrectsext(
         vec![NRect::new(x, 0.0, w, h)],
         dur,
     ))))
@@ -44,6 +53,11 @@ pub struct RItem {
 
 impl RItem {
     pub fn new(rects: Vec<NRect>, dur: Duration) -> Self {
+        let nrects = rects
+            .iter()
+            .map(|r| NRectExt::new(*r, NRectType::DUMMY))
+            .collect::<Vec<_>>();
+
         Self {
             rects,
             duration: dur,
@@ -51,6 +65,41 @@ impl RItem {
             row_idx: 0,
             coords: None,
             nrects: None,
+        }
+    }
+
+    pub fn new_with_nrectsext(rects: Vec<NRect>, dur: Duration) -> Self {
+        let nrects = rects
+            .iter()
+            .map(|r| NRectExt::new(*r, NRectType::WIP("hoho".to_string())))
+            .collect::<Vec<_>>();
+
+        Self {
+            rects,
+            duration: dur,
+            col_idx: 0,
+            row_idx: 0,
+            coords: None,
+            nrects: Some(Rc::new(RefCell::new(nrects))),
+        }
+    }
+
+    pub fn new_from_nrects(nrects: Rc<RefCell<Vec<NRectExt>>>, dur: Duration) -> Self {
+        let rects: Vec<NRect> = nrects
+            .borrow()
+            .iter()
+            .map(|nrect| nrect.0)
+            .collect::<Vec<_>>();
+
+        let nrects_clone = nrects.clone();
+
+        Self {
+            rects,
+            duration: dur,
+            col_idx: 0,
+            row_idx: 0,
+            coords: None,
+            nrects: Some(nrects_clone),
         }
     }
 }
