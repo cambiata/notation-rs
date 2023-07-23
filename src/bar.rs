@@ -1,5 +1,5 @@
-use std::cell::RefCell;
 use std::rc::Rc;
+use std::{cell::RefCell, collections::HashMap};
 
 use crate::{complex, prelude::*};
 
@@ -18,8 +18,18 @@ impl Bars {
                         part.setup_complexes()?;
                     }
 
-                    let complex_count = bar.complex_count();
+                    // let mut complexpositions = vec![];
+                    let mut complexpositions: HashMap<usize, bool> = HashMap::new();
+                    for (partidx, part) in parts.iter().enumerate() {
+                        let mut part = part.borrow_mut();
+                        for complex in part.complexes.as_ref().unwrap() {
+                            let mut complex = complex.borrow_mut();
+                            complexpositions.insert(complex.position, true);
+                        }
+                    }
+                    dbg!(complexpositions);
 
+                    let complex_count = bar.complex_count();
                     for columnidx in 0..complex_count {
                         let mut colitems = vec![];
                         let mut colduration: Option<Duration> = None;

@@ -1,17 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 318.5 132.5">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 318.5 201">
     <rect x="0.5" y="13" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
     <rect x="0.5" y="0.5" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
-    <rect x="30.5" y="25.75" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
-    <rect x="0.5" y="107" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="0.5" y="113" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="0.5" y="100.5" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
     <rect x="105.5" y="13" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
     <rect x="105.5" y="0.5" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
-    <rect x="135.5" y="25.75" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
-    <rect x="105.5" y="107" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="105.5" y="113" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="105.5" y="100.5" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
     <rect x="210.5" y="13" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
     <rect x="210.5" y="0.5" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
-    <ellipse cx="215.5" cy="112" rx="5" ry="5" stroke="gray" stroke-width="1" fill="none"/>
+    <ellipse cx="215.5" cy="118" rx="5" ry="5" stroke="gray" stroke-width="1" fill="none"/>
     <rect x="285.5" y="13" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
     <rect x="285.5" y="0.5" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
-    <ellipse cx="290.5" cy="112" rx="5" ry="5" stroke="gray" stroke-width="1" fill="none"/>
-    <rect x="0" y="0" width="318.5" height="132.5" stroke="black" stroke-width="1" fill="none"/>
+    <ellipse cx="290.5" cy="118" rx="5" ry="5" stroke="gray" stroke-width="1" fill="none"/>
+    <rect x="0" y="0" width="318.5" height="201" stroke="black" stroke-width="1" fill="none"/>
 </svg>
