@@ -17,8 +17,8 @@ fn main() {
     let bar_data =
         QCode::bars("|clef G - | nv2 0 nv8 1 nv16 0 -3 nv8 -2,b-1 1#  /lyr nv2 $lyr:aaa $lyr:b")
             .unwrap();
-    
-    let bar_data = QCode::bars("|clef F G C | 0 / 0 / 0 ").unwrap();
+
+    // let bar_data = QCode::bars("|clef F G C | 0 / 0 / 0 ").unwrap();
     let (bartemplate, bars) = bar_data;
 
     let mut matrix = bars.to_matrix(&bartemplate).unwrap();
