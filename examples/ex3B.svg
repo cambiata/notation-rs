@@ -1,14 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 234 269.7">
-    <rect x="0.5" y="10.5" width="5" height="80" stroke="orange" stroke-width="1" fill="none"/>
-    <rect x="0.5" y="188.5" width="5" height="80" stroke="orange" stroke-width="1" fill="none"/>
-    <rect x="13.5" y="0.5" width="40" height="100" stroke="orange" stroke-width="1" fill="none"/>
-    <ellipse cx="18.5" cy="233.5" rx="5" ry="5" stroke="gray" stroke-width="1" fill="none"/>
-    <rect x="53.5" y="50.5" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
-    <rect x="53.5" y="38" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
-    <rect x="5.739998" y="187.8" width="31.84" height="81.399994" stroke="blue" stroke-width="1" fill="none"/>
-    <rect x="37.579998" y="187.8" width="31.84" height="81.399994" stroke="blue" stroke-width="1" fill="none"/>
-    <rect x="69.42" y="187.8" width="31.84" height="81.399994" stroke="blue" stroke-width="1" fill="none"/>
-    <rect x="228.5" y="10.5" width="5" height="80" stroke="orange" stroke-width="1" fill="none"/>
-    <rect x="228.5" y="188.5" width="5" height="80" stroke="orange" stroke-width="1" fill="none"/>
-    <rect x="0" y="0" width="234" height="269.7" stroke="black" stroke-width="1" fill="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 629 313.45">
+    <rect x="0.5" y="54.25" width="5" height="80" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="0.5" y="232.25" width="5" height="80" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="5.5" y="44.25" width="40" height="100" stroke="orange" stroke-width="1" fill="none"/>
+    <ellipse cx="10.5" cy="277.25" rx="5" ry="5" stroke="gray" stroke-width="1" fill="none"/>
+    <rect x="45.5" y="94.25" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="45.5" y="81.75" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="10.239998" y="231.55" width="31.84" height="81.399994" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="42.079998" y="231.55" width="31.84" height="81.399994" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="73.92" y="231.55" width="31.84" height="81.399994" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="194.5" y="25.5" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="164.5" y="106.75" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
+    <ellipse cx="169.5" cy="277.25" rx="5" ry="5" stroke="gray" stroke-width="1" fill="none"/>
+    <rect x="313.5" y="13" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="283.5" y="94.25" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="276.8" y="231.55" width="38.399998" height="81.399994" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="398.5" y="0.5" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="368.5" y="81.75" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
+    <ellipse cx="373.5" cy="277.25" rx="5" ry="5" stroke="gray" stroke-width="1" fill="none"/>
+    <rect x="453.5" y="56.75" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="453.5" y="44.25" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
+    <ellipse cx="458.5" cy="277.25" rx="5" ry="5" stroke="gray" stroke-width="1" fill="none"/>
+    <rect x="538.5" y="69.25" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="538.5" y="56.75" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
+    <ellipse cx="543.5" cy="277.25" rx="5" ry="5" stroke="gray" stroke-width="1" fill="none"/>
+    <rect x="623.5" y="54.25" width="5" height="80" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="623.5" y="232.25" width="5" height="80" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="0" y="0" width="629" height="313.45" stroke="black" stroke-width="1" fill="none"/>
 </svg>

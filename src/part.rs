@@ -801,7 +801,7 @@ fn create_lyric_rectangles(
                         total_width += char_width;
                     }
 
-                    let mut char_x = -(total_width / 2.0);
+                    let mut char_x = -(total_width / 2.0) + SPACE_HALF;
                     for (idx, char_width) in char_widths.iter().enumerate() {
                         let rect = NRect::new(
                             char_x,
