@@ -18,7 +18,6 @@ impl QCode {
                 a if a.starts_with("$lyr:") => {
                     let mut s = &segment[5..];
                     s = s.trim();
-                    dbg!(s);
                     let syllable = Syllable::new(SyllableType::Text(s.to_string()));
                     let n = Note::new(NoteType::Lyric(syllable), cur_val.unwrap_or(NV4));
                     notes.push(n);
@@ -150,7 +149,7 @@ impl QCode {
         } else if code.starts_with("oth") {
             todo!("other part");
         } else {
-            println!("Music part {}", code);
+            // Music part
             let voices = QCode::voices(code)?;
             let mut part = Part::from_voices(voices)?;
             // part.setup()?;

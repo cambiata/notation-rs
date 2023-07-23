@@ -48,7 +48,7 @@ pub struct RItem {
     pub col_idx: usize,
     pub row_idx: usize,
     pub coords: Option<NPoint>,
-    pub nrects: Option<Rc<RefCell<Vec<Rc<RefCell<NRectExt>>>>>>,
+    pub nrects: Option<Vec<Rc<RefCell<NRectExt>>>>,
 }
 
 impl RItem {
@@ -85,23 +85,20 @@ impl RItem {
             col_idx: 0,
             row_idx: 0,
             coords: None,
-            nrects: Some(Rc::new(RefCell::new(nrects))),
+            nrects: Some(nrects),
         }
     }
 
-    pub fn new_from_nrects(nrects: Rc<RefCell<Vec<Rc<RefCell<NRectExt>>>>>, dur: Duration) -> Self {
+    pub fn new_from_nrects(nrects: Vec<Rc<RefCell<NRectExt>>>, dur: Duration) -> Self {
         let mut rects: Vec<NRect> = vec![];
 
-        for nrect in nrects.borrow().iter() {
+        for nrect in nrects.iter() {
             let nrect: Ref<NRectExt> = nrect.borrow();
             rects.push(nrect.0.clone());
         }
 
-        let nrects_clones: Vec<Rc<RefCell<NRectExt>>> = nrects
-            .borrow()
-            .iter()
-            .map(|nrect| nrect.clone())
-            .collect::<Vec<_>>();
+        let nrects_clones: Vec<Rc<RefCell<NRectExt>>> =
+            nrects.iter().map(|nrect| nrect.clone()).collect::<Vec<_>>();
 
         Self {
             rects,
@@ -109,7 +106,7 @@ impl RItem {
             col_idx: 0,
             row_idx: 0,
             coords: None,
-            nrects: Some(Rc::new(RefCell::new(nrects_clones))),
+            nrects: Some(nrects_clones),
         }
     }
 }
@@ -321,7 +318,7 @@ impl RMatrix {
                     // }
 
                     if let Some(nrects) = &item.nrects {
-                        let nrects: Ref<Vec<Rc<RefCell<NRectExt>>>> = nrects.borrow();
+                        // let nrects: Vec<Rc<RefCell<NRectExt>>> = nrects.borrow();
                         for nrect in nrects.iter() {
                             let mut nrect = nrect.borrow();
                             let rect = nrect.0.move_rect(colx, 0.0);

@@ -14,7 +14,9 @@ fn main() {
     // let bar_data =
     //     QCode::bars("|clef G F - | 0,1,4 1 / 0 0 /lyr $lyr:aa $lyr:c |bl | #0 nv8 1 b2 / 0 0 /lyr nv4dot $lyr:bbb nv8 $lyr:c").unwrap();
 
-    let bar_data = QCode::bars("|clef G - | 0 2 nv8 1 0 -3 -2  /lyr nv2 $lyr:aaa $lyr:b").unwrap();
+    let bar_data =
+        QCode::bars("|clef G - | nv2 2 nv8 1 nv16 0 -3 nv8 -2,b-1 1#  /lyr nv2 $lyr:aaa $lyr:b")
+            .unwrap();
     let (bartemplate, bars) = bar_data;
 
     let mut matrix = bars.to_matrix(&bartemplate).unwrap();
@@ -25,9 +27,9 @@ fn main() {
 
     matrix_to_svg(&matrix, "./examples/ex3A.svg");
 
-    // matrix.add_horizontal_space(70.0);
-    // matrix.add_vertical_space(50.0);
-    // matrix.calculate_measurements();
+    matrix.add_horizontal_space(100.0);
+    matrix.add_vertical_space(50.0);
+    matrix.calculate_measurements();
 
-    // matrix_to_svg(&matrix, "./examples/ex3B.svg");
+    matrix_to_svg(&matrix, "./examples/ex3B.svg");
 }

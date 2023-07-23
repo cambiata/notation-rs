@@ -557,11 +557,7 @@ impl Part {
 
             if !rects.is_empty() {
                 for nrect in rects {
-                    complex
-                        .rects
-                        .as_ref()
-                        .borrow_mut()
-                        .push(Rc::new(RefCell::new(nrect)));
+                    complex.rects.push(Rc::new(RefCell::new(nrect)));
                 }
             }
         }

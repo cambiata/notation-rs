@@ -9,7 +9,7 @@ pub struct Complex {
     pub position: Position,
     pub duration: Duration,
 
-    pub rects: Rc<RefCell<Vec<Rc<RefCell<NRectExt>>>>>,
+    pub rects: Vec<Rc<RefCell<NRectExt>>>,
 }
 
 impl Complex {
@@ -36,7 +36,7 @@ impl Complex {
             position,
             ctype,
             duration: 0,
-            rects: Rc::new(RefCell::new(Vec::new())),
+            rects: Vec::new(),
         }
     }
 

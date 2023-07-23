@@ -69,19 +69,14 @@ impl Bars {
                                         [*complexidx]
                                         .borrow();
 
-                                let item_rects: Vec<NRect> = complex
+                                let item_rects: Vec<NRect> =
+                                    complex.rects.iter().map(|nrect| nrect.borrow().0).collect();
+
+                                let item_nrects = complex
                                     .rects
-                                    .borrow()
                                     .iter()
-                                    .map(|nrect| nrect.borrow().0)
-                                    .collect();
-
-                                let item_nrects = complex.rects.clone();
-
-                                // item = Some(Rc::new(RefCell::new(RItem::new(
-                                //     item_rects,
-                                //     complex.duration,
-                                // ))));
+                                    .map(|nrect| nrect.clone())
+                                    .collect::<Vec<_>>();
 
                                 item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
                                     item_nrects,
@@ -196,7 +191,6 @@ impl Bar {
                     let part = part.borrow();
                     if let Some(complexes) = &part.complexes {
                         let part_count = complexes.len();
-                        dbg!(part_count);
                         count = part_count.max(count);
                     }
                 }
