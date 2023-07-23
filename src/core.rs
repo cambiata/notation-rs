@@ -10,10 +10,6 @@ pub const DOT_WIDTH: f32 = 0.8 * SPACE;
 pub const STEM_WIDTH: f32 = 2.5;
 pub const FONT_SCALE_LYRICS: f32 = 0.08;
 
-pub const RELATIVE_SPCACING_FACTOR: f32 = 30.0;
-pub const LINEAR_SPACING_FACTOR: f32 = 4.0;
-pub const SAME_SPACING_FACTOR: f32 = 1.0;
-
 //------------------------------------------------------------
 pub const LINE: f32 = 2.7;
 //------------------------------------------------------------
@@ -333,13 +329,15 @@ impl NRectExt {
 
 pub type SpacingFn = fn(duration: &Duration) -> f32;
 
-pub const SPACING_LINEAR: SpacingFn = duration_linear;
+pub const ALLOTMENT_LINEAR_FACTOR: f32 = 4.0;
+pub const ALLOTMENT_LINEAR_FN: SpacingFn = duration_linear;
 
 pub fn duration_linear(duration: &Duration) -> f32 {
-    *duration as f32 * LINEAR_SPACING_FACTOR
+    *duration as f32 * ALLOTMENT_LINEAR_FACTOR
 }
 
-pub const SPACING_RELATIVE: SpacingFn = duration_relative;
+pub const ALLOTMENT_RELATIVE_FACTOR: f32 = 30.0;
+pub const ALLOTMENT_RELATIVE_FN: SpacingFn = duration_relative;
 
 pub fn duration_relative(duration: &Duration) -> f32 {
     let v = match duration {
@@ -363,13 +361,17 @@ pub fn duration_relative(duration: &Duration) -> f32 {
             todo!("Unknown spacing duration: {}", duration);
         }
     };
-    v * RELATIVE_SPCACING_FACTOR
+    v * ALLOTMENT_RELATIVE_FACTOR
 }
 
-pub const SPACEING_EQUAL: SpacingFn = duration_equal;
+pub const ALLOTMENT_EQUAL_FACTOR: f32 = 80.0;
+pub const ALLOTMENT_EQUAL_FN: SpacingFn = duration_equal;
 
 pub fn duration_equal(duration: &Duration) -> f32 {
-    4.0 * SAME_SPACING_FACTOR
+    if *duration == 0 {
+        return 0.0;
+    }
+    ALLOTMENT_EQUAL_FACTOR
 }
 
 //============================================================
