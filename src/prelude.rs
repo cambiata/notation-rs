@@ -1,9 +1,11 @@
+pub use crate::bar::*;
 pub use crate::beamgroup::*;
 pub use crate::calc::*;
 pub use crate::complex::*;
 pub use crate::core::*;
 pub use crate::head::*;
 pub use crate::note::*;
+pub use crate::part::*;
 pub use crate::part::*;
 pub use crate::qcode::*;
 pub use crate::render::*;

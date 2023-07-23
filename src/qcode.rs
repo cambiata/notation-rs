@@ -4,7 +4,7 @@ pub struct QCode;
 
 impl QCode {
     pub fn notes(code: &str) -> Result<Notes> {
-        let code = code.replace("  ", " ");
+        let mut code = code.replace("  ", " ");
         let segments: Vec<&str> = code.trim().split(' ').collect();
         let mut cur_val: Option<usize> = None;
         let mut notes: Vec<Note> = vec![];
@@ -53,7 +53,8 @@ impl QCode {
         Ok(Notes::new(notes))
     }
 
-    pub fn voice(code: &str) -> Result<Voice> {
+    pub fn voice(mut code: &str) -> Result<Voice> {
+        code = code.trim();
         let vtype = if code.contains("bp") {
             let c = code.replace("bp", "");
             let c2 = c.trim();
@@ -83,7 +84,9 @@ impl QCode {
         Ok(Voice::new(vtype)) // , VoiceAttributes {}
     }
 
-    pub fn voices(code: &str) -> Result<Voices> {
+    pub fn voices(mut code: &str) -> Result<Voices> {
+        code = code.trim();
+
         if code.contains("/") {
             panic!("code contains /: {}", code);
         }
@@ -115,6 +118,122 @@ impl QCode {
             }
             _ => Err(Generic(format!("too many voices in code: {}", nr_of_voices)).into()),
         }
+    }
+
+    pub(crate) fn parts(code: &str) -> Result<(BarTemplate, Parts)> {
+        let mut part_templates = vec![];
+        let mut parts: Parts = vec![];
+
+        //
+        let segments: Vec<&str> = code.trim().split('/').collect();
+        for segment in segments {
+            if segment.is_empty() {
+                continue;
+            }
+            let part_data = QCode::part(segment)?;
+            let template_type = part_data.0;
+            part_templates.push(template_type);
+            let part = part_data.1;
+            parts.push(Rc::new(RefCell::new(part)));
+        }
+
+        Ok((BarTemplate(part_templates), parts))
+    }
+
+    pub fn part(mut code: &str) -> Result<(PartTemplate, Part)> {
+        code = code.trim();
+        if code.starts_with("lyr") {
+            let code = code.split(' ').collect::<Vec<_>>()[1..].join(" ");
+            let voices = QCode::voices(code.as_str())?;
+            let part = Part::from_lyrics(voices)?;
+            Ok((PartTemplate::Nonmusic, part))
+        } else if code.starts_with("oth") {
+            todo!("other part");
+        } else {
+            println!("Music part {}", code);
+            let voices = QCode::voices(code)?;
+            let mut part = Part::from_voices(voices)?;
+            // part.setup()?;
+            Ok((PartTemplate::Music, part))
+        }
+    }
+
+    pub fn bars(mut code: &str) -> Result<(BarTemplate, Bars)> {
+        code = code.trim();
+        let segments: Vec<&str> = code.split('|').collect();
+        let mut first_bar_template: Option<BarTemplate> = None;
+        let mut bars = vec![];
+
+        for segment in segments {
+            if segment.is_empty() {
+                continue;
+            }
+
+            let bar_data = QCode::bar(segment)?;
+            let (bartemplate, bar) = bar_data;
+
+            if let Some(first_bar_template) = &first_bar_template {
+                if bartemplate != *first_bar_template {
+                    return Err(Generic(format!(
+                        "bar template mismatch: {:?} != {:?}",
+                        bartemplate, first_bar_template
+                    ))
+                    .into());
+                }
+            } else {
+                first_bar_template = Some(bartemplate);
+            }
+
+            bars.push(Rc::new(RefCell::new(bar)));
+        }
+
+        if bars.is_empty() {
+            return Err(Generic(format!("no bars in code: {}", code)).into());
+        }
+
+        Ok((first_bar_template.unwrap(), Bars(bars)))
+    }
+
+    pub fn bar(mut code: &str) -> Result<(BarTemplate, Bar)> {
+        // pub fn bar(mut code: &str) -> Result<()> {
+        code = code.trim();
+
+        if code.starts_with("mul") {
+            todo!("multi rest");
+        } else if code.starts_with("cle") {
+            let code = code.split(' ').skip(1).collect::<Vec<_>>().join(" ");
+
+            let segments = code.split(' ').collect::<Vec<_>>();
+
+            let mut clefs = vec![];
+            let mut parttemplates = vec![];
+
+            for segment in segments {
+                match segment.to_uppercase().as_str() {
+                    "G" => clefs.push(Some(Some(Clef::G))),
+                    "F" => clefs.push(Some(Some(Clef::F))),
+                    "C" => clefs.push(Some(Some(Clef::C))),
+                    "-" => clefs.push(None),
+                    _ => todo!("other clefs {}", segment),
+                }
+
+                match segment.to_uppercase().as_str() {
+                    "-" => parttemplates.push(PartTemplate::Nonmusic),
+                    "G" | "F" | "C" => parttemplates.push(PartTemplate::Music),
+                    _ => todo!("other clefs {}", segment),
+                }
+            }
+
+            let bar = Bar::from_clefs(clefs);
+
+            return Ok((BarTemplate(parttemplates), bar));
+        } else {
+            let parts_data = QCode::parts(code)?;
+            let (template, parts) = parts_data;
+            let bar = Bar::from_parts(parts);
+            return Ok((template, bar));
+        }
+        Err(Generic(format!("unknown bar code: {}", code)).into())
     }
 }
 
