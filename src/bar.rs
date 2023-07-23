@@ -100,8 +100,11 @@ impl Bars {
                     NonContentType::VerticalLine => {
                         let mut colitems = vec![];
                         for parttemplate in bartemplate.0.iter() {
-                            let item = Some(Rc::new(RefCell::new(RItem::new(
-                                vec![NRect::new(0., -40.0, 5., 80.)],
+                            let item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                vec![Rc::new(RefCell::new(NRectExt::new(
+                                    NRect::new(0., -5.0, 10., 10.),
+                                    NRectType::WIP("VerticalLine".to_string()),
+                                )))],
                                 0,
                             ))));
                             colitems.push(item);
@@ -113,10 +116,15 @@ impl Bars {
                         let mut colitems = vec![];
                         for parttemplate in bartemplate.0.iter() {
                             colitems.push(match parttemplate {
-                                PartTemplate::Music => Some(Rc::new(RefCell::new(RItem::new(
-                                    vec![NRect::new(0., -30.0, 5., 60.)],
-                                    0,
-                                )))),
+                                PartTemplate::Music => {
+                                    Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                        vec![Rc::new(RefCell::new(NRectExt::new(
+                                            NRect::new(0., -30.0, 5., 60.),
+                                            NRectType::WIP("barline".to_string()),
+                                        )))],
+                                        0,
+                                    ))))
+                                }
                                 PartTemplate::Nonmusic => None,
                             });
                         }
@@ -132,16 +140,29 @@ impl Bars {
                             if let Some(clefsig) = clefsig {
                                 match clefsig {
                                     Some(clef) => {
-                                        match clef {
-                                            _ => {
-                                                item_rects.push(NRect::new(0.0, -50.0, 40., 100.));
-                                            }
-                                        }
-                                        item =
-                                            Some(Rc::new(RefCell::new(RItem::new(item_rects, 0))));
+                                        let (y, h) = match clef {
+                                            Clef::G => (-116.0, 186.0),
+                                            Clef::F => (-50.0, 84.0),
+                                            Clef::C => (-50.0, 100.0),
+                                        };
+
+                                        item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                            vec![Rc::new(RefCell::new(NRectExt::new(
+                                                NRect::new(0., y, 74., h),
+                                                NRectType::Clef(clef.clone()),
+                                            )))],
+                                            0,
+                                        ))))
                                     }
                                     None => {
-                                        item_rects.push(NRect::new(0., -5.0, 10., 10.));
+                                        //item_rects.push(NRect::new(0., -5.0, 10., 10.));
+                                        item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                            vec![Rc::new(RefCell::new(NRectExt::new(
+                                                NRect::new(0., -5.0, 10., 10.),
+                                                NRectType::WIP("no clef".to_string()),
+                                            )))],
+                                            0,
+                                        ))))
                                     }
                                 }
                             } else {

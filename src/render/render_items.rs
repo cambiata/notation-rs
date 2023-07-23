@@ -43,7 +43,7 @@ pub fn r20() -> Vec<NRect> {
 
 #[derive(Debug)]
 pub struct RItem {
-    pub rects: Vec<NRect>,
+    // pub rects: Vec<NRect>,
     pub duration: Duration,
     pub col_idx: usize,
     pub row_idx: usize,
@@ -59,7 +59,7 @@ impl RItem {
             .collect::<Vec<_>>();
 
         Self {
-            rects,
+            // rects,
             duration: dur,
             col_idx: 0,
             row_idx: 0,
@@ -80,7 +80,7 @@ impl RItem {
             .collect::<Vec<_>>();
 
         Self {
-            rects,
+            // rects,
             duration: dur,
             col_idx: 0,
             row_idx: 0,
@@ -101,7 +101,7 @@ impl RItem {
             nrects.iter().map(|nrect| nrect.clone()).collect::<Vec<_>>();
 
         Self {
-            rects,
+            // rects,
             duration: dur,
             col_idx: 0,
             row_idx: 0,
@@ -264,9 +264,26 @@ impl RMatrix {
                         let mut left_col = self.get_column(left.col_idx).unwrap().borrow_mut();
                         let mut right_col = self.get_column(right.col_idx).unwrap().borrow_mut();
 
+                        let left_rects = &left
+                            .nrects
+                            .as_ref()
+                            .unwrap()
+                            .iter()
+                            .map(|nrect| nrect.borrow().0)
+                            .collect::<Vec<_>>();
+
+                        let right_rects = &right
+                            .nrects
+                            .as_ref()
+                            .unwrap()
+                            .iter()
+                            .map(|nrect| nrect.borrow().0)
+                            .collect::<Vec<_>>();
+
                         // calculate spacings...
+                        // let overlap_spacing: f32 =nrects_overlap_x(&left.rects, &right.rects).unwrap_or(0.0);
                         let overlap_spacing: f32 =
-                            nrects_overlap_x(&left.rects, &right.rects).unwrap_or(0.0);
+                            nrects_overlap_x(&left_rects, &right_rects).unwrap_or(0.0);
 
                         let spacing = if (right_idx - 1) != left_idx.unwrap() {
                             let mut prev_col = self.get_column(right.col_idx - 1).unwrap().borrow();
@@ -370,7 +387,14 @@ impl RMatrix {
         for item in &last_col.items {
             if let Some(item) = item {
                 let item: Ref<RItem> = item.borrow();
-                for rect in item.rects.iter() {
+                // for rect in item.rects.iter() {
+                //     item_w = item_w.max(rect.0 + rect.2);
+                // }
+
+                // let nrects = item.nrects.as_ref().unwrap();
+
+                for rect in item.nrects.as_ref().unwrap().iter() {
+                    let rect: NRect = rect.borrow().0;
                     item_w = item_w.max(rect.0 + rect.2);
                 }
             }
@@ -382,7 +406,12 @@ impl RMatrix {
         for item in &last_row.items {
             if let Some(item) = item {
                 let item: Ref<RItem> = item.borrow();
-                for rect in item.rects.iter() {
+                // for rect in item.rects.iter() {
+                //     item_h = item_h.max(rect.1 + rect.3);
+                // }
+
+                for rect in item.nrects.as_ref().unwrap().iter() {
+                    let rect: NRect = rect.borrow().0;
                     item_h = item_h.max(rect.1 + rect.3);
                 }
             }

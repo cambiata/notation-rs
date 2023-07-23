@@ -381,7 +381,7 @@ pub enum NRectType {
     Head(HeadType, HeadShape),
     Dotted(u8),
     Pause(PauseShape),
-    Clef,
+    Clef(Clef),
     Accidental(Accidental),
     Tie(Tie),
     LyricChar(char),
