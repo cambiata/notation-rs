@@ -1,3 +1,4 @@
+use std::hash::Hash;
 use std::rc::Rc;
 use std::{cell::RefCell, collections::HashMap};
 
@@ -8,6 +9,7 @@ pub struct Bars(pub Vec<Rc<RefCell<Bar>>>);
 
 impl Bars {
     pub fn to_matrix(&self) -> Result<RMatrix> {
+        // pub fn to_matrix(&self) -> Result<()> {
         let mut matrix_cols: Vec<Rc<RefCell<RCol>>> = vec![];
         for (baridx, bar) in self.0.iter().enumerate() {
             let bar = bar.borrow();
@@ -19,65 +21,76 @@ impl Bars {
                     }
 
                     // let mut complexpositions = vec![];
-                    let mut complexpositions: HashMap<usize, bool> = HashMap::new();
+                    let mut positions = vec![];
+                    let mut parts_positions: Vec<HashMap<usize, usize>> = vec![];
+
+                    let mut duration = 0;
                     for (partidx, part) in parts.iter().enumerate() {
+                        let mut complex_positions: HashMap<usize, usize> = HashMap::new();
+
                         let mut part = part.borrow_mut();
-                        for complex in part.complexes.as_ref().unwrap() {
+                        for (complexidx, complex) in
+                            part.complexes.as_ref().unwrap().iter().enumerate()
+                        {
                             let mut complex = complex.borrow_mut();
-                            complexpositions.insert(complex.position, true);
+                            positions.push(complex.position);
+                            complex_positions.insert(complex.position, complexidx);
                         }
+                        parts_positions.push(complex_positions);
+                        duration = duration.max(part.duration);
                     }
-                    dbg!(complexpositions);
+
+                    positions.sort();
+                    positions.dedup();
+
+                    let mut positions2 = positions.clone();
+                    positions2.push(duration);
+                    let durations = positions2
+                        .windows(2)
+                        .map(|w| w[1] - w[0])
+                        .collect::<Vec<_>>();
 
                     let complex_count = bar.complex_count();
-                    for columnidx in 0..complex_count {
+
+                    // for columnidx in 0..complex_count {
+                    for (posidx, position) in positions.iter().enumerate() {
                         let mut colitems = vec![];
                         let mut colduration: Option<Duration> = None;
-                        for part in parts {
-                            let mut part = part.borrow_mut();
+
+                        for (partidx, part) in parts.iter().enumerate() {
+                            let complex_positions = &parts_positions[partidx];
+                            let complexidx = complex_positions.get(&position);
                             let mut item: Option<Rc<RefCell<RItem>>> = None;
-                            match &part.ptype {
-                                PartType::Music(mtype) => match mtype {
-                                    PartMusicType::Voices(voices) => {
-                                        let complex = part
-                                            .complexes
-                                            .as_ref()
-                                            .expect("PartMusicType::Voices should have complexes")
-                                            .get(columnidx);
 
-                                        if let Some(complex) = complex {
-                                            println!("complex idx:{}", columnidx);
-                                            let complex = complex.borrow();
+                            if let Some(complexidx) = complexidx {
+                                let part = part.borrow();
+                                let complex =
+                                    &part.complexes.as_ref().expect("This complex should exist!")
+                                        [*complexidx]
+                                        .borrow();
 
-                                            let item_rects: Vec<NRect> = complex
-                                                .rects
-                                                .borrow()
-                                                .iter()
-                                                .map(|nrect| nrect.0)
-                                                .collect();
+                                let item_rects: Vec<NRect> =
+                                    complex.rects.borrow().iter().map(|nrect| nrect.0).collect();
 
-                                            item = Some(Rc::new(RefCell::new(RItem::new(
-                                                item_rects,
-                                                complex.duration,
-                                            ))));
-                                            colduration = Some(complex.duration);
-                                        } else {
-                                            println!("No complex {}", columnidx);
-                                        }
+                                item = Some(Rc::new(RefCell::new(RItem::new(
+                                    item_rects,
+                                    complex.duration,
+                                ))));
 
-                                        // }
-                                    }
-                                    PartMusicType::RepeatBar(_) => todo!(),
-                                },
-                                PartType::Nonmusic(nmtype) => match nmtype {
-                                    PartNonmusicType::Lyrics(voices) => todo!("lyrics"),
-                                    PartNonmusicType::Other => todo!(),
-                                },
+                                colduration = Some(durations[posidx]);
+                            } else {
+                                //
                             }
+
+                            // // dbg!(&complex_positions);
+                            // let mut part = part.borrow_mut();
+                            // let mut item: Option<Rc<RefCell<RItem>>> = None;
+
                             colitems.push(item);
                         }
 
-                        println!("column:{} =====================================", columnidx);
+                        println!("column:{} =====================================", position);
+                        dbg!(&colitems);
 
                         let rcol: RCol = RCol::new(colitems, colduration);
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
@@ -91,6 +104,7 @@ impl Bars {
         let matrix = RMatrix::new(matrix_cols);
 
         Ok(matrix)
+        // Ok(())
     }
 }
 
