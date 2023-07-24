@@ -14,7 +14,6 @@ pub struct Part {
 impl Part {
     pub fn new(ptype: PartType) -> Self {
         let duration: Duration = ptype.get_duration();
-
         Self { ptype, duration, complexes: None }
     }
 
@@ -90,115 +89,174 @@ impl Part {
                     let mut beamgroup = beamgroup.borrow_mut();
                     // beamgroup.calculate_properties();
                     dbg!(beamgroup.notes.len());
+                    let direction = beamgroup.direction.unwrap();
                     match beamgroup.notes.len() {
                         0 => panic!("Beamgroup has no notes"),
                         1 => {
                             let note = beamgroup.notes[0].clone();
                             let mut note = note.borrow_mut();
+
+                            let top_bottom = (note.top_level(), note.bottom_level());
+                            let mut tilt: i8 = match direction {
+                                DirUD::Up => top_bottom.0,
+                                DirUD::Down => top_bottom.1,
+                            };
+
+                            beamgroup.tilt = Some((tilt as f32, 0.0));
                         }
-                        2 => {
+                        _ => {
                             println!("Two notes");
                             let first = beamgroup.notes[0].clone();
                             let mut first = first.borrow_mut();
-                            let last = beamgroup.notes[1].clone();
-                            let mut last = last.borrow_mut();
-                            let first_top_bottom = (first.top_level(), first.bottom_level());
-                            let last_top_bottom = (last.top_level(), last.bottom_level());
-                        }
-                        _ => {
-                            println!("Three notes or more");
                             let last_idx = beamgroup.notes.len() - 1;
-                            let first = beamgroup.notes[0].clone();
-                            let mut first = first.borrow_mut();
                             let last = beamgroup.notes[last_idx].clone();
                             let mut last = last.borrow_mut();
                             let first_top_bottom = (first.top_level(), first.bottom_level());
                             let last_top_bottom = (last.top_level(), last.bottom_level());
-                            let betweens = beamgroup.notes[1..last_idx].to_vec();
-                            let betweens_top_bottom: Vec<(i8, i8)> = betweens
-                                .iter()
-                                .map(|note| {
-                                    let note = note.borrow();
-                                    (note.top_level(), note.bottom_level())
-                                })
-                                .collect();
+                            let mut tilt: (i8, i8);
 
-                            let middle_top = betweens_top_bottom.iter().map(|f| f.0).min().unwrap();
-                            let middle_bottom = betweens_top_bottom.iter().map(|f| f.1).max().unwrap();
-                            let middle_top_bottom = (middle_top, middle_bottom);
-                            println!("======================================================");
-                            let direction = beamgroup.direction.unwrap();
-                            let tilt = match direction {
-                                DirUD::Up => {
-                                    if first_top_bottom.0 < last_top_bottom.0 {
-                                        // println!("- First is LESS than Last - pointing DOWN?");
-                                        if middle_top_bottom.0 <= first_top_bottom.0 {
-                                            // println!("- - Middle is same or less than first > FLAT");
-                                            (middle_top_bottom.0, middle_top_bottom.0)
-                                        } else {
-                                            // println!("- - Middle is more than first - DOWNWARDS");
-                                            (first_top_bottom.0, middle_top_bottom.0.min(last_top_bottom.0))
-                                        }
-                                    } else if first_top_bottom.0 == last_top_bottom.0 {
-                                        // println!("- First is SAME than Last");
-                                        // println!("- FLAT SAME");
-                                        let level = first_top_bottom.0.min(middle_top_bottom.0);
-                                        (level, level)
-                                    } else if first_top_bottom.0 > last_top_bottom.0 {
-                                        // println!("- First is MORE than Last - pointing UP?");
-                                        if middle_top_bottom.0 <= last_top_bottom.0 {
-                                            // println!("- - Middle is same or less than last > FLAT");
-                                            (middle_top_bottom.0, middle_top_bottom.0)
-                                        } else {
-                                            // println!("- - Middle is more than last - UPWARDS"); // 3 2 2 1
-                                            (first_top_bottom.0.min(middle_top_bottom.0), last_top_bottom.0)
-                                        }
-                                    } else {
-                                        panic!("SHOULD NOT HAPPEN");
+                            match beamgroup.notes.len() {
+                                2 => {
+                                    tilt = match direction {
+                                        DirUD::Up => (first_top_bottom.0, last_top_bottom.0),
+                                        DirUD::Down => (first_top_bottom.1, last_top_bottom.1),
                                     }
                                 }
+                                _ => {
+                                    let betweens = beamgroup.notes[1..last_idx].to_vec();
+                                    let betweens_top_bottom: Vec<(i8, i8)> = betweens
+                                        .iter()
+                                        .map(|note| {
+                                            let note = note.borrow();
+                                            (note.top_level(), note.bottom_level())
+                                        })
+                                        .collect();
 
-                                DirUD::Down => {
-                                    if first_top_bottom.1 < last_top_bottom.1 {
-                                        // println!("- First is LESS than Last - pointing DOWN?");
-                                        if middle_top_bottom.1 >= last_top_bottom.1 {
-                                            // println!("- - Middle is same or more than last > FLAT");
-                                            (middle_top_bottom.1, middle_top_bottom.1)
-                                        } else {
-                                            // println!("- - Middle is less than last - DOWNWARDS");
-                                            (first_top_bottom.1.max(middle_top_bottom.0), last_top_bottom.1)
+                                    let middle_top = betweens_top_bottom.iter().map(|f| f.0).min().unwrap();
+                                    let middle_bottom = betweens_top_bottom.iter().map(|f| f.1).max().unwrap();
+                                    let middle_top_bottom = (middle_top, middle_bottom);
+                                    println!("======================================================");
+                                    let direction = beamgroup.direction.unwrap();
+                                    tilt = match direction {
+                                        DirUD::Up => {
+                                            if first_top_bottom.0 < last_top_bottom.0 {
+                                                // println!("- First is LESS than Last - pointing DOWN?");
+                                                if middle_top_bottom.0 <= first_top_bottom.0 {
+                                                    // println!("- - Middle is same or less than first > FLAT");
+                                                    (middle_top_bottom.0, middle_top_bottom.0)
+                                                } else {
+                                                    // println!("- - Middle is more than first - DOWNWARDS");
+                                                    (first_top_bottom.0, middle_top_bottom.0.min(last_top_bottom.0))
+                                                }
+                                            } else if first_top_bottom.0 == last_top_bottom.0 {
+                                                // println!("- First is SAME than Last");
+                                                // println!("- FLAT SAME");
+                                                let level = first_top_bottom.0.min(middle_top_bottom.0);
+                                                (level, level)
+                                            } else if first_top_bottom.0 > last_top_bottom.0 {
+                                                // println!("- First is MORE than Last - pointing UP?");
+                                                if middle_top_bottom.0 <= last_top_bottom.0 {
+                                                    // println!("- - Middle is same or less than last > FLAT");
+                                                    (middle_top_bottom.0, middle_top_bottom.0)
+                                                } else {
+                                                    // println!("- - Middle is more than last - UPWARDS"); // 3 2 2 1
+                                                    (first_top_bottom.0.min(middle_top_bottom.0), last_top_bottom.0)
+                                                }
+                                            } else {
+                                                panic!("SHOULD NOT HAPPEN");
+                                            }
                                         }
-                                    } else if first_top_bottom.1 == last_top_bottom.1 {
-                                        // println!("- First is SAME than Last");
-                                        // println!("- FLAT SAME");
-                                        let level = first_top_bottom.1.max(middle_top_bottom.1);
-                                        (level, level)
-                                    } else if first_top_bottom.1 > last_top_bottom.1 {
-                                        // println!("- First is MORE than Last - pointing UP?");
-                                        if middle_top_bottom.1 >= first_top_bottom.1 {
-                                            // println!("- - Middle is same or more than last > FLAT");
-                                            (middle_top_bottom.1, middle_top_bottom.1)
-                                        } else {
-                                            // println!("- - Middle is more than last - UPWARDS");
-                                            (first_top_bottom.1, middle_top_bottom.1.max(last_top_bottom.1))
+
+                                        DirUD::Down => {
+                                            if first_top_bottom.1 < last_top_bottom.1 {
+                                                // println!("- First is LESS than Last - pointing DOWN?");
+                                                if middle_top_bottom.1 >= last_top_bottom.1 {
+                                                    // println!("- - Middle is same or more than last > FLAT");
+                                                    (middle_top_bottom.1, middle_top_bottom.1)
+                                                } else {
+                                                    // println!("- - Middle is less than last - DOWNWARDS");
+                                                    (first_top_bottom.1.max(middle_top_bottom.0), last_top_bottom.1)
+                                                }
+                                            } else if first_top_bottom.1 == last_top_bottom.1 {
+                                                // println!("- First is SAME than Last");
+                                                // println!("- FLAT SAME");
+                                                let level = first_top_bottom.1.max(middle_top_bottom.1);
+                                                (level, level)
+                                            } else if first_top_bottom.1 > last_top_bottom.1 {
+                                                // println!("- First is MORE than Last - pointing UP?");
+                                                if middle_top_bottom.1 >= first_top_bottom.1 {
+                                                    // println!("- - Middle is same or more than last > FLAT");
+                                                    (middle_top_bottom.1, middle_top_bottom.1)
+                                                } else {
+                                                    // println!("- - Middle is more than last - UPWARDS");
+                                                    (first_top_bottom.1, middle_top_bottom.1.max(last_top_bottom.1))
+                                                }
+                                            } else {
+                                                panic!("SHOULD NOT HAPPEN");
+                                            }
                                         }
-                                    } else {
-                                        panic!("SHOULD NOT HAPPEN");
-                                    }
+                                    };
                                 }
-                            };
+                            }
 
                             let mut tilt_left = tilt.0 as f32;
                             let mut tilt_right = tilt.1 as f32;
                             let angle = tilt_right - tilt_left;
-                            dbg!(tilt_left, tilt_right, angle);
+                            // dbg!(tilt_left, tilt_right, angle);
 
-                            // dbg!(angle);
-                            // if angle <
-                            // match direction {
-                            //     DirUD::Up => {}
-                            //     DirUD::Down => {}
-                            // }
+                            // Fix angle ==========================================================
+                            const MAX_ANGLE: f32 = 2.0;
+                            match direction {
+                                DirUD::Up => {
+                                    if angle <= -MAX_ANGLE {
+                                        println!("För brant uppåt");
+                                        tilt_left = tilt_right - MAX_ANGLE;
+                                    } else if angle >= MAX_ANGLE {
+                                        println!("För brant nedåt");
+                                        tilt_right = tilt_left + MAX_ANGLE;
+                                    }
+                                }
+                                DirUD::Down => {
+                                    if angle <= -MAX_ANGLE {
+                                        println!("För brant uppåt");
+                                        tilt_right = tilt_left + MAX_ANGLE;
+                                    } else if angle >= MAX_ANGLE {
+                                        println!("För brant nedåt");
+                                        tilt_left = tilt_right - MAX_ANGLE;
+                                    }
+                                }
+                            }
+
+                            // Shorten if two voices directions apart ================================
+                            println!("({}, {})", tilt_left, tilt_right);
+                            match direction {
+                                DirUD::Up => {
+                                    if tilt_left <= -5.0 {
+                                        tilt_left += 1.0;
+                                    } else if tilt_left <= -4.0 {
+                                        tilt_left += 0.5;
+                                    }
+                                    if tilt_right <= -5.0 {
+                                        tilt_right += 1.0;
+                                    } else if tilt_right <= -4.0 {
+                                        tilt_right += 0.5;
+                                    }
+                                }
+                                DirUD::Down => {
+                                    if tilt_left >= 5.0 {
+                                        tilt_left += -1.0;
+                                    } else if tilt_left >= 4.0 {
+                                        tilt_left += -0.5;
+                                    }
+                                    if tilt_right >= 5.0 {
+                                        tilt_right += -1.0;
+                                    } else if tilt_right >= 4.0 {
+                                        tilt_right += -0.5;
+                                    }
+                                }
+                            };
+
+                            beamgroup.tilt = Some((tilt_left, tilt_right));
                         }
                     }
                 }

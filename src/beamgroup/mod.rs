@@ -10,25 +10,15 @@ pub struct Beamgroup {
     pub direction: Option<DirUD>,
     pub top: i8,
     pub bottom: i8,
+    pub tilt: Option<(f32, f32)>,
 }
 
 impl Beamgroup {
     pub fn new(notes: Vec<Rc<RefCell<Note>>>) -> Self {
-        let duration = notes
-            .iter()
-            .fold(0, |acc, item| acc + item.borrow().duration);
+        let duration = notes.iter().fold(0, |acc, item| acc + item.borrow().duration);
 
-        let top = notes
-            .iter()
-            .map(|note| note.borrow().top_level())
-            .min()
-            .unwrap();
-
-        let bottom = notes
-            .iter()
-            .map(|note| note.borrow().bottom_level())
-            .max()
-            .unwrap();
+        let top = notes.iter().map(|note| note.borrow().top_level()).min().unwrap();
+        let bottom = notes.iter().map(|note| note.borrow().bottom_level()).max().unwrap();
 
         Self {
             notes,
@@ -36,6 +26,7 @@ impl Beamgroup {
             direction: None,
             top,
             bottom,
+            tilt: None,
         }
     }
 
@@ -63,9 +54,7 @@ pub fn get_beamgroups(notes: &Notes, pattern: &BeamingPattern) -> Result<Beamgro
     }
 
     if notes.items.len() == 1 {
-        return Ok(vec![Rc::new(RefCell::new(Beamgroup::new(vec![notes
-            .items[0]
-            .clone()])))]);
+        return Ok(vec![Rc::new(RefCell::new(Beamgroup::new(vec![notes.items[0].clone()])))]);
     }
 
     let result = match pattern {
@@ -73,10 +62,7 @@ pub fn get_beamgroups(notes: &Notes, pattern: &BeamingPattern) -> Result<Beamgro
         BeamingPattern::NValues(ref values) => get_beamgroups_nvalues(notes, values)?,
     };
 
-    Ok(result
-        .into_iter()
-        .map(|item| Rc::new(RefCell::new(item)))
-        .collect::<Vec<_>>())
+    Ok(result.into_iter().map(|item| Rc::new(RefCell::new(item))).collect::<Vec<_>>())
 }
 
 #[cfg(test)]
