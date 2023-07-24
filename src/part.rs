@@ -15,32 +15,20 @@ impl Part {
     pub fn new(ptype: PartType) -> Self {
         let duration: Duration = ptype.get_duration();
 
-        Self {
-            ptype,
-            duration,
-            complexes: None,
-        }
+        Self { ptype, duration, complexes: None }
     }
 
     pub fn from_voices(voices: Voices) -> Result<Part> {
         let ptype = PartType::Music(PartMusicType::Voices(voices));
         let duration: Duration = ptype.get_duration();
-        let mut part = Self {
-            ptype,
-            duration,
-            complexes: None,
-        };
+        let mut part = Self { ptype, duration, complexes: None };
         Ok(part)
     }
 
     pub fn from_lyrics(voices: Voices) -> Result<Part> {
         let ptype = PartType::Nonmusic(PartNonmusicType::Lyrics(voices));
         let duration: Duration = ptype.get_duration();
-        let mut part = Self {
-            ptype,
-            duration,
-            complexes: None,
-        };
+        let mut part = Self { ptype, duration, complexes: None };
         Ok(part)
     }
 
@@ -102,6 +90,117 @@ impl Part {
                     let mut beamgroup = beamgroup.borrow_mut();
                     // beamgroup.calculate_properties();
                     dbg!(beamgroup.notes.len());
+                    match beamgroup.notes.len() {
+                        0 => panic!("Beamgroup has no notes"),
+                        1 => {
+                            let note = beamgroup.notes[0].clone();
+                            let mut note = note.borrow_mut();
+                        }
+                        2 => {
+                            println!("Two notes");
+                            let first = beamgroup.notes[0].clone();
+                            let mut first = first.borrow_mut();
+                            let last = beamgroup.notes[1].clone();
+                            let mut last = last.borrow_mut();
+                            let first_top_bottom = (first.top_level(), first.bottom_level());
+                            let last_top_bottom = (last.top_level(), last.bottom_level());
+                        }
+                        _ => {
+                            println!("Three notes or more");
+                            let last_idx = beamgroup.notes.len() - 1;
+                            let first = beamgroup.notes[0].clone();
+                            let mut first = first.borrow_mut();
+                            let last = beamgroup.notes[last_idx].clone();
+                            let mut last = last.borrow_mut();
+                            let first_top_bottom = (first.top_level(), first.bottom_level());
+                            let last_top_bottom = (last.top_level(), last.bottom_level());
+                            let betweens = beamgroup.notes[1..last_idx].to_vec();
+                            let betweens_top_bottom: Vec<(i8, i8)> = betweens
+                                .iter()
+                                .map(|note| {
+                                    let note = note.borrow();
+                                    (note.top_level(), note.bottom_level())
+                                })
+                                .collect();
+
+                            let middle_top = betweens_top_bottom.iter().map(|f| f.0).min().unwrap();
+                            let middle_bottom = betweens_top_bottom.iter().map(|f| f.1).max().unwrap();
+                            let middle_top_bottom = (middle_top, middle_bottom);
+                            println!("======================================================");
+                            let direction = beamgroup.direction.unwrap();
+                            let tilt = match direction {
+                                DirUD::Up => {
+                                    if first_top_bottom.0 < last_top_bottom.0 {
+                                        // println!("- First is LESS than Last - pointing DOWN?");
+                                        if middle_top_bottom.0 <= first_top_bottom.0 {
+                                            // println!("- - Middle is same or less than first > FLAT");
+                                            (middle_top_bottom.0, middle_top_bottom.0)
+                                        } else {
+                                            // println!("- - Middle is more than first - DOWNWARDS");
+                                            (first_top_bottom.0, middle_top_bottom.0.min(last_top_bottom.0))
+                                        }
+                                    } else if first_top_bottom.0 == last_top_bottom.0 {
+                                        // println!("- First is SAME than Last");
+                                        // println!("- FLAT SAME");
+                                        let level = first_top_bottom.0.min(middle_top_bottom.0);
+                                        (level, level)
+                                    } else if first_top_bottom.0 > last_top_bottom.0 {
+                                        // println!("- First is MORE than Last - pointing UP?");
+                                        if middle_top_bottom.0 <= last_top_bottom.0 {
+                                            // println!("- - Middle is same or less than last > FLAT");
+                                            (middle_top_bottom.0, middle_top_bottom.0)
+                                        } else {
+                                            // println!("- - Middle is more than last - UPWARDS"); // 3 2 2 1
+                                            (first_top_bottom.0.min(middle_top_bottom.0), last_top_bottom.0)
+                                        }
+                                    } else {
+                                        panic!("SHOULD NOT HAPPEN");
+                                    }
+                                }
+
+                                DirUD::Down => {
+                                    if first_top_bottom.1 < last_top_bottom.1 {
+                                        // println!("- First is LESS than Last - pointing DOWN?");
+                                        if middle_top_bottom.1 >= last_top_bottom.1 {
+                                            // println!("- - Middle is same or more than last > FLAT");
+                                            (middle_top_bottom.1, middle_top_bottom.1)
+                                        } else {
+                                            // println!("- - Middle is less than last - DOWNWARDS");
+                                            (first_top_bottom.1.max(middle_top_bottom.0), last_top_bottom.1)
+                                        }
+                                    } else if first_top_bottom.1 == last_top_bottom.1 {
+                                        // println!("- First is SAME than Last");
+                                        // println!("- FLAT SAME");
+                                        let level = first_top_bottom.1.max(middle_top_bottom.1);
+                                        (level, level)
+                                    } else if first_top_bottom.1 > last_top_bottom.1 {
+                                        // println!("- First is MORE than Last - pointing UP?");
+                                        if middle_top_bottom.1 >= first_top_bottom.1 {
+                                            // println!("- - Middle is same or more than last > FLAT");
+                                            (middle_top_bottom.1, middle_top_bottom.1)
+                                        } else {
+                                            // println!("- - Middle is more than last - UPWARDS");
+                                            (first_top_bottom.1, middle_top_bottom.1.max(last_top_bottom.1))
+                                        }
+                                    } else {
+                                        panic!("SHOULD NOT HAPPEN");
+                                    }
+                                }
+                            };
+
+                            let mut tilt_left = tilt.0 as f32;
+                            let mut tilt_right = tilt.1 as f32;
+                            let angle = tilt_right - tilt_left;
+                            dbg!(tilt_left, tilt_right, angle);
+
+                            // dbg!(angle);
+                            // if angle <
+                            // match direction {
+                            //     DirUD::Up => {}
+                            //     DirUD::Down => {}
+                            // }
+                        }
+                    }
                 }
             }
         }
@@ -140,10 +239,7 @@ impl Part {
                     VoiceType::Notes(ref notes) => {
                         //println!("One voice, notes");
                         for note in notes.items.iter() {
-                            let complex = Complex::new(
-                                ComplexType::Single(note.clone()),
-                                note.borrow().position,
-                            );
+                            let complex = Complex::new(ComplexType::Single(note.clone()), note.borrow().position);
                             complexes.push(complex);
                         }
                     }
@@ -161,10 +257,7 @@ impl Part {
                         [VoiceType::Barpause(_), VoiceType::Notes(notes)] => {
                             //println!("Two voices, barpause, notes");
                             for note in notes.items.iter() {
-                                let complex = Complex::new(
-                                    ComplexType::Lower(note.clone(), false),
-                                    note.borrow().position,
-                                );
+                                let complex = Complex::new(ComplexType::Lower(note.clone(), false), note.borrow().position);
                                 complexes.push(complex);
                             }
                             //
@@ -173,10 +266,7 @@ impl Part {
                         [VoiceType::Notes(notes), VoiceType::Barpause(_)] => {
                             //println!("Two voices, notes, barpause");
                             for note in notes.items.iter() {
-                                let complex = Complex::new(
-                                    ComplexType::Upper(note.clone(), false),
-                                    note.borrow().position,
-                                );
+                                let complex = Complex::new(ComplexType::Upper(note.clone(), false), note.borrow().position);
                                 complexes.push(complex);
                             }
                             //
@@ -205,8 +295,7 @@ impl Part {
                             });
                             let mut positions: Vec<usize> = positions_hash.into_iter().collect();
                             positions.sort();
-                            let mut durations: Vec<usize> =
-                                positions.windows(2).map(|f| f[1] - f[0]).collect();
+                            let mut durations: Vec<usize> = positions.windows(2).map(|f| f[1] - f[0]).collect();
                             durations.push(max_duration - positions[positions.len() - 1]);
 
                             for (idx, position) in positions.iter().enumerate() {
@@ -214,36 +303,15 @@ impl Part {
 
                                 match [map_upper.get(position), map_lower.get(position)] {
                                     [Some(note1), Some(note2)] => {
-                                        let complex = Complex::new(
-                                            ComplexType::Two(
-                                                note1.clone(),
-                                                note2.clone(),
-                                                crate::calc::complex_calculate_x_adjustment(
-                                                    note1, note2,
-                                                ),
-                                            ),
-                                            *position,
-                                        );
+                                        let complex = Complex::new(ComplexType::Two(note1.clone(), note2.clone(), crate::calc::complex_calculate_x_adjustment(note1, note2)), *position);
                                         complexes.push(complex);
                                     }
                                     [Some(note), None] => {
-                                        let complex = Complex::new(
-                                            ComplexType::Upper(
-                                                note.clone(),
-                                                position >= &min_duration,
-                                            ),
-                                            note.borrow().position,
-                                        );
+                                        let complex = Complex::new(ComplexType::Upper(note.clone(), position >= &min_duration), note.borrow().position);
                                         complexes.push(complex);
                                     }
                                     [None, Some(note)] => {
-                                        let complex = Complex::new(
-                                            ComplexType::Lower(
-                                                note.clone(),
-                                                position >= &min_duration,
-                                            ),
-                                            note.borrow().position,
-                                        );
+                                        let complex = Complex::new(ComplexType::Lower(note.clone(), position >= &min_duration), note.borrow().position);
                                         complexes.push(complex);
                                     }
 
@@ -274,12 +342,7 @@ impl Part {
         }
 
         if !complexes.is_empty() {
-            self.complexes = Some(
-                complexes
-                    .into_iter()
-                    .map(|item| Rc::new(RefCell::new(item)))
-                    .collect::<Vec<_>>(),
-            );
+            self.complexes = Some(complexes.into_iter().map(|item| Rc::new(RefCell::new(item))).collect::<Vec<_>>());
         }
     }
 
@@ -306,7 +369,6 @@ impl Part {
                     }
                 }
                 ComplexType::Two(upper, lower, _) => {
-                    println!("ComplexType::Two");
                     let upper = upper.borrow();
                     let mut upper_beamgroup = upper.beamgroup.as_ref().unwrap().borrow_mut();
                     if upper_beamgroup.direction.is_none() {
@@ -322,12 +384,10 @@ impl Part {
                         // println!("{idx}- Two lower: Set beamgroup direction to Down");
                         lower_beamgroup.direction = Some(DirUD::Down);
                     } else {
-                        // println!("{idx}- Two lower: Beamgroup direction is already set");
+                        println!("{idx}- Two lower: Beamgroup direction is already set");
                     }
                 }
                 ComplexType::Upper(upper, overflow) => {
-                    println!("ComplexType::Upper overflow: {overflow}");
-
                     let upper = upper.borrow();
                     let mut upper_beamgroup = upper.beamgroup.as_ref().unwrap().borrow_mut();
                     if upper_beamgroup.direction.is_none() {
@@ -346,7 +406,6 @@ impl Part {
                     }
                 }
                 ComplexType::Lower(lower, overflow) => {
-                    println!("ComplexType::Lower overflow: {overflow}");
                     let lower = lower.borrow();
                     let mut lower_beamgroup = lower.beamgroup.as_ref().unwrap().borrow_mut();
                     if lower_beamgroup.direction.is_none() {
@@ -530,13 +589,7 @@ impl Part {
                         None => 0.0,
                     };
 
-                    rects = create_note_rectangles(
-                        rects,
-                        &upper.borrow(),
-                        &upper_placements,
-                        upper_adjust,
-                        pause_up as f32 * SPACE_HALF,
-                    )?;
+                    rects = create_note_rectangles(rects, &upper.borrow(), &upper_placements, upper_adjust, pause_up as f32 * SPACE_HALF)?;
 
                     let pause_down = std::cmp::max(upper.borrow().bottom_level() + 5, 3);
 
@@ -549,13 +602,7 @@ impl Part {
                         None => 0.0,
                     };
 
-                    rects = create_note_rectangles(
-                        rects,
-                        &lower.borrow(),
-                        &lower_placements,
-                        lower_adjust,
-                        pause_down as f32 * SPACE_HALF,
-                    )?;
+                    rects = create_note_rectangles(rects, &lower.borrow(), &lower_placements, lower_adjust, pause_down as f32 * SPACE_HALF)?;
 
                     //==================================================================
                     let mut levels_accidentals = upper.borrow().levels_accidentals();
@@ -583,8 +630,7 @@ impl Part {
                 ComplexType::Upper(ref note, overflow) => {
                     let placements = note_get_heads_placements(&note.borrow())?;
                     // dbg!(" - Upper", &placements, overflow);
-                    rects =
-                        create_note_rectangles(rects, &note.borrow(), &placements, 0.0, -SPACE)?;
+                    rects = create_note_rectangles(rects, &note.borrow(), &placements, 0.0, -SPACE)?;
                     //
                     let mut levels_accidentals = note.borrow().levels_accidentals();
                     levels_accidentals.sort_by(|a, b| a.0.cmp(&b.0));
@@ -612,17 +658,10 @@ impl Part {
     }
 }
 
-fn create_accidentals_rectangles(
-    mut rects: Vec<NRectExt>,
-    mut levels_accidentals: Vec<(i8, Accidental)>,
-) -> Result<Vec<NRectExt>> {
+fn create_accidentals_rectangles(mut rects: Vec<NRectExt>, mut levels_accidentals: Vec<(i8, Accidental)>) -> Result<Vec<NRectExt>> {
     let mut idx = 0;
     while levels_accidentals.len() > 0 {
-        let level_accidental = if idx % 2 == 0 {
-            levels_accidentals.remove(0)
-        } else {
-            levels_accidentals.pop().unwrap()
-        };
+        let level_accidental = if idx % 2 == 0 { levels_accidentals.remove(0) } else { levels_accidentals.pop().unwrap() };
 
         let (level, accidental) = level_accidental;
 
@@ -651,13 +690,7 @@ fn create_accidentals_rectangles(
     Ok(rects)
 }
 
-pub fn create_note_rectangles(
-    mut rects: Vec<NRectExt>,
-    note: &Note,
-    placements: &HeadsPlacement,
-    adjust_right: f32,
-    adjust_y: f32,
-) -> Result<Vec<NRectExt>> {
+pub fn create_note_rectangles(mut rects: Vec<NRectExt>, note: &Note, placements: &HeadsPlacement, adjust_right: f32, adjust_y: f32) -> Result<Vec<NRectExt>> {
     match note.ntype {
         NoteType::Heads(_) => {
             rects = create_heads_and_dots_rectangles(rects, note, placements, adjust_right)?;
@@ -672,12 +705,7 @@ pub fn create_note_rectangles(
     Ok(rects)
 }
 
-pub fn create_heads_and_dots_rectangles(
-    mut rects: Vec<NRectExt>,
-    note: &Note,
-    placements: &HeadsPlacement,
-    adjust_right: f32,
-) -> Result<Vec<NRectExt>> {
+pub fn create_heads_and_dots_rectangles(mut rects: Vec<NRectExt>, note: &Note, placements: &HeadsPlacement, adjust_right: f32) -> Result<Vec<NRectExt>> {
     let note_head_type = duration_get_headtype(&note.duration);
     let note_shape = duration_get_headshape(&note.duration);
     let duration = note.duration;
@@ -691,17 +719,13 @@ pub fn create_heads_and_dots_rectangles(
         let dir = note.beamgroup.as_ref().unwrap().borrow().direction;
 
         const DEV_STEM_LENGHT: f32 = 6.5;
-        let stem_length =
-            (note.bottom_level() as f32 - note.top_level() as f32 + 0.5 + DEV_STEM_LENGHT)
-                * SPACE_HALF;
+        let stem_length = (note.bottom_level() as f32 - note.top_level() as f32 + 0.5 + DEV_STEM_LENGHT) * SPACE_HALF;
         if let Some(d) = dir {
             match d {
                 DirUD::Up => {
                     let rect: NRect = NRect::new(
                         adjust_right + note_width - STEM_WIDTH,
-                        note.top_level() as f32 * SPACE_HALF
-                            - SPACE_HALF
-                            - (DEV_STEM_LENGHT * SPACE_HALF),
+                        note.top_level() as f32 * SPACE_HALF - SPACE_HALF - (DEV_STEM_LENGHT * SPACE_HALF),
                         STEM_WIDTH,
                         stem_length,
                     );
@@ -709,12 +733,7 @@ pub fn create_heads_and_dots_rectangles(
                     //
                 }
                 DirUD::Down => {
-                    let rect: NRect = NRect::new(
-                        adjust_right,
-                        note.top_level() as f32 * SPACE_HALF,
-                        STEM_WIDTH,
-                        stem_length,
-                    );
+                    let rect: NRect = NRect::new(adjust_right, note.top_level() as f32 * SPACE_HALF, STEM_WIDTH, stem_length);
                     rects.push(NRectExt(rect, NRectType::DevStem));
                 }
             }
@@ -728,27 +747,14 @@ pub fn create_heads_and_dots_rectangles(
 
         let mut current_x: f32 = (place.as_f32() * note_width) + adjust_right;
 
-        let rect: NRect = NRect::new(
-            current_x,
-            *level as f32 * SPACE_HALF - SPACE_HALF,
-            note_width,
-            SPACE,
-        );
-        rects.push(NRectExt(
-            rect,
-            NRectType::Head(*note_head_type, *note_shape),
-        ));
+        let rect: NRect = NRect::new(current_x, *level as f32 * SPACE_HALF - SPACE_HALF, note_width, SPACE);
+        rects.push(NRectExt(rect, NRectType::Head(*note_head_type, *note_shape)));
         current_x += note_width;
 
         // Dots
 
         if dots_nr > 0 {
-            let rect: NRect = NRect::new(
-                current_x,
-                *level as f32 * SPACE_HALF - SPACE_QUARTER,
-                dots_width,
-                SPACE_HALF,
-            );
+            let rect: NRect = NRect::new(current_x, *level as f32 * SPACE_HALF - SPACE_QUARTER, dots_width, SPACE_HALF);
             rects.push(NRectExt(rect, NRectType::Dotted(dots_nr)));
             // current_x += dots_width;
         }
@@ -756,27 +762,15 @@ pub fn create_heads_and_dots_rectangles(
         // Ties
 
         if head.borrow().tie.is_some() {
-            let rect: NRect = NRect::new(
-                current_x,
-                *level as f32 * SPACE_HALF - SPACE_HALF,
-                SPACE,
-                SPACE,
-            );
-            rects.push(NRectExt(
-                rect,
-                NRectType::Tie(head.borrow().tie.as_ref().unwrap().clone()),
-            ));
+            let rect: NRect = NRect::new(current_x, *level as f32 * SPACE_HALF - SPACE_HALF, SPACE, SPACE);
+            rects.push(NRectExt(rect, NRectType::Tie(head.borrow().tie.as_ref().unwrap().clone())));
         }
     }
 
     Ok(rects)
 }
 
-pub fn create_pause_rectangles(
-    mut rects: Vec<NRectExt>,
-    note: &Note,
-    adjust_y: f32,
-) -> Result<Vec<NRectExt>> {
+pub fn create_pause_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: f32) -> Result<Vec<NRectExt>> {
     let avoid_y_collision = 0.0;
     match note.duration {
         NV1 | NV1DOT => {
@@ -784,21 +778,11 @@ pub fn create_pause_rectangles(
             rects.push(NRectExt(rect, NRectType::Pause(PauseShape::Whole)));
         }
         NV2 | NV2DOT | NV2TRI => {
-            let rect = NRect::new(
-                0.,
-                adjust_y + -SPACE_HALF + avoid_y_collision,
-                SPACE,
-                SPACE_HALF,
-            );
+            let rect = NRect::new(0., adjust_y + -SPACE_HALF + avoid_y_collision, SPACE, SPACE_HALF);
             rects.push(NRectExt(rect, NRectType::Pause(PauseShape::Half)));
         }
         NV4 | NV4DOT | NV4TRI => {
-            let rect = NRect::new(
-                0.,
-                adjust_y + -1.4 * SPACE + avoid_y_collision,
-                SPACE,
-                2.8 * SPACE,
-            );
+            let rect = NRect::new(0., adjust_y + -1.4 * SPACE + avoid_y_collision, SPACE, 2.8 * SPACE);
             rects.push(NRectExt(rect, NRectType::Pause(PauseShape::Quarter)));
         }
         NV8 | NV8DOT | NV8TRI => {
@@ -806,32 +790,20 @@ pub fn create_pause_rectangles(
             rects.push(NRectExt(rect, NRectType::Pause(PauseShape::Eighth)));
         }
         NV16 | NV16DOT | NV16TRI => {
-            let rect = NRect::new(
-                0.,
-                adjust_y + -SPACE + avoid_y_collision,
-                SPACE * 1.3,
-                3. * SPACE,
-            );
+            let rect = NRect::new(0., adjust_y + -SPACE + avoid_y_collision, SPACE * 1.3, 3. * SPACE);
             rects.push(NRectExt(rect, NRectType::Pause(PauseShape::Sixteenth)));
         }
 
         _ => {
             let rect = NRect::new(0., adjust_y + -SPACE_HALF + avoid_y_collision, SPACE, SPACE);
-            rects.push(NRectExt(
-                rect,
-                NRectType::WIP("pause undefined".to_string()),
-            ));
+            rects.push(NRectExt(rect, NRectType::WIP("pause undefined".to_string())));
         }
     };
 
     Ok(rects)
 }
 
-fn create_lyric_rectangles(
-    mut rects: Vec<NRectExt>,
-    note: &Note,
-    adjust_y: f32,
-) -> Result<Vec<NRectExt>> {
+fn create_lyric_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: f32) -> Result<Vec<NRectExt>> {
     let mut char_height = GLYPH_HEIGHT * FONT_SCALE_LYRICS;
 
     match &note.ntype {
@@ -843,24 +815,15 @@ fn create_lyric_rectangles(
                     let mut char_widths = Vec::new();
 
                     for char in s.chars() {
-                        let char_width = crate::render::fonts::ebgaramond::glyph_widths(char)
-                            * FONT_SCALE_LYRICS; // use the width of the current character
+                        let char_width = crate::render::fonts::ebgaramond::glyph_widths(char) * FONT_SCALE_LYRICS; // use the width of the current character
                         char_widths.push(char_width);
                         total_width += char_width;
                     }
 
                     let mut char_x = -(total_width / 2.0) + SPACE_HALF;
                     for (idx, char_width) in char_widths.iter().enumerate() {
-                        let rect = NRect::new(
-                            char_x,
-                            adjust_y + -(char_height / 2.0) - SPACE_HALF,
-                            *char_width,
-                            char_height + SPACE,
-                        );
-                        rects.push(NRectExt(
-                            rect,
-                            NRectType::LyricChar(s.chars().nth(idx).unwrap()),
-                        ));
+                        let rect = NRect::new(char_x, adjust_y + -(char_height / 2.0) - SPACE_HALF, *char_width, char_height + SPACE);
+                        rects.push(NRectExt(rect, NRectType::LyricChar(s.chars().nth(idx).unwrap())));
                         char_x += char_width;
                     }
 
@@ -908,18 +871,14 @@ impl PartType {
             PartType::Music(mtype) => match mtype {
                 PartMusicType::Voices(voices) => match voices {
                     Voices::One(voice) => voice.borrow().duration,
-                    Voices::Two(upper, lower) => {
-                        std::cmp::max(upper.borrow().duration, lower.borrow().duration)
-                    }
+                    Voices::Two(upper, lower) => std::cmp::max(upper.borrow().duration, lower.borrow().duration),
                 },
                 PartMusicType::RepeatBar(_) => todo!(),
             },
             PartType::Nonmusic(ntype) => match ntype {
                 PartNonmusicType::Lyrics(voices) => match voices {
                     Voices::One(voice) => voice.borrow().duration,
-                    Voices::Two(upper, lower) => {
-                        std::cmp::max(upper.borrow().duration, lower.borrow().duration)
-                    }
+                    Voices::Two(upper, lower) => std::cmp::max(upper.borrow().duration, lower.borrow().duration),
                 },
                 PartNonmusicType::Other => todo!(),
             },

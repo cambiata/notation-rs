@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../render_notation/src"
+		}
+	],
+	"settings": {}
+}
