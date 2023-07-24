@@ -53,6 +53,9 @@ impl Part {
                     self.create_complexes();
                     self.set_complex_durations();
                     self.set_beamgroups_directions(DirUAD::Auto);
+
+                    self.calculate_beamgoups_properties();
+
                     self.set_note_directions();
                     self.create_complex_rects()?;
                 }
@@ -61,7 +64,6 @@ impl Part {
             PartType::Nonmusic(ntype) => match ntype {
                 PartNonmusicType::Lyrics(voices) => {
                     self.set_voice_notes_references();
-                    self.create_beamgroups(BeamingPattern::NValues(vec![NV4]));
                     self.create_complexes();
                     self.set_complex_durations();
                     self.create_complex_rects()?;
@@ -91,6 +93,41 @@ impl Part {
             },
             PartType::Nonmusic(_) => {}
         }
+    }
+
+    fn calculate_beamgoups_properties(&self) {
+        fn do_beamgroup(beamgroups: &Option<Vec<Rc<RefCell<Beamgroup>>>>) {
+            if let Some(beamgroups) = beamgroups {
+                for beamgroup in beamgroups.iter() {
+                    let mut beamgroup = beamgroup.borrow_mut();
+                    // beamgroup.calculate_properties();
+                    dbg!(beamgroup.notes.len());
+                }
+            }
+        }
+
+        match &self.ptype {
+            PartType::Music(mtype) => match mtype {
+                PartMusicType::Voices(voices) => match voices {
+                    Voices::One(v) => {
+                        let mut voice = v.borrow_mut();
+                        // voice.create_beamgroups(&pattern);
+                        do_beamgroup(&voice.beamgroups);
+                    }
+                    Voices::Two(upper, lower) => {
+                        println!("Upper");
+                        let mut upper = upper.borrow_mut();
+                        do_beamgroup(&upper.beamgroups);
+                        println!("Lower");
+                        let mut lower = lower.borrow_mut();
+                        do_beamgroup(&lower.beamgroups);
+                    }
+                },
+                PartMusicType::RepeatBar(_) => todo!(),
+            },
+            PartType::Nonmusic(_) => {}
+        }
+        //
     }
 
     pub fn create_complexes(&mut self) {
@@ -269,6 +306,7 @@ impl Part {
                     }
                 }
                 ComplexType::Two(upper, lower, _) => {
+                    println!("ComplexType::Two");
                     let upper = upper.borrow();
                     let mut upper_beamgroup = upper.beamgroup.as_ref().unwrap().borrow_mut();
                     if upper_beamgroup.direction.is_none() {
@@ -288,32 +326,40 @@ impl Part {
                     }
                 }
                 ComplexType::Upper(upper, overflow) => {
+                    println!("ComplexType::Upper overflow: {overflow}");
+
                     let upper = upper.borrow();
                     let mut upper_beamgroup = upper.beamgroup.as_ref().unwrap().borrow_mut();
                     if upper_beamgroup.direction.is_none() {
-                        let dir: DirUD = match force_overflow_dir {
-                            DirUAD::Up => DirUD::Up,
-                            DirUAD::Down => DirUD::Down,
-                            DirUAD::Auto => upper_beamgroup.calc_direction(),
+                        let dir: DirUD = if !overflow {
+                            DirUD::Up
+                        } else {
+                            match force_overflow_dir {
+                                DirUAD::Up => DirUD::Up,
+                                DirUAD::Down => DirUD::Down,
+                                DirUAD::Auto => upper_beamgroup.calc_direction(),
+                            }
                         };
-
-                        // println!("{idx}- Upper: Set beamgroup direction to {dir:?} ");
                         upper_beamgroup.direction = Some(dir);
                     } else {
                         // println!("{idx}- Upper: Beamgroup direction is already set");
                     }
                 }
                 ComplexType::Lower(lower, overflow) => {
+                    println!("ComplexType::Lower overflow: {overflow}");
                     let lower = lower.borrow();
                     let mut lower_beamgroup = lower.beamgroup.as_ref().unwrap().borrow_mut();
                     if lower_beamgroup.direction.is_none() {
-                        let dir: DirUD = match force_overflow_dir {
-                            DirUAD::Up => DirUD::Up,
-                            DirUAD::Down => DirUD::Down,
-                            DirUAD::Auto => lower_beamgroup.calc_direction(),
+                        let dir: DirUD = if !overflow {
+                            DirUD::Down
+                        } else {
+                            match force_overflow_dir {
+                                DirUAD::Up => DirUD::Up,
+                                DirUAD::Down => DirUD::Down,
+                                DirUAD::Auto => lower_beamgroup.calc_direction(),
+                            }
                         };
 
-                        // println!("{idx}- Lower: Set beamgroup direction to {dir:?}");
                         lower_beamgroup.direction = Some(dir);
                     } else {
                         // println!("{idx}- Lower: Beamgroup direction is already set");

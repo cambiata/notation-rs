@@ -20,15 +20,14 @@ pub struct Note {
     pub attr: NoteAttributes,
 
     pub id: usize,
+    
     //-------------------------------------------
     // calculated
     pub position: Position,
     pub end_position: Position,
 
     pub voice: Option<Rc<RefCell<Voice>>>,
-
     pub beamgroup: Option<Rc<RefCell<Beamgroup>>>,
-
     pub direction: Option<DirUD>,
 }
 
