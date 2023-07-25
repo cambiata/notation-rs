@@ -390,7 +390,7 @@ pub enum NRectType {
     Tie(Tie),
     LyricChar(char),
     WIP(String),
-    DevStem,
+    DevStem(String),
     DUMMY,
     Dev(bool, String),
     // DevRectRed,

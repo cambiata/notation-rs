@@ -92,7 +92,7 @@ pub enum ComplexType {
     Lower(Rc<RefCell<Note>>, bool),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum ComplexXAdjustment {
     UpperRight(f32),
     LowerRight(f32),

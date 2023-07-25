@@ -770,30 +770,30 @@ pub fn create_heads_and_dots_rectangles(mut rects: Vec<NRectExt>, note: &Note, p
 
     // DevStem
 
-    if note.has_stem() {
-        let dir = note.beamgroup.as_ref().unwrap().borrow().direction;
+    // if note.has_stem() {
+    //     let dir = note.beamgroup.as_ref().unwrap().borrow().direction;
 
-        const DEV_STEM_LENGHT: f32 = 6.5;
-        let stem_length = (note.bottom_level() as f32 - note.top_level() as f32 + 0.5 + DEV_STEM_LENGHT) * SPACE_HALF;
-        if let Some(d) = dir {
-            match d {
-                DirUD::Up => {
-                    let rect: NRect = NRect::new(
-                        adjust_right + note_width - STEM_WIDTH,
-                        note.top_level() as f32 * SPACE_HALF - SPACE_HALF - (DEV_STEM_LENGHT * SPACE_HALF),
-                        STEM_WIDTH,
-                        stem_length,
-                    );
-                    rects.push(NRectExt(rect, NRectType::DevStem));
-                    //
-                }
-                DirUD::Down => {
-                    let rect: NRect = NRect::new(adjust_right, note.top_level() as f32 * SPACE_HALF, STEM_WIDTH, stem_length);
-                    rects.push(NRectExt(rect, NRectType::DevStem));
-                }
-            }
-        }
-    };
+    //     const DEV_STEM_LENGHT: f32 = 6.5;
+    //     let stem_length = (note.bottom_level() as f32 - note.top_level() as f32 + 0.5 + DEV_STEM_LENGHT) * SPACE_HALF;
+    //     if let Some(d) = dir {
+    //         match d {
+    //             DirUD::Up => {
+    //                 let rect: NRect = NRect::new(
+    //                     adjust_right + note_width - STEM_WIDTH,
+    //                     note.top_level() as f32 * SPACE_HALF - SPACE_HALF - (DEV_STEM_LENGHT * SPACE_HALF),
+    //                     STEM_WIDTH,
+    //                     stem_length,
+    //                 );
+    //                 rects.push(NRectExt(rect, NRectType::DevStem("red".to_string())));
+    //                 //
+    //             }
+    //             DirUD::Down => {
+    //                 let rect: NRect = NRect::new(adjust_right, note.top_level() as f32 * SPACE_HALF, STEM_WIDTH, stem_length);
+    //                 rects.push(NRectExt(rect, NRectType::DevStem("red".to_string())));
+    //             }
+    //         }
+    //     }
+    // };
 
     // Heads
 
