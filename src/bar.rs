@@ -29,9 +29,7 @@ impl Bars {
                         let mut complex_positions: HashMap<usize, usize> = HashMap::new();
 
                         let mut part = part.borrow_mut();
-                        for (complexidx, complex) in
-                            part.complexes.as_ref().unwrap().iter().enumerate()
-                        {
+                        for (complexidx, complex) in part.complexes.as_ref().unwrap().iter().enumerate() {
                             let mut complex = complex.borrow_mut();
                             positions.push(complex.position);
                             complex_positions.insert(complex.position, complexidx);
@@ -45,12 +43,9 @@ impl Bars {
 
                     let mut positions2 = positions.clone();
                     positions2.push(duration);
-                    let durations = positions2
-                        .windows(2)
-                        .map(|w| w[1] - w[0])
-                        .collect::<Vec<_>>();
+                    let durations = positions2.windows(2).map(|w| w[1] - w[0]).collect::<Vec<_>>();
 
-                    let complex_count = bar.complex_count();
+                    // let complex_count = bar.complex_count();
 
                     // for columnidx in 0..complex_count {
                     for (posidx, position) in positions.iter().enumerate() {
@@ -64,26 +59,26 @@ impl Bars {
 
                             if let Some(complexidx) = complexidx {
                                 let part = part.borrow();
-                                let complex =
-                                    &part.complexes.as_ref().expect("This complex should exist!")
-                                        [*complexidx]
-                                        .borrow();
+                                let complex = &part.complexes.as_ref().expect("This complex should exist!")[*complexidx].borrow();
 
-                                let item_rects: Vec<NRect> =
-                                    complex.rects.iter().map(|nrect| nrect.borrow().0).collect();
+                                let item_rects: Vec<NRect> = complex.rects.iter().map(|nrect| nrect.borrow().0).collect();
 
-                                let item_nrects = complex
-                                    .rects
-                                    .iter()
-                                    .map(|nrect| nrect.clone())
-                                    .collect::<Vec<_>>();
+                                let item_nrects = complex.rects.iter().map(|nrect| nrect.clone()).collect::<Vec<_>>();
 
-                                item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
-                                    item_nrects,
-                                    complex.duration,
-                                ))));
+                                item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(item_nrects, complex.duration))));
 
                                 colduration = Some(durations[posidx]);
+
+                                //--------------------------------------------
+
+                                match complex.ctype {
+                                    ComplexType::Single(ref single) => {
+                                        dbg!(&single.borrow().beamgroup);
+                                    }
+                                    ComplexType::Two(ref upper, ref lower, _) => todo!(),
+                                    ComplexType::Upper(ref upper, _) => todo!(),
+                                    ComplexType::Lower(ref lower, _) => todo!(),
+                                }
                             } else {
                                 //
                             }
@@ -101,10 +96,7 @@ impl Bars {
                         let mut colitems = vec![];
                         for parttemplate in bartemplate.0.iter() {
                             let item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
-                                vec![Rc::new(RefCell::new(NRectExt::new(
-                                    NRect::new(0., -5.0, 10., 10.),
-                                    NRectType::WIP("VerticalLine".to_string()),
-                                )))],
+                                vec![Rc::new(RefCell::new(NRectExt::new(NRect::new(0., -5.0, 10., 10.), NRectType::WIP("VerticalLine".to_string()))))],
                                 0,
                             ))));
                             colitems.push(item);
@@ -116,15 +108,10 @@ impl Bars {
                         let mut colitems = vec![];
                         for parttemplate in bartemplate.0.iter() {
                             colitems.push(match parttemplate {
-                                PartTemplate::Music => {
-                                    Some(Rc::new(RefCell::new(RItem::new_from_nrects(
-                                        vec![Rc::new(RefCell::new(NRectExt::new(
-                                            NRect::new(0., -30.0, 5., 60.),
-                                            NRectType::WIP("barline".to_string()),
-                                        )))],
-                                        0,
-                                    ))))
-                                }
+                                PartTemplate::Music => Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                    vec![Rc::new(RefCell::new(NRectExt::new(NRect::new(0., -30.0, 5., 60.), NRectType::WIP("barline".to_string()))))],
+                                    0,
+                                )))),
                                 PartTemplate::Nonmusic => None,
                             });
                         }
@@ -147,20 +134,14 @@ impl Bars {
                                         };
 
                                         item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
-                                            vec![Rc::new(RefCell::new(NRectExt::new(
-                                                NRect::new(0., y, 74., h),
-                                                NRectType::Clef(clef.clone()),
-                                            )))],
+                                            vec![Rc::new(RefCell::new(NRectExt::new(NRect::new(0., y, 74., h), NRectType::Clef(clef.clone()))))],
                                             0,
                                         ))))
                                     }
                                     None => {
                                         //item_rects.push(NRect::new(0., -5.0, 10., 10.));
                                         item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
-                                            vec![Rc::new(RefCell::new(NRectExt::new(
-                                                NRect::new(0., -5.0, 10., 10.),
-                                                NRectType::WIP("no clef".to_string()),
-                                            )))],
+                                            vec![Rc::new(RefCell::new(NRectExt::new(NRect::new(0., -5.0, 10., 10.), NRectType::WIP("no clef".to_string()))))],
                                             0,
                                         ))))
                                     }

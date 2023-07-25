@@ -22,8 +22,10 @@ fn main() {
     // let bar_data = QCode::bars("nv16 -1 -2 -3 -3 ").unwrap();
 
     // let bar_data = QCode::bars("nv16 -1 -2 -2 -3 ").unwrap();
-    let bar_data = QCode::bars("nv16 0 -1 -4 -5 -4 -2 -2 -1 % nv16 5 3 3 2 2 3 3 5").unwrap();
+    // let bar_data = QCode::bars("nv16 0 -1 -4 -5 -4 -2 -2 -1 % nv16 5 3 3 2 2 3 3 5").unwrap();
 
+    
+    let bar_data = QCode::bars("0 1").unwrap();
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.to_matrix(&bartemplate).unwrap();
 
