@@ -279,9 +279,9 @@ impl Bars {
                                             NoteType::Heads(_) => {
                                                 let beamgroup_ref = note2.beamgroup.as_ref().expect("Lower note should have beamgroup!").clone();
                                                 let beamgroup = beamgroup_ref.borrow();
-                                                if beamgroup.id != note_current_beamgroup_id {
-                                                    note_current_beamgroup_id = beamgroup.id;
-                                                    note_current_beamgroup_note_idx = 0;
+                                                if beamgroup.id != note2_current_beamgroup_id {
+                                                    note2_current_beamgroup_id = beamgroup.id;
+                                                    note2_current_beamgroup_note_idx = 0;
 
                                                     let data = RItemBeamData {
                                                         id: beamgroup.id,
@@ -313,8 +313,8 @@ impl Bars {
                                                         head_width: duration_get_headwidth(&note2.duration),
                                                     };
 
-                                                    note_current_beamgroup_note_idx += 1;
-                                                    if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
+                                                    note2_current_beamgroup_note_idx += 1;
+                                                    if note2_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
                                                         item.note2_beam = RItemBeam::Middle(beamgroup.id, note.top_level(), note.bottom_level());
                                                     } else {
                                                         item.note2_beam = RItemBeam::End(data);
