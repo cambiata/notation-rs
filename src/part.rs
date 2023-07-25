@@ -102,7 +102,7 @@ impl Part {
                                 DirUD::Down => top_bottom.1,
                             };
 
-                            beamgroup.tilt = Some((tilt as f32, 0.0));
+                            beamgroup.start_level = tilt as f32;
                         }
                         _ => {
                             println!("Two notes");
@@ -256,7 +256,8 @@ impl Part {
                                 }
                             };
 
-                            beamgroup.tilt = Some((tilt_left, tilt_right));
+                            beamgroup.start_level = tilt_left;
+                            beamgroup.end_level = tilt_right;
                         }
                     }
                 }

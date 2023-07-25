@@ -11,7 +11,7 @@ pub struct Beamgroup {
     pub direction: Option<DirUD>,
     pub top: i8,
     pub bottom: i8,
-    pub tilt: Option<(f32, f32)>,
+    // pub tilt: Option<(f32, f32)>,
     pub start_level: f32,
     pub end_level: f32,
 }
@@ -30,7 +30,7 @@ impl Beamgroup {
             direction: None,
             top,
             bottom,
-            tilt: None,
+            // tilt: None,
             start_level: 0.0,
             end_level: 0.0,
         }

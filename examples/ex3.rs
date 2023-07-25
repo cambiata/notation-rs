@@ -35,11 +35,11 @@ fn main() {
     matrix.calculate_row_spacing();
     matrix.calculate_measurements();
 
-    matrix_to_svg(&matrix, "./examples/ex3A.svg");
+    matrix_to_svg(&matrix, "./examples/ex3AX.svg");
 
     matrix.add_horizontal_space(100.0);
     matrix.add_vertical_space(50.0);
     matrix.calculate_measurements();
 
-    matrix_to_svg(&matrix, "./examples/ex3B.svg");
+    // matrix_to_svg(&matrix, "./examples/ex3B.svg");
 }
