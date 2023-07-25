@@ -88,7 +88,6 @@ impl Part {
                 for beamgroup in beamgroups.iter() {
                     let mut beamgroup = beamgroup.borrow_mut();
                     // beamgroup.calculate_properties();
-                    dbg!(beamgroup.notes.len());
                     let direction = beamgroup.direction.unwrap();
                     match beamgroup.notes.len() {
                         0 => panic!("Beamgroup has no notes"),
@@ -105,7 +104,7 @@ impl Part {
                             beamgroup.start_level = tilt as f32;
                         }
                         _ => {
-                            println!("Two notes");
+                            println!("Two notes or more");
                             let first = beamgroup.notes[0].clone();
                             let mut first = first.borrow_mut();
                             let last_idx = beamgroup.notes.len() - 1;
@@ -175,7 +174,7 @@ impl Part {
                                                     (middle_top_bottom.1, middle_top_bottom.1)
                                                 } else {
                                                     // println!("- - Middle is less than last - DOWNWARDS");
-                                                    (first_top_bottom.1.max(middle_top_bottom.0), last_top_bottom.1)
+                                                    (first_top_bottom.1.max(middle_top_bottom.1), last_top_bottom.1)
                                                 }
                                             } else if first_top_bottom.1 == last_top_bottom.1 {
                                                 // println!("- First is SAME than Last");
@@ -209,52 +208,52 @@ impl Part {
                             match direction {
                                 DirUD::Up => {
                                     if angle <= -MAX_ANGLE {
-                                        println!("För brant uppåt");
-                                        tilt_left = tilt_right - MAX_ANGLE;
+                                        // println!("För brant uppåt 1");
+                                        tilt_left = tilt_right + MAX_ANGLE;
                                     } else if angle >= MAX_ANGLE {
-                                        println!("För brant nedåt");
+                                        // println!("För brant nedåt");
                                         tilt_right = tilt_left + MAX_ANGLE;
                                     }
                                 }
                                 DirUD::Down => {
                                     if angle <= -MAX_ANGLE {
-                                        println!("För brant uppåt");
-                                        tilt_right = tilt_left + MAX_ANGLE;
+                                        // println!("För brant uppåt 2");
+                                        tilt_right = tilt_left - MAX_ANGLE;
                                     } else if angle >= MAX_ANGLE {
-                                        println!("För brant nedåt");
+                                        // println!("För brant nedåt");
                                         tilt_left = tilt_right - MAX_ANGLE;
                                     }
                                 }
                             }
 
                             // Shorten if two voices directions apart ================================
-                            println!("({}, {})", tilt_left, tilt_right);
-                            match direction {
-                                DirUD::Up => {
-                                    if tilt_left <= -5.0 {
-                                        tilt_left += 1.0;
-                                    } else if tilt_left <= -4.0 {
-                                        tilt_left += 0.5;
-                                    }
-                                    if tilt_right <= -5.0 {
-                                        tilt_right += 1.0;
-                                    } else if tilt_right <= -4.0 {
-                                        tilt_right += 0.5;
-                                    }
-                                }
-                                DirUD::Down => {
-                                    if tilt_left >= 5.0 {
-                                        tilt_left += -1.0;
-                                    } else if tilt_left >= 4.0 {
-                                        tilt_left += -0.5;
-                                    }
-                                    if tilt_right >= 5.0 {
-                                        tilt_right += -1.0;
-                                    } else if tilt_right >= 4.0 {
-                                        tilt_right += -0.5;
-                                    }
-                                }
-                            };
+                            // println!("({}, {})", tilt_left, tilt_right);
+                            // match direction {
+                            //     DirUD::Up => {
+                            //         if tilt_left <= -5.0 {
+                            //             tilt_left += 1.0;
+                            //         } else if tilt_left <= -4.0 {
+                            //             tilt_left += 0.5;
+                            //         }
+                            //         if tilt_right <= -5.0 {
+                            //             tilt_right += 1.0;
+                            //         } else if tilt_right <= -4.0 {
+                            //             tilt_right += 0.5;
+                            //         }
+                            //     }
+                            //     DirUD::Down => {
+                            //         if tilt_left >= 5.0 {
+                            //             tilt_left += -1.0;
+                            //         } else if tilt_left >= 4.0 {
+                            //             tilt_left += -0.5;
+                            //         }
+                            //         if tilt_right >= 5.0 {
+                            //             tilt_right += -1.0;
+                            //         } else if tilt_right >= 4.0 {
+                            //             tilt_right += -0.5;
+                            //         }
+                            //     }
+                            // };
 
                             beamgroup.start_level = tilt_left;
                             beamgroup.end_level = tilt_right;

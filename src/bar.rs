@@ -152,7 +152,6 @@ impl Bars {
 
     pub fn add_beamgroups_to_matrix_items(&self) {
         for (baridx, bar) in self.0.iter().enumerate() {
-            dbg!(baridx);
             let bar = bar.borrow();
             match bar.btype {
                 BarType::Standard(ref parts) => {
@@ -160,7 +159,6 @@ impl Bars {
                         let part = part.borrow();
                         let complexes = part.complexes.as_ref().expect("Part should have complexes!");
 
-                        // let mut upper_beamgroup: Option<Rc<RefCell<Beamgroup>>> = None;
                         let mut note_current_beamgroup_id: usize = 0;
                         let mut note_current_beamgroup_note_idx: usize = 0;
                         let mut note2_current_beamgroup_id: usize = 0;
@@ -174,68 +172,104 @@ impl Bars {
                                 match &complex.ctype {
                                     ComplexType::Lower(ref note, _) | ComplexType::Upper(ref note, _) | ComplexType::Single(ref note, _) => {
                                         let note = &note.borrow();
-                                        let beamgroup_ref = note.beamgroup.as_ref().expect("Single note should have beamgroup!").clone();
-                                        let beamgroup = beamgroup_ref.borrow();
-                                        println!("beamgroup.id:{}", beamgroup.id);
-                                        if beamgroup.id != note_current_beamgroup_id {
-                                            note_current_beamgroup_id = beamgroup.id;
-                                            note_current_beamgroup_note_idx = 0;
-                                            if (beamgroup.notes.len() == 1) {
-                                                item.upper_beam = RItemBeam::Single(beamgroup.id);
-                                            } else {
-                                                item.upper_beam = RItemBeam::Start(beamgroup.id, beamgroup.direction.unwrap());
+                                        match note.ntype {
+                                            NoteType::Heads(_) => {
+                                                let beamgroup_ref = note.beamgroup.as_ref().expect("Single note should have beamgroup!").clone();
+                                                let beamgroup = beamgroup_ref.borrow();
+                                                if beamgroup.id != note_current_beamgroup_id {
+                                                    note_current_beamgroup_id = beamgroup.id;
+                                                    note_current_beamgroup_note_idx = 0;
+                                                    if beamgroup.notes.len() == 1 {
+                                                        item.note_beam = RItemBeam::Single(
+                                                            beamgroup.id,
+                                                            beamgroup.direction.unwrap(),
+                                                            beamgroup.start_level,
+                                                            note.duration,
+                                                            note.top_level(),
+                                                            note.bottom_level(),
+                                                            note.has_stem(),
+                                                        );
+                                                    } else {
+                                                        item.note_beam = RItemBeam::Start(beamgroup.id, beamgroup.direction.unwrap(), beamgroup.start_level, note.top_level(), note.bottom_level());
+                                                    }
+                                                } else {
+                                                    note_current_beamgroup_note_idx += 1;
+                                                    if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
+                                                        item.note_beam = RItemBeam::Middle(beamgroup.id, note.top_level(), note.bottom_level());
+                                                    } else {
+                                                        item.note_beam = RItemBeam::End(beamgroup.id, beamgroup.end_level, note.top_level(), note.bottom_level());
+                                                    }
+                                                }
                                             }
-                                        } else {
-                                            note_current_beamgroup_note_idx += 1;
-                                            if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
-                                                item.upper_beam = RItemBeam::Middle(beamgroup.id);
-                                            } else {
-                                                item.upper_beam = RItemBeam::End(beamgroup.id);
-                                            }
+                                            _ => {}
                                         }
                                     }
 
                                     ComplexType::Two(ref note, ref note2, _) => {
                                         let note = &note.borrow();
-                                        let beamgroup_ref = note.beamgroup.as_ref().expect("Upper note should have beamgroup!").clone();
-                                        let beamgroup = beamgroup_ref.borrow();
-                                        println!("beamgroup.id:{}", beamgroup.id);
-                                        if beamgroup.id != note_current_beamgroup_id {
-                                            note_current_beamgroup_id = beamgroup.id;
-                                            note_current_beamgroup_note_idx = 0;
-                                            if (beamgroup.notes.len() == 1) {
-                                                item.upper_beam = RItemBeam::Single(beamgroup.id);
-                                            } else {
-                                                item.upper_beam = RItemBeam::Start(beamgroup.id, beamgroup.direction.unwrap());
+                                        match note.ntype {
+                                            NoteType::Heads(_) => {
+                                                let beamgroup_ref = note.beamgroup.as_ref().expect("Upper note should have beamgroup!").clone();
+                                                let beamgroup = beamgroup_ref.borrow();
+                                                if beamgroup.id != note_current_beamgroup_id {
+                                                    note_current_beamgroup_id = beamgroup.id;
+                                                    note_current_beamgroup_note_idx = 0;
+                                                    if beamgroup.notes.len() == 1 {
+                                                        item.note_beam = RItemBeam::Single(
+                                                            beamgroup.id,
+                                                            beamgroup.direction.unwrap(),
+                                                            beamgroup.start_level,
+                                                            note.duration,
+                                                            note.top_level(),
+                                                            note.bottom_level(),
+                                                            note.has_stem(),
+                                                        );
+                                                    } else {
+                                                        item.note_beam = RItemBeam::Start(beamgroup.id, beamgroup.direction.unwrap(), beamgroup.start_level, note.top_level(), note.bottom_level());
+                                                    }
+                                                } else {
+                                                    note_current_beamgroup_note_idx += 1;
+                                                    if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
+                                                        item.note_beam = RItemBeam::Middle(beamgroup.id, note.top_level(), note.bottom_level());
+                                                    } else {
+                                                        item.note_beam = RItemBeam::End(beamgroup.id, beamgroup.end_level, note.top_level(), note.bottom_level());
+                                                    }
+                                                }
                                             }
-                                        } else {
-                                            note_current_beamgroup_note_idx += 1;
-                                            if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
-                                                item.upper_beam = RItemBeam::Middle(beamgroup.id);
-                                            } else {
-                                                item.upper_beam = RItemBeam::End(beamgroup.id);
-                                            }
+                                            _ => {}
                                         }
 
                                         let note2 = &note2.borrow();
-                                        let beamgroup_ref = note2.beamgroup.as_ref().expect("Lower note should have beamgroup!").clone();
-                                        let beamgroup = beamgroup_ref.borrow();
-                                        println!("beamgroup.id:{}", beamgroup.id);
-                                        if beamgroup.id != note_current_beamgroup_id {
-                                            note_current_beamgroup_id = beamgroup.id;
-                                            note_current_beamgroup_note_idx = 0;
-                                            if (beamgroup.notes.len() == 1) {
-                                                item.lower_beam = RItemBeam::Single(beamgroup.id);
-                                            } else {
-                                                item.lower_beam = RItemBeam::Start(beamgroup.id, beamgroup.direction.unwrap());
+                                        match note2.ntype {
+                                            NoteType::Heads(_) => {
+                                                let beamgroup_ref = note2.beamgroup.as_ref().expect("Lower note should have beamgroup!").clone();
+                                                let beamgroup = beamgroup_ref.borrow();
+                                                if beamgroup.id != note_current_beamgroup_id {
+                                                    note_current_beamgroup_id = beamgroup.id;
+                                                    note_current_beamgroup_note_idx = 0;
+                                                    if beamgroup.notes.len() == 1 {
+                                                        item.note2_beam = RItemBeam::Single(
+                                                            beamgroup.id,
+                                                            beamgroup.direction.unwrap(),
+                                                            beamgroup.start_level,
+                                                            note.duration,
+                                                            note.top_level(),
+                                                            note.bottom_level(),
+                                                            note.has_stem(),
+                                                        );
+                                                    } else {
+                                                        item.note2_beam = RItemBeam::Start(beamgroup.id, beamgroup.direction.unwrap(), beamgroup.start_level, note.top_level(), note.bottom_level());
+                                                    }
+                                                } else {
+                                                    note_current_beamgroup_note_idx += 1;
+                                                    if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
+                                                        item.note2_beam = RItemBeam::Middle(beamgroup.id, note.top_level(), note.bottom_level());
+                                                    } else {
+                                                        item.note2_beam = RItemBeam::End(beamgroup.id, beamgroup.end_level, note.top_level(), note.bottom_level());
+                                                    }
+                                                }
                                             }
-                                        } else {
-                                            note_current_beamgroup_note_idx += 1;
-                                            if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
-                                                item.lower_beam = RItemBeam::Middle(beamgroup.id);
-                                            } else {
-                                                item.lower_beam = RItemBeam::End(beamgroup.id);
-                                            }
+                                            _ => {}
                                         }
                                     }
                                 }

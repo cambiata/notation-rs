@@ -16,12 +16,11 @@ pub enum NoteType {
 #[derive(PartialEq)]
 pub struct Note {
     pub id: usize,
-    
+
     pub ntype: NoteType,
     pub duration: Duration,
     pub attr: NoteAttributes,
 
-    
     //-------------------------------------------
     // calculated
     pub position: Position,
@@ -88,6 +87,13 @@ impl Note {
             _ => Vec::new(),
         }
     }
+
+    pub fn is_heads(&self) -> bool {
+        match &self.ntype {
+            NoteType::Heads(_) => true,
+            _ => false,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -113,18 +119,10 @@ impl Debug for Note {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match &self.ntype {
             NoteType::Heads(heads) => {
-                write!(
-                    f,
-                    "Note id:{} pos:{} end:{} dur:{} heads:{:?}",
-                    self.id, self.position, self.end_position, self.duration, heads
-                )
+                write!(f, "Note id:{} pos:{} end:{} dur:{} heads:{:?}", self.id, self.position, self.end_position, self.duration, heads)
             }
             NoteType::Pause => {
-                write!(
-                    f,
-                    "Note PAUSE id:{} pos:{} end:{} dur:{} pause",
-                    self.id, self.position, self.end_position, self.duration
-                )
+                write!(f, "Note PAUSE id:{} pos:{} end:{} dur:{} pause", self.id, self.position, self.end_position, self.duration)
             }
             // NoteType::Lyric(syllable) => {
             //     write!(
@@ -134,11 +132,7 @@ impl Debug for Note {
             //     )
             // }
             _ => {
-                write!(
-                    f,
-                    "Note OTHER TYPE id:{} pos:{} end:{} dur:{}",
-                    self.id, self.position, self.end_position, self.duration
-                )
+                write!(f, "Note OTHER TYPE id:{} pos:{} end:{} dur:{}", self.id, self.position, self.end_position, self.duration)
             }
         }
     }
@@ -152,10 +146,7 @@ pub struct Notes {
 
 impl Notes {
     pub fn new(items: Vec<Note>) -> Self {
-        let items: Vec<Rc<RefCell<Note>>> = items
-            .into_iter()
-            .map(|item| Rc::new(RefCell::new(item)))
-            .collect();
+        let items: Vec<Rc<RefCell<Note>>> = items.into_iter().map(|item| Rc::new(RefCell::new(item))).collect();
 
         let duration = items.iter().fold(0, |acc, item| {
             let mut item_mut = item.borrow_mut();

@@ -41,8 +41,8 @@ pub struct RItem {
     pub row_idx: usize,
     pub coords: Option<NPoint>,
     pub nrects: Option<Vec<Rc<RefCell<NRectExt>>>>,
-    pub upper_beam: RItemBeam,
-    pub lower_beam: RItemBeam,
+    pub note_beam: RItemBeam,
+    pub note2_beam: RItemBeam,
 }
 
 impl RItem {
@@ -56,8 +56,8 @@ impl RItem {
             row_idx: 0,
             coords: None,
             nrects: None,
-            upper_beam: RItemBeam::None,
-            lower_beam: RItemBeam::None,
+            note_beam: RItemBeam::None,
+            note2_beam: RItemBeam::None,
         }
     }
 
@@ -71,8 +71,8 @@ impl RItem {
             row_idx: 0,
             coords: None,
             nrects: Some(nrects),
-            upper_beam: RItemBeam::None,
-            lower_beam: RItemBeam::None,
+            note_beam: RItemBeam::None,
+            note2_beam: RItemBeam::None,
         }
     }
 
@@ -93,8 +93,8 @@ impl RItem {
             row_idx: 0,
             coords: None,
             nrects: Some(nrects_clones),
-            upper_beam: RItemBeam::None,
-            lower_beam: RItemBeam::None,
+            note_beam: RItemBeam::None,
+            note2_beam: RItemBeam::None,
         }
     }
 }
@@ -102,10 +102,10 @@ impl RItem {
 #[derive(Debug, PartialEq)]
 pub enum RItemBeam {
     None,
-    Single(usize),
-    Start(usize, DirUD),
-    Middle(usize),
-    End(usize),
+    Single(usize, DirUD, f32, Duration, i8, i8, bool),
+    Start(usize, DirUD, f32, i8, i8),
+    Middle(usize, i8, i8),
+    End(usize, f32, i8, i8),
 }
 
 #[derive(Debug)]
@@ -335,8 +335,29 @@ impl RMatrix {
         }
     }
 
-    pub fn calculate_measurements(&mut self) {
-        // cols, rows, items
+    pub fn calculate_col_measurements(&mut self) {
+        let mut x = 0.0;
+        for col in &self.cols {
+            let mut col = col.borrow_mut();
+            // let mut y = 0.0;
+            // let mut rowidx = 0;
+            // for item in &col.items {
+            //     if let Some(item) = item {
+            //         let mut item: RefMut<RItem> = item.borrow_mut();
+            //         item.coords = Some(NPoint::new(x, y));
+            //     }
+            //     // let mut row = self.get_row(rowidx).unwrap().borrow_mut();
+            //     // row.y = y;
+            //     // y += row.distance_y.round();
+            //     // rowidx += 1;
+            // }
+            col.x = x;
+            x += col.distance_x.round();
+            //x += col.distance_x_after_allot;
+        }
+    }
+
+    pub fn calculate_col_row_item_measurements(&mut self) {
         let mut x = 0.0;
         for col in &self.cols {
             let mut col = col.borrow_mut();
@@ -356,7 +377,9 @@ impl RMatrix {
             x += col.distance_x.round();
             //x += col.distance_x_after_allot;
         }
+    }
 
+    pub fn calculate_matrix_size(&mut self) {
         // matrix size
         let last_col: Ref<RCol> = self.cols.last().unwrap().borrow();
         let mut item_w: f32 = -1000.0;
@@ -394,6 +417,67 @@ impl RMatrix {
         }
         self.height = last_row.y + item_h;
     }
+
+    // pub fn calculate_measurements(&mut self) {
+    //     // cols, rows, items
+    //     self.calculate_col_row_measurements();
+    // let mut x = 0.0;
+    // for col in &self.cols {
+    //     let mut col = col.borrow_mut();
+    //     let mut y = 0.0;
+    //     let mut rowidx = 0;
+    //     for item in &col.items {
+    //         if let Some(item) = item {
+    //             let mut item: RefMut<RItem> = item.borrow_mut();
+    //             item.coords = Some(NPoint::new(x, y));
+    //         }
+    //         let mut row = self.get_row(rowidx).unwrap().borrow_mut();
+    //         row.y = y;
+    //         y += row.distance_y.round();
+    //         rowidx += 1;
+    //     }
+    //     col.x = x;
+    //     x += col.distance_x.round();
+    //     //x += col.distance_x_after_allot;
+    // }
+
+    // // matrix size
+    // let last_col: Ref<RCol> = self.cols.last().unwrap().borrow();
+    // let mut item_w: f32 = -1000.0;
+    // for item in &last_col.items {
+    //     if let Some(item) = item {
+    //         let item: Ref<RItem> = item.borrow();
+    //         // for rect in item.rects.iter() {
+    //         //     item_w = item_w.max(rect.0 + rect.2);
+    //         // }
+
+    //         // let nrects = item.nrects.as_ref().unwrap();
+
+    //         for rect in item.nrects.as_ref().unwrap().iter() {
+    //             let rect: NRect = rect.borrow().0;
+    //             item_w = item_w.max(rect.0 + rect.2);
+    //         }
+    //     }
+    // }
+    // self.width = last_col.x + item_w;
+
+    // let last_row: Ref<RRow> = self.rows.last().unwrap().borrow();
+    // let mut item_h: f32 = -1000.0;
+    // for item in &last_row.items {
+    //     if let Some(item) = item {
+    //         let item: Ref<RItem> = item.borrow();
+    //         // for rect in item.rects.iter() {
+    //         //     item_h = item_h.max(rect.1 + rect.3);
+    //         // }
+
+    //         for rect in item.nrects.as_ref().unwrap().iter() {
+    //             let rect: NRect = rect.borrow().0;
+    //             item_h = item_h.max(rect.1 + rect.3);
+    //         }
+    //     }
+    // }
+    // self.height = last_row.y + item_h;
+    // }
 
     pub fn add_vertical_space(&self, add_space: f32) {
         if add_space <= 1.0 {
@@ -462,17 +546,84 @@ impl RMatrix {
     }
 
     pub fn calculate_beamgroups(&self) {
-        for col in self.cols.iter() {
-            let col = col.borrow();
+        // for row in self.rows.iter() {
+        // for col in self.cols.iter() {
+        // let col = col.borrow();
 
-            for item in col.items.iter() {
-                if (item.is_none()) {
+        // let mut note_start_level: f32 = 0.0;
+        // let mut note_x_positions: Vec<f32> = vec![];
+        let mut beam_direction: DirUD = DirUD::Up;
+
+        for row in self.rows.iter() {
+            let row = row.borrow();
+            for item in row.items.iter() {
+                if item.is_none() {
                     continue;
                 }
-                let item: Ref<RItem> = item.as_ref().unwrap().borrow();
-                dbg!(item);
-                // dbg!(&item.upper_beam);
-                // dbg!(&item.lower_beam);
+                let mut item: RefMut<RItem> = item.as_ref().unwrap().borrow_mut();
+                let coords = item.coords.expect("RItem coords should always be calculated!");
+                // dbg!(&item);
+
+                match item.note_beam {
+                    RItemBeam::None => {}
+                    RItemBeam::Single(id, direction, level, duration, top, bottom, has_stem) => {
+                        // println!("SINGLE single upper");
+                        if !has_stem {
+                            continue;
+                        }
+
+                        let stave_y = direction.sign() * (SPACE * 4.0);
+                        let stave_length = stave_y.abs();
+                        let chord_length = (bottom - top) as f32 * SPACE_HALF;
+                        let rect = match direction {
+                            DirUD::Up => NRect::new(0., (level * SPACE_HALF) + stave_y, STEM_WIDTH, stave_length + chord_length),
+                            DirUD::Down => NRect::new(0., (level * SPACE_HALF) - chord_length, STEM_WIDTH, stave_length),
+                        };
+                        let nrect = NRectExt::new(rect, NRectType::DevStem);
+                        let mut nrects = item.nrects.as_mut().unwrap();
+                        nrects.push(Rc::new(RefCell::new(nrect)));
+                    }
+                    RItemBeam::Start(id, direction, level, top, bottom) => {
+                        // println!("START  upper {} {:?}", level, direction);
+                        let stave_y = direction.sign() * (SPACE * 4.0);
+                        let stave_length = stave_y.abs();
+                        let chord_length = (bottom - top) as f32 * SPACE_HALF;
+                        let rect = match direction {
+                            DirUD::Up => NRect::new(0., (level * SPACE_HALF) + stave_y, STEM_WIDTH, stave_length + chord_length),
+                            DirUD::Down => NRect::new(0., (level * SPACE_HALF) - chord_length, STEM_WIDTH, stave_length),
+                        };
+                        let nrect = NRectExt::new(rect, NRectType::DevStem);
+                        let mut nrects = item.nrects.as_mut().unwrap();
+                        nrects.push(Rc::new(RefCell::new(nrect)));
+                        beam_direction = direction;
+                    }
+                    RItemBeam::Middle(id, top, bottom) => {
+                        // println!("MIDDLE  upper");
+                    }
+                    RItemBeam::End(id, level, top, bottom) => {
+                        // println!("END  upper {} {:?}", level, beam_direction);
+                        let stave_y = beam_direction.sign() * (SPACE * 4.0);
+                        let stave_length = stave_y.abs();
+                        let chord_length = (bottom - top) as f32 * SPACE_HALF;
+                        let rect = match beam_direction {
+                            DirUD::Up => NRect::new(0., (level * SPACE_HALF) + stave_y, STEM_WIDTH, stave_length + chord_length),
+                            DirUD::Down => NRect::new(0., (level * SPACE_HALF) - chord_length, STEM_WIDTH, stave_length),
+                        };
+                        let nrect = NRectExt::new(rect, NRectType::DevStem);
+                        let mut nrects = item.nrects.as_mut().unwrap();
+                        nrects.push(Rc::new(RefCell::new(nrect)));
+                    }
+                }
+
+                // match item.note2_beam {
+                //     RItemBeam::None => todo!(),
+                //     RItemBeam::Single(_, _, _, _) => todo!(),
+                //     RItemBeam::Start(_, _, _) => todo!(),
+                //     RItemBeam::Middle(_) => todo!(),
+                //     RItemBeam::End(_, _) => todo!(),
+                // }
+
+                // dbg!(&item.note2_beam);
                 // itemidx += 1;
             }
         }
