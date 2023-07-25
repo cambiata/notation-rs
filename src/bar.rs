@@ -189,6 +189,7 @@ impl Bars {
                                                         bottom_level: note.bottom_level(),
                                                         has_stem: note.has_stem(),
                                                         adjustment_x: None,
+                                                        head_width: duration_get_headwidth(&note.duration),
                                                     };
 
                                                     if beamgroup.notes.len() == 1 {
@@ -208,6 +209,7 @@ impl Bars {
                                                         bottom_level: note.bottom_level(),
                                                         has_stem: note.has_stem(),
                                                         adjustment_x: None,
+                                                        head_width: duration_get_headwidth(&note.duration),
                                                     };
 
                                                     if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
@@ -240,6 +242,7 @@ impl Bars {
                                                         bottom_level: note.bottom_level(),
                                                         has_stem: note.has_stem(),
                                                         adjustment_x: *adjustment_x,
+                                                        head_width: duration_get_headwidth(&note.duration),
                                                     };
 
                                                     if beamgroup.notes.len() == 1 {
@@ -257,6 +260,7 @@ impl Bars {
                                                         bottom_level: note.bottom_level(),
                                                         has_stem: note.has_stem(),
                                                         adjustment_x: *adjustment_x,
+                                                        head_width: duration_get_headwidth(&note.duration),
                                                     };
 
                                                     note_current_beamgroup_note_idx += 1;
@@ -284,10 +288,11 @@ impl Bars {
                                                         direction: beamgroup.direction.unwrap(),
                                                         tip_level: beamgroup.start_level,
                                                         duration: note2.duration,
-                                                        top_level: note.top_level(),
-                                                        bottom_level: note.bottom_level(),
-                                                        has_stem: note.has_stem(),
+                                                        top_level: note2.top_level(),
+                                                        bottom_level: note2.bottom_level(),
+                                                        has_stem: note2.has_stem(),
                                                         adjustment_x: *adjustment_x,
+                                                        head_width: duration_get_headwidth(&note2.duration),
                                                     };
 
                                                     if beamgroup.notes.len() == 1 {
@@ -301,10 +306,11 @@ impl Bars {
                                                         direction: beamgroup.direction.unwrap(),
                                                         tip_level: beamgroup.end_level,
                                                         duration: note2.duration,
-                                                        top_level: note.top_level(),
-                                                        bottom_level: note.bottom_level(),
-                                                        has_stem: note.has_stem(),
+                                                        top_level: note2.top_level(),
+                                                        bottom_level: note2.bottom_level(),
+                                                        has_stem: note2.has_stem(),
                                                         adjustment_x: *adjustment_x,
+                                                        head_width: duration_get_headwidth(&note2.duration),
                                                     };
 
                                                     note_current_beamgroup_note_idx += 1;

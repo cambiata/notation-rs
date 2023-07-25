@@ -96,15 +96,20 @@ impl Part {
                             let mut note = note.borrow_mut();
 
                             let top_bottom = (note.top_level(), note.bottom_level());
-                            let mut tilt: i8 = match direction {
-                                DirUD::Up => top_bottom.0,
-                                DirUD::Down => top_bottom.1,
+                            let mut tilt: f32 = match direction {
+                                DirUD::Up => top_bottom.0 as f32,
+                                DirUD::Down => top_bottom.1 as f32,
+                            };
+
+                            tilt = match direction {
+                                DirUD::Up => tilt.min(STEM_LENGTH),
+                                DirUD::Down => tilt.max(-STEM_LENGTH),
                             };
 
                             beamgroup.start_level = tilt as f32;
                         }
                         _ => {
-                            println!("Two notes or more");
+                            // println!("Two notes or more");
                             let first = beamgroup.notes[0].clone();
                             let mut first = first.borrow_mut();
                             let last_idx = beamgroup.notes.len() - 1;
@@ -201,7 +206,6 @@ impl Part {
                             let mut tilt_left = tilt.0 as f32;
                             let mut tilt_right = tilt.1 as f32;
                             let angle = tilt_right - tilt_left;
-                            // dbg!(tilt_left, tilt_right, angle);
 
                             // Fix angle ==========================================================
                             const MAX_ANGLE: f32 = 2.0;
@@ -225,6 +229,16 @@ impl Part {
                                     }
                                 }
                             }
+
+                            // Reach to mid line ===================================================
+                            tilt_left = match direction {
+                                DirUD::Up => tilt_left.min(STEM_LENGTH),
+                                DirUD::Down => tilt_left.max(-STEM_LENGTH),
+                            };
+                            tilt_right = match direction {
+                                DirUD::Up => tilt_right.min(STEM_LENGTH),
+                                DirUD::Down => tilt_right.max(-STEM_LENGTH),
+                            };
 
                             // Shorten if two voices directions apart ================================
                             // println!("({}, {})", tilt_left, tilt_right);
@@ -875,7 +889,7 @@ fn create_lyric_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: f32)
                         total_width += char_width;
                     }
 
-                    let mut char_x = -(total_width / 2.0) + SPACE_HALF;
+                    let mut char_x = -(total_width / 3.0) + SPACE_HALF;
                     for (idx, char_width) in char_widths.iter().enumerate() {
                         let rect = NRect::new(char_x, adjust_y + -(char_height / 2.0) - SPACE_HALF, *char_width, char_height + SPACE);
                         rects.push(NRectExt(rect, NRectType::LyricChar(s.chars().nth(idx).unwrap())));

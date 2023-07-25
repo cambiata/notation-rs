@@ -7,7 +7,8 @@ pub const HEAD_WIDTH_BLACK: f32 = 1.3 * SPACE;
 pub const HEAD_WIDTH_WHITE: f32 = 1.35 * SPACE;
 pub const HEAD_WIDTH_WIDE: f32 = 1.65 * SPACE;
 pub const DOT_WIDTH: f32 = 0.8 * SPACE;
-pub const STEM_WIDTH: f32 = 2.5;
+pub const STEM_WIDTH: f32 = 3.0;
+pub const STEM_LENGTH: f32 = 7.2; // * SPACE_HALF
 pub const FONT_SCALE_LYRICS: f32 = 0.08;
 
 //------------------------------------------------------------

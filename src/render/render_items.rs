@@ -118,6 +118,7 @@ pub struct RItemBeamData {
     pub bottom_level: i8,
     pub has_stem: bool,
     pub adjustment_x: Option<ComplexXAdjustment>,
+    pub head_width: f32,
 }
 
 #[derive(Debug)]
@@ -577,115 +578,82 @@ impl RMatrix {
 
                 match item.note_beam {
                     RItemBeam::None => {}
-                    RItemBeam::Single(ref data) => {
+                    RItemBeam::Single(ref data) | RItemBeam::Start(ref data) | RItemBeam::End(ref data) => {
                         // println!("SINGLE single upper");
                         if !data.has_stem {
                             continue;
                         }
 
-                        let stave_y = data.direction.sign() * (SPACE * 4.0);
-                        let stave_length = stave_y.abs();
-                        let chord_length = (data.bottom_level - data.top_level) as f32 * SPACE_HALF;
-                        let rect = match data.direction {
-                            DirUD::Up => NRect::new(0., (data.tip_level * SPACE_HALF) + stave_y, STEM_WIDTH, stave_length + chord_length),
-                            DirUD::Down => NRect::new(0., (data.tip_level * SPACE_HALF) - chord_length, STEM_WIDTH, stave_length),
+                        let mut adjust_x = if let Some(adjust_x) = data.adjustment_x {
+                            match adjust_x {
+                                ComplexXAdjustment::UpperRight(x) => x,
+                                ComplexXAdjustment::LowerRight(_) => 0.0,
+                            }
+                        } else {
+                            0.0
                         };
-                        let nrect = NRectExt::new(rect, NRectType::DevStem("blue".to_string()));
+                        match data.direction {
+                            DirUD::Up => {
+                                adjust_x += data.head_width - STEM_WIDTH;
+                            }
+                            _ => {}
+                        }
+
+                        let (y, y2) = match data.direction {
+                            DirUD::Up => ((data.tip_level - STEM_LENGTH) * SPACE_HALF, data.bottom_level as f32 * SPACE_HALF),
+                            DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
+                        };
+                        let h = y2 - y;
+
+                        let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
+                        let nrect = NRectExt::new(rect, NRectType::DevStem("black".to_string()));
                         let mut nrects = item.nrects.as_mut().unwrap();
                         nrects.push(Rc::new(RefCell::new(nrect)));
-                    }
-                    RItemBeam::Start(ref data) => {
-                        // println!("START  upper {} {:?}", level, direction);
-                        let stave_y = data.direction.sign() * (SPACE * 4.0);
-                        let stave_length = stave_y.abs();
-                        let chord_length = (data.bottom_level - data.top_level) as f32 * SPACE_HALF;
-                        let rect = match data.direction {
-                            DirUD::Up => NRect::new(0., (data.tip_level * SPACE_HALF) + stave_y, STEM_WIDTH, stave_length + chord_length),
-                            DirUD::Down => NRect::new(0., (data.tip_level * SPACE_HALF) - chord_length, STEM_WIDTH, stave_length),
-                        };
-                        let nrect = NRectExt::new(rect, NRectType::DevStem("blue".to_string()));
-                        let mut nrects = item.nrects.as_mut().unwrap();
-                        nrects.push(Rc::new(RefCell::new(nrect)));
-                        // beam_direction = direction;
                     }
                     RItemBeam::Middle(id, top, bottom) => {
                         // println!("MIDDLE  upper");
-                    }
-                    RItemBeam::End(ref data) => {
-                        // println!("END  upper {} {:?}", level, beam_direction);
-                        let stave_y = data.direction.sign() * (SPACE * 4.0);
-                        let stave_length = stave_y.abs();
-                        let chord_length = (data.bottom_level - data.top_level) as f32 * SPACE_HALF;
-                        let rect = match data.direction {
-                            DirUD::Up => NRect::new(0., (data.tip_level * SPACE_HALF) + stave_y, STEM_WIDTH, stave_length + chord_length),
-                            DirUD::Down => NRect::new(0., (data.tip_level * SPACE_HALF) - chord_length, STEM_WIDTH, stave_length),
-                        };
-                        let nrect = NRectExt::new(rect, NRectType::DevStem("blue".to_string()));
-                        let mut nrects = item.nrects.as_mut().unwrap();
-                        nrects.push(Rc::new(RefCell::new(nrect)));
-                    }
+                    } // RItemBeam::End(ref data) => {
                 }
 
                 match item.note2_beam {
                     RItemBeam::None => {}
-                    RItemBeam::Single(ref data) => {
+                    RItemBeam::Single(ref data) | RItemBeam::Start(ref data) | RItemBeam::End(ref data) => {
                         // println!("SINGLE single upper");
                         if !data.has_stem {
                             continue;
                         }
-                        let stave_y = data.direction.sign() * (SPACE * 4.0);
-                        let stave_length = stave_y.abs();
-                        let chord_length = (data.bottom_level - data.top_level) as f32 * SPACE_HALF;
-                        let rect = match data.direction {
-                            DirUD::Up => NRect::new(0., (data.tip_level * SPACE_HALF) + stave_y, STEM_WIDTH, stave_length + chord_length),
-                            DirUD::Down => NRect::new(0., (data.tip_level * SPACE_HALF) - chord_length, STEM_WIDTH, stave_length),
+
+                        let mut adjust_x = if let Some(adjust_x) = data.adjustment_x {
+                            match adjust_x {
+                                ComplexXAdjustment::UpperRight(_) => 0.0,
+                                ComplexXAdjustment::LowerRight(x) => x,
+                            }
+                        } else {
+                            0.0
                         };
-                        let nrect = NRectExt::new(rect, NRectType::DevStem("blue".to_string()));
+                        match data.direction {
+                            DirUD::Up => {
+                                adjust_x += data.head_width - STEM_WIDTH;
+                            }
+                            _ => {}
+                        }
+
+                        let (y, y2) = match data.direction {
+                            DirUD::Up => ((data.tip_level - STEM_LENGTH) * SPACE_HALF, data.bottom_level as f32 * SPACE_HALF),
+                            DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
+                        };
+                        let h = y2 - y;
+
+                        let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
+
+                        let nrect = NRectExt::new(rect, NRectType::DevStem("black".to_string()));
                         let mut nrects = item.nrects.as_mut().unwrap();
                         nrects.push(Rc::new(RefCell::new(nrect)));
-                    }
-                    RItemBeam::Start(ref data) => {
-                        // println!("START  upper {} {:?}", level, direction);
-                        let stave_y = data.direction.sign() * (SPACE * 4.0);
-                        let stave_length = stave_y.abs();
-                        let chord_length = (data.bottom_level - data.top_level) as f32 * SPACE_HALF;
-                        let rect = match data.direction {
-                            DirUD::Up => NRect::new(0., (data.tip_level * SPACE_HALF) + stave_y, STEM_WIDTH, stave_length + chord_length),
-                            DirUD::Down => NRect::new(0., (data.tip_level * SPACE_HALF) - chord_length, STEM_WIDTH, stave_length),
-                        };
-                        let nrect = NRectExt::new(rect, NRectType::DevStem("blue".to_string()));
-                        let mut nrects = item.nrects.as_mut().unwrap();
-                        nrects.push(Rc::new(RefCell::new(nrect)));
-                        // beam_direction = direction;
                     }
                     RItemBeam::Middle(id, top, bottom) => {
                         // println!("MIDDLE  upper");
-                    }
-                    RItemBeam::End(ref data) => {
-                        // println!("END  upper {} {:?}", level, beam_direction);
-                        let stave_y = data.direction.sign() * (SPACE * 4.0);
-                        let stave_length = stave_y.abs();
-                        let chord_length = (data.bottom_level - data.top_level) as f32 * SPACE_HALF;
-                        let rect = match data.direction {
-                            DirUD::Up => NRect::new(0., (data.tip_level * SPACE_HALF) + stave_y, STEM_WIDTH, stave_length + chord_length),
-                            DirUD::Down => NRect::new(0., (data.tip_level * SPACE_HALF) - chord_length, STEM_WIDTH, stave_length),
-                        };
-                        let nrect = NRectExt::new(rect, NRectType::DevStem("blue".to_string()));
-                        let mut nrects = item.nrects.as_mut().unwrap();
-                        nrects.push(Rc::new(RefCell::new(nrect)));
-                    }
+                    } // RItemBeam::End(ref data) => {
                 }
-
-                // match item.note2_beam {
-                //     RItemBeam::None => todo!(),
-                //     RItemBeam::Single(_, _, _, _) => todo!(),
-                //     RItemBeam::Start(_, _, _) => todo!(),
-                //     RItemBeam::Middle(_) => todo!(),
-                //     RItemBeam::End(_, _) => todo!(),
-                // }
-
-                // dbg!(&item.note2_beam);
-                // itemidx += 1;
             }
         }
     }
