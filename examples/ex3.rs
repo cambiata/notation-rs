@@ -24,12 +24,14 @@ fn main() {
     // let bar_data = QCode::bars("nv16 -1 -2 -2 -3 ").unwrap();
     // let bar_data = QCode::bars("nv16 0 -1 -4 -5 -4 -2 -2 -1 % nv16 5 3 3 2 2 3 3 5").unwrap();
 
-    
-    let bar_data = QCode::bars("0 1").unwrap();
+    // let bar_data = QCode::bars("nv8 0 1 nv16 0 0 0 0 nv8 0 0 ").unwrap();
+    let bar_data = QCode::bars("nv4 0 % nv8 2 0").unwrap();
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.to_matrix(&bartemplate).unwrap();
+    bars.add_beamgroups_to_matrix_items();
 
     matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);
+    matrix.calculate_beamgroups();
     matrix.calculate_row_spacing();
     matrix.calculate_measurements();
 

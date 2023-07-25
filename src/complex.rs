@@ -4,12 +4,15 @@ use crate::prelude::*;
 
 #[derive(Debug, PartialEq)]
 pub struct Complex {
+    pub id: usize,
     // pub notes: Vec<Rc<RefCell<Note>>>,
     pub ctype: ComplexType,
     pub position: Position,
     pub duration: Duration,
 
     pub rects: Vec<Rc<RefCell<NRectExt>>>,
+
+    pub matrix_item: Option<Rc<RefCell<RItem>>>,
 }
 
 impl Complex {
@@ -33,21 +36,19 @@ impl Complex {
         // }
 
         Self {
+            id: ID_COUNTER.fetch_add(1, Ordering::Relaxed),
             position,
             ctype,
             duration: 0,
             rects: Vec::new(),
+            matrix_item: None,
         }
     }
 
     pub fn print(&self) {
         match &self.ctype {
-            ComplexType::Single(note) => {
-                println!(
-                    "Complex pos {}: Single({:?})",
-                    &self.position,
-                    note.borrow().position
-                );
+            ComplexType::Single(note, _) => {
+                println!("Complex pos {}: Single({:?})", &self.position, note.borrow().position);
             }
             ComplexType::Two(note1, note2, overlap) => {
                 println!(
@@ -84,13 +85,9 @@ impl Complex {
 
 #[derive(Debug, PartialEq)]
 pub enum ComplexType {
-    Single(Rc<RefCell<Note>>),
+    Single(Rc<RefCell<Note>>, bool),
     //
-    Two(
-        Rc<RefCell<Note>>,
-        Rc<RefCell<Note>>,
-        Option<ComplexXAdjustment>,
-    ),
+    Two(Rc<RefCell<Note>>, Rc<RefCell<Note>>, Option<ComplexXAdjustment>),
     Upper(Rc<RefCell<Note>>, bool),
     Lower(Rc<RefCell<Note>>, bool),
 }

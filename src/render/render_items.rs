@@ -2,9 +2,7 @@
 
 use std::cell::{Ref, RefMut};
 
-use crate::{
-    prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT, types::some_cloneables::SomeCloneablePairs,
-};
+use crate::{prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT, types::some_cloneables::SomeCloneablePairs};
 
 use crate::prelude::NRect;
 
@@ -14,10 +12,7 @@ pub fn qitem(x: f32, w: f32, dur: Duration) -> Option<Rc<RefCell<RItem>>> {
     //     dur,
     // ))))
 
-    Some(Rc::new(RefCell::new(RItem::new_with_nrectsext(
-        vec![NRect::new(x, 0.0, w, 10.0)],
-        dur,
-    ))))
+    Some(Rc::new(RefCell::new(RItem::new_with_nrectsext(vec![NRect::new(x, 0.0, w, 10.0)], dur))))
 }
 
 pub fn xitem(x: f32, w: f32, h: f32, dur: Duration) -> Option<Rc<RefCell<RItem>>> {
@@ -25,10 +20,7 @@ pub fn xitem(x: f32, w: f32, h: f32, dur: Duration) -> Option<Rc<RefCell<RItem>>
     //     vec![NRect::new(x, 0.0, w, h)],
     //     dur,
     // ))))
-    Some(Rc::new(RefCell::new(RItem::new_with_nrectsext(
-        vec![NRect::new(x, 0.0, w, h)],
-        dur,
-    ))))
+    Some(Rc::new(RefCell::new(RItem::new_with_nrectsext(vec![NRect::new(x, 0.0, w, h)], dur))))
 }
 
 pub fn r10() -> Vec<NRect> {
@@ -41,7 +33,7 @@ pub fn r20() -> Vec<NRect> {
 
 // trait Col {}
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct RItem {
     // pub rects: Vec<NRect>,
     pub duration: Duration,
@@ -49,14 +41,13 @@ pub struct RItem {
     pub row_idx: usize,
     pub coords: Option<NPoint>,
     pub nrects: Option<Vec<Rc<RefCell<NRectExt>>>>,
+    pub upper_beam: RItemBeam,
+    pub lower_beam: RItemBeam,
 }
 
 impl RItem {
     pub fn new(rects: Vec<NRect>, dur: Duration) -> Self {
-        let nrects = rects
-            .iter()
-            .map(|r| NRectExt::new(*r, NRectType::DUMMY))
-            .collect::<Vec<_>>();
+        let nrects = rects.iter().map(|r| NRectExt::new(*r, NRectType::DUMMY)).collect::<Vec<_>>();
 
         Self {
             // rects,
@@ -65,19 +56,13 @@ impl RItem {
             row_idx: 0,
             coords: None,
             nrects: None,
+            upper_beam: RItemBeam::None,
+            lower_beam: RItemBeam::None,
         }
     }
 
     pub fn new_with_nrectsext(rects: Vec<NRect>, dur: Duration) -> Self {
-        let nrects: Vec<Rc<RefCell<NRectExt>>> = rects
-            .iter()
-            .map(|r| {
-                Rc::new(RefCell::new(NRectExt::new(
-                    *r,
-                    NRectType::WIP("hoho".to_string()),
-                )))
-            })
-            .collect::<Vec<_>>();
+        let nrects: Vec<Rc<RefCell<NRectExt>>> = rects.iter().map(|r| Rc::new(RefCell::new(NRectExt::new(*r, NRectType::WIP("hoho".to_string()))))).collect::<Vec<_>>();
 
         Self {
             // rects,
@@ -86,6 +71,8 @@ impl RItem {
             row_idx: 0,
             coords: None,
             nrects: Some(nrects),
+            upper_beam: RItemBeam::None,
+            lower_beam: RItemBeam::None,
         }
     }
 
@@ -97,8 +84,7 @@ impl RItem {
             rects.push(nrect.0.clone());
         }
 
-        let nrects_clones: Vec<Rc<RefCell<NRectExt>>> =
-            nrects.iter().map(|nrect| nrect.clone()).collect::<Vec<_>>();
+        let nrects_clones: Vec<Rc<RefCell<NRectExt>>> = nrects.iter().map(|nrect| nrect.clone()).collect::<Vec<_>>();
 
         Self {
             // rects,
@@ -107,8 +93,19 @@ impl RItem {
             row_idx: 0,
             coords: None,
             nrects: Some(nrects_clones),
+            upper_beam: RItemBeam::None,
+            lower_beam: RItemBeam::None,
         }
     }
+}
+
+#[derive(Debug, PartialEq)]
+pub enum RItemBeam {
+    None,
+    Single(usize),
+    Start(usize, DirUD),
+    Middle(usize),
+    End(usize),
 }
 
 #[derive(Debug)]
@@ -150,11 +147,7 @@ pub struct RRow {
 }
 impl RRow {
     fn new(items: Vec<Option<Rc<RefCell<RItem>>>>, distance_y: f32) -> Self {
-        Self {
-            items,
-            distance_y,
-            y: 0.0,
-        }
+        Self { items, distance_y, y: 0.0 }
     }
 }
 
@@ -252,9 +245,7 @@ impl RMatrix {
         for row in self.rows.iter() {
             let row = row.borrow();
 
-            let pairs = SomeCloneablePairs {
-                items: row.items.clone(),
-            };
+            let pairs = SomeCloneablePairs { items: row.items.clone() };
             for (left, left_idx, right, right_idx) in pairs.into_iter() {
                 //println!("==========================");
                 match [&left, &right] {
@@ -264,26 +255,13 @@ impl RMatrix {
                         let mut left_col = self.get_column(left.col_idx).unwrap().borrow_mut();
                         let mut right_col = self.get_column(right.col_idx).unwrap().borrow_mut();
 
-                        let left_rects = &left
-                            .nrects
-                            .as_ref()
-                            .unwrap()
-                            .iter()
-                            .map(|nrect| nrect.borrow().0)
-                            .collect::<Vec<_>>();
+                        let left_rects = &left.nrects.as_ref().unwrap().iter().map(|nrect| nrect.borrow().0).collect::<Vec<_>>();
 
-                        let right_rects = &right
-                            .nrects
-                            .as_ref()
-                            .unwrap()
-                            .iter()
-                            .map(|nrect| nrect.borrow().0)
-                            .collect::<Vec<_>>();
+                        let right_rects = &right.nrects.as_ref().unwrap().iter().map(|nrect| nrect.borrow().0).collect::<Vec<_>>();
 
                         // calculate spacings...
                         // let overlap_spacing: f32 =nrects_overlap_x(&left.rects, &right.rects).unwrap_or(0.0);
-                        let overlap_spacing: f32 =
-                            nrects_overlap_x(&left_rects, &right_rects).unwrap_or(0.0);
+                        let overlap_spacing: f32 = nrects_overlap_x(&left_rects, &right_rects).unwrap_or(0.0);
 
                         let spacing = if (right_idx - 1) != left_idx.unwrap() {
                             let mut prev_col = self.get_column(right.col_idx - 1).unwrap().borrow();
@@ -295,9 +273,7 @@ impl RMatrix {
                         //
 
                         left_col.spacing_overlap = left_col.spacing_overlap.max(overlap_spacing);
-                        left_col.overlap_overshoot = left_col
-                            .overlap_overshoot
-                            .max(left_col.spacing_overlap - left_col.spacing_duration);
+                        left_col.overlap_overshoot = left_col.overlap_overshoot.max(left_col.spacing_overlap - left_col.spacing_duration);
                     }
 
                     [Some(left), None] => {
@@ -483,5 +459,22 @@ impl RMatrix {
             loopcount += 1;
         }
         println!("add_horizontal_count passes:{}", loopcount);
+    }
+
+    pub fn calculate_beamgroups(&self) {
+        for col in self.cols.iter() {
+            let col = col.borrow();
+
+            for item in col.items.iter() {
+                if (item.is_none()) {
+                    continue;
+                }
+                let item: Ref<RItem> = item.as_ref().unwrap().borrow();
+                dbg!(item);
+                // dbg!(&item.upper_beam);
+                // dbg!(&item.lower_beam);
+                // itemidx += 1;
+            }
+        }
     }
 }

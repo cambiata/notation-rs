@@ -15,11 +15,12 @@ pub enum NoteType {
 
 #[derive(PartialEq)]
 pub struct Note {
+    pub id: usize,
+    
     pub ntype: NoteType,
     pub duration: Duration,
     pub attr: NoteAttributes,
 
-    pub id: usize,
     
     //-------------------------------------------
     // calculated

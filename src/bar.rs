@@ -1,3 +1,4 @@
+use std::cell::Ref;
 use std::hash::Hash;
 use std::rc::Rc;
 use std::{cell::RefCell, collections::HashMap};
@@ -59,28 +60,14 @@ impl Bars {
 
                             if let Some(complexidx) = complexidx {
                                 let part = part.borrow();
-                                let complex = &part.complexes.as_ref().expect("This complex should exist!")[*complexidx].borrow();
-
+                                let mut complex = part.complexes.as_ref().expect("This complex should exist!")[*complexidx].borrow_mut();
                                 let item_rects: Vec<NRect> = complex.rects.iter().map(|nrect| nrect.borrow().0).collect();
-
                                 let item_nrects = complex.rects.iter().map(|nrect| nrect.clone()).collect::<Vec<_>>();
-
-                                item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(item_nrects, complex.duration))));
+                                let ritem = Rc::new(RefCell::new(RItem::new_from_nrects(item_nrects, complex.duration)));
+                                complex.matrix_item = Some(ritem.clone());
+                                item = Some(ritem);
 
                                 colduration = Some(durations[posidx]);
-
-                                //--------------------------------------------
-
-                                match complex.ctype {
-                                    ComplexType::Single(ref single) => {
-                                        dbg!(&single.borrow().beamgroup);
-                                    }
-                                    ComplexType::Two(ref upper, ref lower, _) => todo!(),
-                                    ComplexType::Upper(ref upper, _) => todo!(),
-                                    ComplexType::Lower(ref lower, _) => todo!(),
-                                }
-                            } else {
-                                //
                             }
 
                             colitems.push(item);
@@ -161,6 +148,104 @@ impl Bars {
 
         Ok(matrix)
         // Ok(())
+    }
+
+    pub fn add_beamgroups_to_matrix_items(&self) {
+        for (baridx, bar) in self.0.iter().enumerate() {
+            dbg!(baridx);
+            let bar = bar.borrow();
+            match bar.btype {
+                BarType::Standard(ref parts) => {
+                    for part in parts {
+                        let part = part.borrow();
+                        let complexes = part.complexes.as_ref().expect("Part should have complexes!");
+
+                        // let mut upper_beamgroup: Option<Rc<RefCell<Beamgroup>>> = None;
+                        let mut note_current_beamgroup_id: usize = 0;
+                        let mut note_current_beamgroup_note_idx: usize = 0;
+                        let mut note2_current_beamgroup_id: usize = 0;
+                        let mut note2_current_beamgroup_note_idx: usize = 0;
+
+                        for complex in complexes {
+                            let complex = complex.borrow();
+                            if let Some(item) = &complex.matrix_item {
+                                let mut item = item.borrow_mut();
+
+                                match &complex.ctype {
+                                    ComplexType::Lower(ref note, _) | ComplexType::Upper(ref note, _) | ComplexType::Single(ref note, _) => {
+                                        let note = &note.borrow();
+                                        let beamgroup_ref = note.beamgroup.as_ref().expect("Single note should have beamgroup!").clone();
+                                        let beamgroup = beamgroup_ref.borrow();
+                                        println!("beamgroup.id:{}", beamgroup.id);
+                                        if beamgroup.id != note_current_beamgroup_id {
+                                            note_current_beamgroup_id = beamgroup.id;
+                                            note_current_beamgroup_note_idx = 0;
+                                            if (beamgroup.notes.len() == 1) {
+                                                item.upper_beam = RItemBeam::Single(beamgroup.id);
+                                            } else {
+                                                item.upper_beam = RItemBeam::Start(beamgroup.id, beamgroup.direction.unwrap());
+                                            }
+                                        } else {
+                                            note_current_beamgroup_note_idx += 1;
+                                            if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
+                                                item.upper_beam = RItemBeam::Middle(beamgroup.id);
+                                            } else {
+                                                item.upper_beam = RItemBeam::End(beamgroup.id);
+                                            }
+                                        }
+                                    }
+
+                                    ComplexType::Two(ref note, ref note2, _) => {
+                                        let note = &note.borrow();
+                                        let beamgroup_ref = note.beamgroup.as_ref().expect("Upper note should have beamgroup!").clone();
+                                        let beamgroup = beamgroup_ref.borrow();
+                                        println!("beamgroup.id:{}", beamgroup.id);
+                                        if beamgroup.id != note_current_beamgroup_id {
+                                            note_current_beamgroup_id = beamgroup.id;
+                                            note_current_beamgroup_note_idx = 0;
+                                            if (beamgroup.notes.len() == 1) {
+                                                item.upper_beam = RItemBeam::Single(beamgroup.id);
+                                            } else {
+                                                item.upper_beam = RItemBeam::Start(beamgroup.id, beamgroup.direction.unwrap());
+                                            }
+                                        } else {
+                                            note_current_beamgroup_note_idx += 1;
+                                            if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
+                                                item.upper_beam = RItemBeam::Middle(beamgroup.id);
+                                            } else {
+                                                item.upper_beam = RItemBeam::End(beamgroup.id);
+                                            }
+                                        }
+
+                                        let note2 = &note2.borrow();
+                                        let beamgroup_ref = note2.beamgroup.as_ref().expect("Lower note should have beamgroup!").clone();
+                                        let beamgroup = beamgroup_ref.borrow();
+                                        println!("beamgroup.id:{}", beamgroup.id);
+                                        if beamgroup.id != note_current_beamgroup_id {
+                                            note_current_beamgroup_id = beamgroup.id;
+                                            note_current_beamgroup_note_idx = 0;
+                                            if (beamgroup.notes.len() == 1) {
+                                                item.lower_beam = RItemBeam::Single(beamgroup.id);
+                                            } else {
+                                                item.lower_beam = RItemBeam::Start(beamgroup.id, beamgroup.direction.unwrap());
+                                            }
+                                        } else {
+                                            note_current_beamgroup_note_idx += 1;
+                                            if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
+                                                item.lower_beam = RItemBeam::Middle(beamgroup.id);
+                                            } else {
+                                                item.lower_beam = RItemBeam::End(beamgroup.id);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
     }
 }
 

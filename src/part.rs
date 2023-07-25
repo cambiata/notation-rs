@@ -297,7 +297,7 @@ impl Part {
                     VoiceType::Notes(ref notes) => {
                         //println!("One voice, notes");
                         for note in notes.items.iter() {
-                            let complex = Complex::new(ComplexType::Single(note.clone()), note.borrow().position);
+                            let complex = Complex::new(ComplexType::Single(note.clone(), false), note.borrow().position);
                             complexes.push(complex);
                         }
                     }
@@ -411,7 +411,7 @@ impl Part {
         let complexes = self.complexes.as_ref().unwrap();
         for (idx, complex) in complexes.into_iter().enumerate() {
             match &complex.borrow().ctype {
-                ComplexType::Single(note) => {
+                ComplexType::Single(note, _) => {
                     let note = note.borrow();
                     let mut beamgroup = note.beamgroup.as_ref().unwrap().borrow_mut();
                     if beamgroup.direction.is_none() {
@@ -618,7 +618,6 @@ impl Part {
         if self.complexes.is_none() {
             return Ok(());
         }
-
         let complexes = self.complexes.as_ref().unwrap();
 
         for (idx, complex) in complexes.into_iter().enumerate() {
@@ -626,14 +625,12 @@ impl Part {
             let mut complex = complex.borrow_mut();
 
             match complex.ctype {
-                ComplexType::Single(ref note) => {
+                ComplexType::Single(ref note, _) => {
                     let placements = note_get_heads_placements(&note.borrow())?;
                     rects = create_note_rectangles(rects, &note.borrow(), &placements, 0.0, 0.0)?;
                     let mut levels_accidentals = note.borrow().levels_accidentals();
                     levels_accidentals.sort_by(|a, b| a.0.cmp(&b.0));
                     rects = create_accidentals_rectangles(rects, levels_accidentals)?;
-
-                    //
                 }
                 ComplexType::Two(ref upper, ref lower, ref adjust) => {
                     let pause_up = std::cmp::min(lower.borrow().top_level() - 5, -3);

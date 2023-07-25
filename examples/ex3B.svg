@@ -1,13 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 331 169.75">
-    <rect x="0.5" y="76.75" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
-    <rect x="10.5" y="81.75" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
-    <rect x="10.5" y="81.75" width="2.5" height="87.5" fill="black"/>
-    <rect x="10.5" y="69.25" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
-    <path d="M 10.5 85.15 Q 10.5 79.15 17.1 73.6 Q 23.7 68.05 30.6 68.05 Q 33.4 68.05 35.95 68.75 Q 38.5 69.45 40.800003 71.95 Q 43.100002 74.45 43.100002 78.35 Q 43.100002 83.85 36.4 89.65 Q 29.7 95.45 23 95.45 Q 20.2 95.45 17.65 94.75 Q 15.1 94.05 12.8 91.55 Q 10.5 89.05 10.5 85.15 Z " fill="black"/>
-    <rect x="195.5" y="0.5" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
-    <rect x="195.5" y="0.5" width="2.5" height="87.5" fill="black"/>
-    <rect x="165.5" y="81.75" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
-    <path d="M 165.5 97.65 Q 165.5 91.65 172.1 86.1 Q 178.7 80.55 185.6 80.55 Q 188.4 80.55 190.95 81.25 Q 193.5 81.95 195.8 84.45 Q 198.1 86.95 198.1 90.85 Q 198.1 96.35 191.4 102.15 Q 184.7 107.95 178 107.95 Q 175.2 107.95 172.65 107.25 Q 170.1 106.55 167.8 104.05 Q 165.5 101.55 165.5 97.65 Z " fill="black"/>
-    <rect x="320.5" y="76.75" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
-    <rect x="0" y="0" width="331" height="169.75" stroke="black" stroke-width="1" fill="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 271 207.25">
+    <rect x="0.5" y="89.25" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="40.5" y="0.5" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="40.5" y="0.5" width="2.5" height="87.5" fill="black"/>
+    <rect x="10.5" y="81.75" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
+    <path d="M 10.5 97.65 Q 10.5 91.65 17.1 86.1 Q 23.7 80.55 30.6 80.55 Q 33.4 80.55 35.95 81.25 Q 38.5 81.95 40.800003 84.45 Q 43.100002 86.95 43.100002 90.85 Q 43.100002 96.35 36.4 102.15 Q 29.7 107.95 23 107.95 Q 20.2 107.95 17.65 107.25 Q 15.1 106.55 12.8 104.05 Q 10.5 101.55 10.5 97.65 Z " fill="black"/>
+    <rect x="10.5" y="119.25" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="10.5" y="119.25" width="2.5" height="87.5" fill="black"/>
+    <rect x="10.5" y="106.75" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
+    <path d="M 10.5 122.65 Q 10.5 116.65 17.1 111.1 Q 23.7 105.55 30.6 105.55 Q 33.4 105.55 35.95 106.25 Q 38.5 106.95 40.800003 109.45 Q 43.100002 111.95 43.100002 115.85 Q 43.100002 121.35 36.4 127.15 Q 29.7 132.95 23 132.95 Q 20.2 132.95 17.65 132.25 Q 15.1 131.55 12.8 129.05 Q 10.5 126.55 10.5 122.65 Z " fill="black"/>
+    <rect x="135.5" y="94.25" width="2.5" height="87.5" stroke="blue" stroke-width="1" fill="none"/>
+    <rect x="135.5" y="94.25" width="2.5" height="87.5" fill="black"/>
+    <rect x="135.5" y="81.75" width="32.5" height="25" stroke="blue" stroke-width="1" fill="none"/>
+    <path d="M 135.5 97.65 Q 135.5 91.65 142.1 86.1 Q 148.7 80.55 155.6 80.55 Q 158.4 80.55 160.95 81.25 Q 163.5 81.95 165.8 84.45 Q 168.1 86.95 168.1 90.85 Q 168.1 96.35 161.4 102.15 Q 154.7 107.95 148 107.95 Q 145.2 107.95 142.65 107.25 Q 140.1 106.55 137.8 104.05 Q 135.5 101.55 135.5 97.65 Z " fill="black"/>
+    <rect x="260.5" y="89.25" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="0" y="0" width="271" height="207.25" stroke="black" stroke-width="1" fill="none"/>
 </svg>

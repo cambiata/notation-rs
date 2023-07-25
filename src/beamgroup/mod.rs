@@ -5,12 +5,15 @@ mod calc;
 
 #[derive(Debug, PartialEq)]
 pub struct Beamgroup {
+    pub id: usize,
     pub notes: Vec<Rc<RefCell<Note>>>,
     pub duration: usize,
     pub direction: Option<DirUD>,
     pub top: i8,
     pub bottom: i8,
     pub tilt: Option<(f32, f32)>,
+    pub start_level: f32,
+    pub end_level: f32,
 }
 
 impl Beamgroup {
@@ -21,12 +24,15 @@ impl Beamgroup {
         let bottom = notes.iter().map(|note| note.borrow().bottom_level()).max().unwrap();
 
         Self {
+            id: ID_COUNTER.fetch_add(1, Ordering::Relaxed),
             notes,
             duration,
             direction: None,
             top,
             bottom,
             tilt: None,
+            start_level: 0.0,
+            end_level: 0.0,
         }
     }
 
