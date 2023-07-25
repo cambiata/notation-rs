@@ -28,10 +28,10 @@ fn main() {
     // let bar_data = QCode::bars("|clef G - |  nv4 -1 nv16 3 2 1 0 nv4 -2 nv8 -3 2 % nv4 p nv2 5 nv4 3 /lyr $lyr:aaaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
     // let bar_data = QCode::bars("nv8 -5,-7 5,3 5,3 -5,-7 -4,-2 6,8 6,8 -4,-2").unwrap();
     // let bar_data = QCode::bars("|clef G - | 0 /lyr $lyr:aa  ").unwrap();
-
     // let bar_data = QCode::bars("|clef G | -3 p % nv8 0,#2 7,9 7,9 0,2").unwrap();
     // let bar_data = QCode::bars("|clef G | nv16 0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16").unwrap();
-    let bar_data = QCode::bars("|clef G - |  nv4 -1 nv16 3 b2 1 0 nv4 -2 nv8 -3 2 % nv4 p nv2 4 nv4 3 /lyr $lyr:aaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
+
+    let bar_data = QCode::bars("|clef G - |  nv4 #1 nv16 3 b2 1 0 nv4 -2 nv8 -3 2 % nv4 p nv2 4 nv4 3 /lyr $lyr:aaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
 
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.to_matrix(&bartemplate).unwrap();
