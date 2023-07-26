@@ -41,8 +41,11 @@ pub struct RItem {
     pub row_idx: usize,
     pub coords: Option<NPoint>,
     pub nrects: Option<Vec<Rc<RefCell<NRectExt>>>>,
+
     pub note_beam: RItemBeam,
     pub note2_beam: RItemBeam,
+    pub note_beam_xyy2: Option<(f32, f32, f32)>,
+    pub note2_beam_xyy2: Option<(f32, f32, f32)>,
 }
 
 impl RItem {
@@ -58,6 +61,8 @@ impl RItem {
             nrects: None,
             note_beam: RItemBeam::None,
             note2_beam: RItemBeam::None,
+            note_beam_xyy2: None,
+            note2_beam_xyy2: None,
         }
     }
 
@@ -73,6 +78,8 @@ impl RItem {
             nrects: Some(nrects),
             note_beam: RItemBeam::None,
             note2_beam: RItemBeam::None,
+            note_beam_xyy2: None,
+            note2_beam_xyy2: None,
         }
     }
 
@@ -95,6 +102,8 @@ impl RItem {
             nrects: Some(nrects_clones),
             note_beam: RItemBeam::None,
             note2_beam: RItemBeam::None,
+            note_beam_xyy2: None,
+            note2_beam_xyy2: None,
         }
     }
 }
@@ -111,6 +120,8 @@ pub enum RItemBeam {
 #[derive(Debug, PartialEq)]
 pub struct RItemBeamData {
     pub id: usize,
+    pub note_id: usize,
+    pub note_position: usize,
     pub direction: DirUD,
     pub tip_level: f32,
     pub duration: Duration,
@@ -574,7 +585,7 @@ impl RMatrix {
                     continue;
                 }
                 let mut item: RefMut<RItem> = item.as_ref().unwrap().borrow_mut();
-                let coords = item.coords.expect("RItem coords should always be calculated!");
+                // let coords = item.coords.expect("RItem coords should always be calculated!");
 
                 match item.note_beam {
                     RItemBeam::None => {}
@@ -603,6 +614,7 @@ impl RMatrix {
                             DirUD::Up => ((data.tip_level - STEM_LENGTH) * SPACE_HALF, data.bottom_level as f32 * SPACE_HALF),
                             DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
                         };
+                        item.note_beam_xyy2 = Some((adjust_x, y, y2));
                         let h = y2 - y;
 
                         let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
@@ -631,6 +643,7 @@ impl RMatrix {
                         } else {
                             0.0
                         };
+
                         match data.direction {
                             DirUD::Up => {
                                 adjust_x += data.head_width - STEM_WIDTH;
@@ -642,6 +655,7 @@ impl RMatrix {
                             DirUD::Up => ((data.tip_level - STEM_LENGTH) * SPACE_HALF, data.bottom_level as f32 * SPACE_HALF),
                             DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
                         };
+                        item.note2_beam_xyy2 = Some((adjust_x, y, y2));
                         let h = y2 - y;
 
                         let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);

@@ -169,8 +169,130 @@ impl Bars {
                             if let Some(item) = &complex.matrix_item {
                                 let mut item = item.borrow_mut();
 
+                                let note = match &complex.ctype {
+                                    ComplexType::Single(ref note, _) | ComplexType::Upper(ref note, _) => Some(note),
+                                    ComplexType::Two(ref note, _, _) => Some(note),
+                                    _ => None,
+                                };
+
+                                let note2 = match &complex.ctype {
+                                    ComplexType::Two(_, ref note2, _) => Some(note2),
+                                    ComplexType::Lower(ref note2, _) => Some(note2),
+                                    _ => None,
+                                };
+
+                                let adjust_x = match &complex.ctype {
+                                    ComplexType::Two(_, _, adjust_x) => adjust_x,
+                                    _ => &None,
+                                };
+
+                                if let Some(note) = note {
+                                    let note = note.borrow();
+
+                                    let beamgroup_ref = note.beamgroup.as_ref().expect("Single note should have beamgroup!").clone();
+                                    let beamgroup = beamgroup_ref.borrow();
+                                    if beamgroup.id != note_current_beamgroup_id {
+                                        note_current_beamgroup_id = beamgroup.id;
+                                        note_current_beamgroup_note_idx = 0;
+
+                                        let data = RItemBeamData {
+                                            id: beamgroup.id,
+                                            note_id: note.id,
+                                            note_position: note.position,
+                                            direction: beamgroup.direction.unwrap(),
+                                            tip_level: beamgroup.start_level,
+                                            duration: note.duration,
+                                            top_level: note.top_level(),
+                                            bottom_level: note.bottom_level(),
+                                            has_stem: note.has_stem(),
+                                            adjustment_x: None,
+                                            head_width: duration_get_headwidth(&note.duration),
+                                        };
+
+                                        if beamgroup.notes.len() == 1 {
+                                            item.note_beam = RItemBeam::Single(data);
+                                        } else {
+                                            item.note_beam = RItemBeam::Start(data);
+                                        }
+                                    } else {
+                                        note_current_beamgroup_note_idx += 1;
+
+                                        let data = RItemBeamData {
+                                            id: beamgroup.id,
+                                            note_id: note.id,
+                                            note_position: note.position,
+                                            direction: beamgroup.direction.unwrap(),
+                                            tip_level: beamgroup.end_level,
+                                            duration: note.duration,
+                                            top_level: note.top_level(),
+                                            bottom_level: note.bottom_level(),
+                                            has_stem: note.has_stem(),
+                                            adjustment_x: None,
+                                            head_width: duration_get_headwidth(&note.duration),
+                                        };
+
+                                        if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
+                                            item.note_beam = RItemBeam::Middle(beamgroup.id, note.top_level(), note.bottom_level());
+                                        } else {
+                                            item.note_beam = RItemBeam::End(data);
+                                        }
+                                    }
+                                }
+
+                                if let Some(note2) = note2 {
+                                    let note2 = note2.borrow();
+                                    let beamgroup_ref = note2.beamgroup.as_ref().expect("Lower note should have beamgroup!").clone();
+                                    let beamgroup = beamgroup_ref.borrow();
+                                    if beamgroup.id != note2_current_beamgroup_id {
+                                        note2_current_beamgroup_id = beamgroup.id;
+                                        note2_current_beamgroup_note_idx = 0;
+
+                                        let data = RItemBeamData {
+                                            id: beamgroup.id,
+                                            note_id: note2.id,
+                                            note_position: note2.position,
+                                            direction: beamgroup.direction.unwrap(),
+                                            tip_level: beamgroup.start_level,
+                                            duration: note2.duration,
+                                            top_level: note2.top_level(),
+                                            bottom_level: note2.bottom_level(),
+                                            has_stem: note2.has_stem(),
+                                            adjustment_x: None,
+                                            head_width: duration_get_headwidth(&note2.duration),
+                                        };
+
+                                        if beamgroup.notes.len() == 1 {
+                                            item.note2_beam = RItemBeam::Single(data);
+                                        } else {
+                                            item.note2_beam = RItemBeam::Start(data);
+                                        }
+                                    } else {
+                                        let data = RItemBeamData {
+                                            id: beamgroup.id,
+                                            note_id: note2.id,
+                                            note_position: note2.position,
+                                            direction: beamgroup.direction.unwrap(),
+                                            tip_level: beamgroup.end_level,
+                                            duration: note2.duration,
+                                            top_level: note2.top_level(),
+                                            bottom_level: note2.bottom_level(),
+                                            has_stem: note2.has_stem(),
+                                            adjustment_x: None,
+                                            head_width: duration_get_headwidth(&note2.duration),
+                                        };
+
+                                        note2_current_beamgroup_note_idx += 1;
+                                        if note2_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
+                                            item.note2_beam = RItemBeam::Middle(beamgroup.id, note2.top_level(), note2.bottom_level());
+                                        } else {
+                                            item.note2_beam = RItemBeam::End(data);
+                                        }
+                                    }
+                                }
+
+                                /*
                                 match &complex.ctype {
-                                    ComplexType::Lower(ref note, _) | ComplexType::Upper(ref note, _) | ComplexType::Single(ref note, _) => {
+                                    ComplexType::Upper(ref note, _) | ComplexType::Single(ref note, _) => {
                                         let note = &note.borrow();
                                         match note.ntype {
                                             NoteType::Heads(_) => {
@@ -182,6 +304,8 @@ impl Bars {
 
                                                     let data = RItemBeamData {
                                                         id: beamgroup.id,
+                                                        note_id: note.id,
+                                                        note_position: note.position,
                                                         direction: beamgroup.direction.unwrap(),
                                                         tip_level: beamgroup.start_level,
                                                         duration: note.duration,
@@ -202,6 +326,8 @@ impl Bars {
 
                                                     let data = RItemBeamData {
                                                         id: beamgroup.id,
+                                                        note_id: note.id,
+                                                        note_position: note.position,
                                                         direction: beamgroup.direction.unwrap(),
                                                         tip_level: beamgroup.end_level,
                                                         duration: note.duration,
@@ -222,6 +348,61 @@ impl Bars {
                                             _ => {}
                                         }
                                     }
+                                    ComplexType::Lower(ref note2, _) => {
+                                        let note2 = &note2.borrow();
+                                        match note2.ntype {
+                                            NoteType::Heads(_) => {
+                                                let beamgroup_ref = note2.beamgroup.as_ref().expect("Lower note should have beamgroup!").clone();
+                                                let beamgroup = beamgroup_ref.borrow();
+                                                if beamgroup.id != note2_current_beamgroup_id {
+                                                    note2_current_beamgroup_id = beamgroup.id;
+                                                    note2_current_beamgroup_note_idx = 0;
+
+                                                    let data = RItemBeamData {
+                                                        id: beamgroup.id,
+                                                        note_id: note2.id,
+                                                        note_position: note2.position,
+                                                        direction: beamgroup.direction.unwrap(),
+                                                        tip_level: beamgroup.start_level,
+                                                        duration: note2.duration,
+                                                        top_level: note2.top_level(),
+                                                        bottom_level: note2.bottom_level(),
+                                                        has_stem: note2.has_stem(),
+                                                        adjustment_x: None,
+                                                        head_width: duration_get_headwidth(&note2.duration),
+                                                    };
+
+                                                    if beamgroup.notes.len() == 1 {
+                                                        item.note2_beam = RItemBeam::Single(data);
+                                                    } else {
+                                                        item.note2_beam = RItemBeam::Start(data);
+                                                    }
+                                                } else {
+                                                    let data = RItemBeamData {
+                                                        id: beamgroup.id,
+                                                        note_id: note2.id,
+                                                        note_position: note2.position,
+                                                        direction: beamgroup.direction.unwrap(),
+                                                        tip_level: beamgroup.end_level,
+                                                        duration: note2.duration,
+                                                        top_level: note2.top_level(),
+                                                        bottom_level: note2.bottom_level(),
+                                                        has_stem: note2.has_stem(),
+                                                        adjustment_x: None,
+                                                        head_width: duration_get_headwidth(&note2.duration),
+                                                    };
+
+                                                    note2_current_beamgroup_note_idx += 1;
+                                                    if note2_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
+                                                        item.note2_beam = RItemBeam::Middle(beamgroup.id, note2.top_level(), note2.bottom_level());
+                                                    } else {
+                                                        item.note2_beam = RItemBeam::End(data);
+                                                    }
+                                                }
+                                            }
+                                            _ => {}
+                                        }
+                                    }
 
                                     ComplexType::Two(ref note, ref note2, ref adjustment_x) => {
                                         let note = &note.borrow();
@@ -235,6 +416,8 @@ impl Bars {
 
                                                     let data = RItemBeamData {
                                                         id: beamgroup.id,
+                                                        note_id: note.id,
+                                                        note_position: note.position,
                                                         direction: beamgroup.direction.unwrap(),
                                                         tip_level: beamgroup.start_level,
                                                         duration: note.duration,
@@ -253,6 +436,8 @@ impl Bars {
                                                 } else {
                                                     let data = RItemBeamData {
                                                         id: beamgroup.id,
+                                                        note_id: note.id,
+                                                        note_position: note.position,
                                                         direction: beamgroup.direction.unwrap(),
                                                         tip_level: beamgroup.end_level,
                                                         duration: note.duration,
@@ -285,6 +470,8 @@ impl Bars {
 
                                                     let data = RItemBeamData {
                                                         id: beamgroup.id,
+                                                        note_id: note2.id,
+                                                        note_position: note2.position,
                                                         direction: beamgroup.direction.unwrap(),
                                                         tip_level: beamgroup.start_level,
                                                         duration: note2.duration,
@@ -303,6 +490,8 @@ impl Bars {
                                                 } else {
                                                     let data = RItemBeamData {
                                                         id: beamgroup.id,
+                                                        note_id: note2.id,
+                                                        note_position: note2.position,
                                                         direction: beamgroup.direction.unwrap(),
                                                         tip_level: beamgroup.end_level,
                                                         duration: note2.duration,
@@ -315,7 +504,7 @@ impl Bars {
 
                                                     note2_current_beamgroup_note_idx += 1;
                                                     if note2_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
-                                                        item.note2_beam = RItemBeam::Middle(beamgroup.id, note.top_level(), note.bottom_level());
+                                                        item.note2_beam = RItemBeam::Middle(beamgroup.id, note2.top_level(), note2.bottom_level());
                                                     } else {
                                                         item.note2_beam = RItemBeam::End(data);
                                                     }
@@ -324,7 +513,7 @@ impl Bars {
                                             _ => {}
                                         }
                                     }
-                                }
+                                }*/
                             }
                         }
                     }

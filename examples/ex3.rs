@@ -31,14 +31,16 @@ fn main() {
     // let bar_data = QCode::bars("|clef G | -3 p % nv8 0,#2 7,9 7,9 0,2").unwrap();
     // let bar_data = QCode::bars("|clef G | nv16 0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16").unwrap();
 
-    let bar_data = QCode::bars("|clef G - |  nv4 #1 nv16 3 b2 p 0 nv4 -2 nv8 -3 2 % nv4 p nv2dot 4 /lyr $lyr:aaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
+    // let bar_data = QCode::bars("|clef G - |  nv4 #3 nv16 3 b2 p 0 nv4 -2 nv8 -3 2 % nv4 p nv2dot 4 /lyr $lyr:aaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
+    let bar_data = QCode::bars("nv8 -2 nv16 -3 -4 % nv16 3 2 nv8 4").unwrap();
+    // let bar_data = QCode::bars("nv8 -2 nv16 -3 -4 ").unwrap();
 
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.to_matrix(&bartemplate).unwrap();
     bars.add_beamgroups_to_matrix_items();
 
     matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);
-    matrix.calculate_col_row_item_measurements();
+    // matrix.calculate_col_row_item_measurements();
     matrix.calculate_beamgroups();
     matrix.calculate_row_spacing();
     matrix.calculate_col_row_item_measurements();
