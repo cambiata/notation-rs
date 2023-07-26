@@ -238,7 +238,7 @@ impl Bars {
                                         };
 
                                         if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
-                                            item.note_beam = RItemBeam::Middle(beamgroup.id, note.top_level(), note.bottom_level());
+                                            item.note_beam = RItemBeam::Middle(data);
                                         } else {
                                             item.note_beam = RItemBeam::End(data);
                                         }
@@ -293,7 +293,7 @@ impl Bars {
 
                                         note2_current_beamgroup_note_idx += 1;
                                         if note2_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
-                                            item.note2_beam = RItemBeam::Middle(beamgroup.id, note2.top_level(), note2.bottom_level());
+                                            item.note2_beam = RItemBeam::Middle(data);
                                         } else {
                                             item.note2_beam = RItemBeam::End(data);
                                         }

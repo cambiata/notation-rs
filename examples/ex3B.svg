@@ -1,31 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 411 294">
-    <rect x="0.5" y="148" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
-    <rect x="0.5" y="78" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
-    <path d="M 0.5 93.9 Q 0.5 87.9 7.1 82.35 Q 13.7 76.8 20.6 76.8 Q 23.4 76.8 25.95 77.5 Q 28.5 78.2 30.800001 80.7 Q 33.100002 83.2 33.100002 87.1 Q 33.100002 92.6 26.4 98.4 Q 19.7 104.2 13 104.2 Q 10.2 104.2 7.65 103.5 Q 5.1 102.8 2.8 100.3 Q 0.5 97.8 0.5 93.9 Z " fill="black"/>
-    <rect x="0.5" y="190.5" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
-    <path d="M 0.5 206.4 Q 0.5 200.4 7.1 194.85 Q 13.7 189.3 20.6 189.3 Q 23.4 189.3 25.95 190 Q 28.5 190.7 30.800001 193.2 Q 33.100002 195.7 33.100002 199.6 Q 33.100002 205.1 26.4 210.9 Q 19.7 216.7 13 216.7 Q 10.2 216.7 7.65 216 Q 5.1 215.3 2.8 212.8 Q 0.5 210.3 0.5 206.4 Z " fill="black"/>
-    <rect x="30" y="0.5" width="3" height="90" stroke="lightgray" stroke-width="1" fill="none"/>
-    <rect x="30" y="0.5" width="3" height="90" fill="black"/>
-    <rect x="0.5" y="203" width="3" height="90" stroke="lightgray" stroke-width="1" fill="none"/>
-    <rect x="0.5" y="203" width="3" height="90" fill="black"/>
-    <rect x="100.5" y="115.5" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
-    <path d="M 100.5 131.4 Q 100.5 125.4 107.1 119.85 Q 113.7 114.3 120.6 114.3 Q 123.4 114.3 125.95 115 Q 128.5 115.7 130.8 118.2 Q 133.1 120.7 133.1 124.6 Q 133.1 130.1 126.4 135.9 Q 119.7 141.7 113 141.7 Q 110.2 141.7 107.65 141 Q 105.1 140.3 102.8 137.8 Q 100.5 135.3 100.5 131.4 Z " fill="black"/>
-    <rect x="100.5" y="128" width="3" height="140" stroke="lightgray" stroke-width="1" fill="none"/>
-    <rect x="100.5" y="128" width="3" height="140" fill="black"/>
-    <rect x="200.5" y="78" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
-    <path d="M 200.5 93.9 Q 200.5 87.9 207.1 82.35 Q 213.7 76.8 220.6 76.8 Q 223.4 76.8 225.95 77.5 Q 228.5 78.2 230.8 80.7 Q 233.1 83.2 233.1 87.1 Q 233.1 92.6 226.4 98.4 Q 219.7 104.2 213 104.2 Q 210.2 104.2 207.65 103.5 Q 205.1 102.8 202.8 100.3 Q 200.5 97.8 200.5 93.9 Z " fill="black"/>
-    <rect x="200.5" y="115.5" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
-    <path d="M 200.5 131.4 Q 200.5 125.4 207.1 119.85 Q 213.7 114.3 220.6 114.3 Q 223.4 114.3 225.95 115 Q 228.5 115.7 230.8 118.2 Q 233.1 120.7 233.1 124.6 Q 233.1 130.1 226.4 135.9 Q 219.7 141.7 213 141.7 Q 210.2 141.7 207.65 141 Q 205.1 140.3 202.8 137.8 Q 200.5 135.3 200.5 131.4 Z " fill="black"/>
-    <rect x="230" y="0.5" width="3" height="90" stroke="lightgray" stroke-width="1" fill="none"/>
-    <rect x="230" y="0.5" width="3" height="90" fill="black"/>
-    <rect x="200.5" y="128" width="3" height="127.5" stroke="lightgray" stroke-width="1" fill="none"/>
-    <rect x="200.5" y="128" width="3" height="127.5" fill="black"/>
-    <rect x="300.5" y="178" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
-    <path d="M 300.5 193.9 Q 300.5 187.9 307.1 182.35 Q 313.7 176.8 320.6 176.8 Q 323.4 176.8 325.95 177.5 Q 328.5 178.2 330.8 180.7 Q 333.1 183.2 333.1 187.1 Q 333.1 192.6 326.4 198.4 Q 319.7 204.2 313 204.2 Q 310.2 204.2 307.65 203.5 Q 305.1 202.8 302.8 200.3 Q 300.5 197.8 300.5 193.9 Z " fill="black"/>
-    <rect x="300.5" y="190.5" width="3" height="90" stroke="lightgray" stroke-width="1" fill="none"/>
-    <rect x="300.5" y="190.5" width="3" height="90" fill="black"/>
-    <rect x="400.5" y="148" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
-    <path d="M 0.5 281 L 103.5 256 L 103.5 269 L 0.5 294 Z " fill="black"/>
-    <path d="M 200.5 243.5 L 303.5 268.5 L 303.5 281.5 L 200.5 256.5 Z " fill="black"/>
-    <rect x="0" y="0" width="411" height="294" stroke="black" stroke-width="1" fill="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 544 164.9">
+    <rect x="0.5" y="83.7" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="0.5" y="126.2" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
+    <path d="M 0.5 142.1 Q 0.5 136.1 7.1 130.54999 Q 13.7 125 20.6 125 Q 23.4 125 25.95 125.7 Q 28.5 126.399994 30.800001 128.9 Q 33.100002 131.4 33.100002 135.29999 Q 33.100002 140.79999 26.4 146.6 Q 19.7 152.4 13 152.4 Q 10.2 152.4 7.65 151.7 Q 5.1 151 2.8 148.5 Q 0.5 146 0.5 142.1 Z " fill="black"/>
+    <rect x="30" y="36.2" width="3" height="102.5" stroke="lightgray" stroke-width="1" fill="none"/>
+    <rect x="30" y="36.2" width="3" height="102.5" fill="black"/>
+    <rect x="74.5" y="113.7" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
+    <path d="M 74.5 129.6 Q 74.5 123.6 81.1 118.049995 Q 87.7 112.5 94.6 112.5 Q 97.4 112.5 99.95 113.2 Q 102.5 113.899994 104.8 116.399994 Q 107.100006 118.899994 107.100006 122.799995 Q 107.100006 128.29999 100.4 134.1 Q 93.7 139.9 87 139.9 Q 84.2 139.9 81.65 139.2 Q 79.1 138.5 76.8 136 Q 74.5 133.5 74.5 129.6 Z " fill="black"/>
+    <rect x="148.5" y="138.7" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
+    <path d="M 148.5 154.6 Q 148.5 148.6 155.1 143.04999 Q 161.7 137.5 168.6 137.5 Q 171.4 137.5 173.95 138.2 Q 176.5 138.9 178.8 141.4 Q 181.1 143.9 181.1 147.79999 Q 181.1 153.29999 174.4 159.1 Q 167.7 164.9 161 164.9 Q 158.2 164.9 155.65 164.2 Q 153.1 163.5 150.8 161 Q 148.5 158.5 148.5 154.6 Z " fill="black"/>
+    <rect x="148.5" y="113.7" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
+    <path d="M 148.5 129.6 Q 148.5 123.6 155.1 118.049995 Q 161.7 112.5 168.6 112.5 Q 171.4 112.5 173.95 113.2 Q 176.5 113.899994 178.8 116.399994 Q 181.1 118.899994 181.1 122.799995 Q 181.1 128.29999 174.4 134.1 Q 167.7 139.9 161 139.9 Q 158.2 139.9 155.65 139.2 Q 153.1 138.5 150.8 136 Q 148.5 133.5 148.5 129.6 Z " fill="black"/>
+    <rect x="222.5" y="88.7" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
+    <path d="M 222.5 104.6 Q 222.5 98.6 229.1 93.049995 Q 235.7 87.5 242.6 87.5 Q 245.4 87.5 247.95 88.2 Q 250.5 88.899994 252.8 91.399994 Q 255.1 93.899994 255.1 97.799995 Q 255.1 103.299995 248.4 109.1 Q 241.7 114.899994 235 114.899994 Q 232.2 114.899994 229.65 114.2 Q 227.1 113.5 224.8 111 Q 222.5 108.5 222.5 104.6 Z " fill="black"/>
+    <rect x="252" y="11.199997" width="3" height="90" stroke="lightgray" stroke-width="1" fill="none"/>
+    <rect x="252" y="11.199997" width="3" height="90" fill="black"/>
+    <rect x="296.5" y="38.699997" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
+    <path d="M 296.5 54.6 Q 296.5 48.6 303.1 43.049995 Q 309.7 37.499996 316.6 37.499996 Q 319.4 37.499996 321.95 38.199997 Q 324.5 38.899998 326.8 41.399998 Q 329.1 43.899998 329.1 47.799995 Q 329.1 53.299995 322.4 59.1 Q 315.7 64.899994 309 64.899994 Q 306.2 64.899994 303.65 64.2 Q 301.1 63.499996 298.8 60.999996 Q 296.5 58.499996 296.5 54.6 Z " fill="black"/>
+    <rect x="296.5" y="51.199997" width="3" height="90" stroke="lightgray" stroke-width="1" fill="none"/>
+    <rect x="296.5" y="51.199997" width="3" height="90" fill="black"/>
+    <rect x="375.5" y="1.199997" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
+    <path d="M 375.5 17.099998 Q 375.5 11.099998 382.1 5.5499954 Q 388.7 0 395.6 0 Q 398.4 0 400.95 0.69999695 Q 403.5 1.3999939 405.8 3.899994 Q 408.1 6.399994 408.1 10.299995 Q 408.1 15.799995 401.4 21.599998 Q 394.7 27.399998 388 27.399998 Q 385.2 27.399998 382.65 26.699997 Q 380.1 25.999996 377.8 23.5 Q 375.5 21 375.5 17.099998 Z " fill="black"/>
+    <rect x="375.5" y="26.199997" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
+    <path d="M 375.5 42.1 Q 375.5 36.1 382.1 30.549995 Q 388.7 24.999996 395.6 24.999996 Q 398.4 24.999996 400.95 25.699997 Q 403.5 26.399998 405.8 28.899998 Q 408.1 31.399998 408.1 35.299995 Q 408.1 40.799995 401.4 46.6 Q 394.7 52.399998 388 52.399998 Q 385.2 52.399998 382.65 51.699997 Q 380.1 50.999996 377.8 48.499996 Q 375.5 45.999996 375.5 42.1 Z " fill="black"/>
+    <rect x="454.5" y="13.699997" width="32.5" height="25" stroke="lightgray" stroke-width="1" fill="none"/>
+    <path d="M 454.5 29.599998 Q 454.5 23.599998 461.1 18.049995 Q 467.7 12.5 474.6 12.5 Q 477.4 12.5 479.95 13.199997 Q 482.5 13.899994 484.8 16.399994 Q 487.1 18.899994 487.1 22.799995 Q 487.1 28.299995 480.4 34.1 Q 473.7 39.899998 467 39.899998 Q 464.2 39.899998 461.65 39.199997 Q 459.1 38.499996 456.8 35.999996 Q 454.5 33.499996 454.5 29.599998 Z " fill="black"/>
+    <rect x="454.5" y="26.199997" width="3" height="102.5" stroke="lightgray" stroke-width="1" fill="none"/>
+    <rect x="454.5" y="26.199997" width="3" height="102.5" fill="black"/>
+    <rect x="533.5" y="83.7" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
+    <path d="M 30 35.2 L 255 10.199997 L 255 23.199997 L 30 48.2 Z " fill="black"/>
+    <ellipse cx="107" cy="88.7" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
+    <ellipse cx="181" cy="88.7" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 296.5 140.2 L 457.5 127.7 L 457.5 140.7 L 296.5 153.2 Z " fill="black"/>
+    <ellipse cx="375.5" cy="88.7" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="0" y="0" width="544" height="164.9" stroke="black" stroke-width="1" fill="none"/>
 </svg>

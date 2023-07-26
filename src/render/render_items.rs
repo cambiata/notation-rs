@@ -113,11 +113,11 @@ pub enum RItemBeam {
     None,
     Single(RItemBeamData),
     Start(RItemBeamData),
-    Middle(usize, i8, i8),
+    Middle(RItemBeamData),
     End(RItemBeamData),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub struct RItemBeamData {
     pub id: usize,
     pub note_id: usize,
@@ -622,7 +622,7 @@ impl RMatrix {
                         let mut nrects = item.nrects.as_mut().unwrap();
                         nrects.push(Rc::new(RefCell::new(nrect)));
                     }
-                    RItemBeam::Middle(id, top, bottom) => {
+                    RItemBeam::Middle(ref data) => {
                         // println!("MIDDLE  upper");
                     } // RItemBeam::End(ref data) => {
                 }
@@ -664,7 +664,7 @@ impl RMatrix {
                         let mut nrects = item.nrects.as_mut().unwrap();
                         nrects.push(Rc::new(RefCell::new(nrect)));
                     }
-                    RItemBeam::Middle(id, top, bottom) => {
+                    RItemBeam::Middle(ref data) => {
                         // println!("MIDDLE  upper");
                     } // RItemBeam::End(ref data) => {
                 }

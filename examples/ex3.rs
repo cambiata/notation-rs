@@ -35,7 +35,9 @@ fn main() {
     // let bar_data = QCode::bars("nv8 -2 nv16 -3 -4 % nv16 3 2 nv8 4").unwrap();
     // let bar_data = QCode::bars("nv8 -2 nv16 -3 -4 ").unwrap();
     // let bar_data = QCode::bars("0 0 % nv8 3 5 5 3").unwrap();
-    let bar_data = QCode::bars("-5 -5 % nv8 4 -2 -2 3 ").unwrap();
+    let bar_data = QCode::bars("nv16 4 3 5,3 1 nv8tri -3 -4,-6 -5 ").unwrap();
+
+    let bar_data = QCode::bars("-2 -2 % nv16 1,4 2,5 3,5 4,6 3,5 2,6 1,7 0 |bl | nv16 -1 -2 -3 -4 -3 -2 -1 0 % 2 2").unwrap();
 
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.to_matrix(&bartemplate).unwrap();
@@ -55,5 +57,5 @@ fn main() {
     matrix.calculate_col_row_item_measurements();
     matrix.calculate_matrix_size();
 
-    matrix_to_svg(&matrix, "./examples/ex3B.svg");
+    // matrix_to_svg(&matrix, "./examples/ex3B.svg");
 }
