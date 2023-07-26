@@ -29,6 +29,12 @@ mod tests2 {
     #[test]
     fn test() {
         //
+        let v = vec![1, 2, 3];
+
+        match v {
+            [1, 2, 3] => println!("ok"),
+            _ => println!("not ok"),
+        }
     }
 }
 
