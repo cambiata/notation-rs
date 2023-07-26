@@ -9,6 +9,8 @@ pub const HEAD_WIDTH_WIDE: f32 = 1.65 * SPACE;
 pub const DOT_WIDTH: f32 = 0.8 * SPACE;
 pub const STEM_WIDTH: f32 = 3.0;
 pub const STEM_LENGTH: f32 = 7.2; // * SPACE_HALF
+pub const BEAM_HEIGHT: f32 = 13.0; //
+                                   // pub const BEAM_HEIGHT_HALF: f32 = BEAM_HEIGHT / 2.0; //
 pub const FONT_SCALE_LYRICS: f32 = 0.08;
 
 //------------------------------------------------------------

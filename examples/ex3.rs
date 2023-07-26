@@ -32,8 +32,8 @@ fn main() {
 
     // let bar_data = QCode::bars("|clef G | nv16 0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16").unwrap();
 
-    let bar_data = QCode::bars("|clef G - |  nv4 #3 nv16 3 b2 p 0 nv4 -2 nv8 -3 2 % nv4 p nv2dot 4 /lyr $lyr:aaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
-    // let bar_data = QCode::bars("nv8 -2 nv16 -3 -4 % nv16 3 2 nv8 4").unwrap();
+    // let bar_data = QCode::bars("|clef G - |  nv4 #3 nv16 3 b2 p 0 nv4 -2 nv8 -3 2 % nv4 p nv2dot 4 /lyr $lyr:aaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
+    let bar_data = QCode::bars("nv8 -2 nv16 -3 -4 % nv16 3 2 nv8 4").unwrap();
     // let bar_data = QCode::bars("nv8 -2 nv16 -3 -4 ").unwrap();
 
     // let bar_data = QCode::bars("0 0 % nv8 3 5 5 3").unwrap();
