@@ -14,11 +14,18 @@ pub struct Beamgroup {
     // pub tilt: Option<(f32, f32)>,
     pub start_level: f32,
     pub end_level: f32,
+    pub note_durations: Vec<Duration>,
 }
 
 impl Beamgroup {
     pub fn new(notes: Vec<Rc<RefCell<Note>>>) -> Self {
-        let duration = notes.iter().fold(0, |acc, item| acc + item.borrow().duration);
+        let mut duration = 0;
+        let mut note_durations = vec![];
+        for note in notes.iter() {
+            let note_duration = note.borrow().duration;
+            note_durations.push(note_duration);
+            duration += note.borrow().duration;
+        }
 
         let top = notes.iter().map(|note| note.borrow().top_level()).min().unwrap();
         let bottom = notes.iter().map(|note| note.borrow().bottom_level()).max().unwrap();
@@ -33,6 +40,7 @@ impl Beamgroup {
             // tilt: None,
             start_level: 0.0,
             end_level: 0.0,
+            note_durations,
         }
     }
 

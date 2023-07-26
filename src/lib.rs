@@ -29,10 +29,12 @@ mod tests2 {
     #[test]
     fn test() {
         //
-        let v = vec![1, 2, 3];
+        let v = vec![24, 24];
 
-        match v {
-            [1, 2, 3] => println!("ok"),
+        match v.as_slice() {
+            [1, 2] => println!("1,2"),
+            [1, 2, 3] => println!("1,2,3"),
+            [NV4, NV4] => println!("NV4,NV4"),
             _ => println!("not ok"),
         }
     }

@@ -213,6 +213,7 @@ impl Bars {
                                             has_stem: note.has_stem(),
                                             adjustment_x: *adjust_x,
                                             head_width: duration_get_headwidth(&note.duration),
+                                            note_durations: None,
                                         };
 
                                         if beamgroup.notes.len() == 1 {
@@ -223,7 +224,7 @@ impl Bars {
                                     } else {
                                         note_current_beamgroup_note_idx += 1;
 
-                                        let data = RItemBeamData {
+                                        let mut data = RItemBeamData {
                                             id: beamgroup.id,
                                             note_id: note.id,
                                             note_position: note.position,
@@ -235,11 +236,13 @@ impl Bars {
                                             has_stem: note.has_stem(),
                                             adjustment_x: *adjust_x,
                                             head_width: duration_get_headwidth(&note.duration),
+                                            note_durations: None,
                                         };
 
                                         if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
                                             item.note_beam = RItemBeam::Middle(data);
                                         } else {
+                                            data.note_durations = Some(beamgroup.note_durations.clone());
                                             item.note_beam = RItemBeam::End(data);
                                         }
                                     }
@@ -269,6 +272,7 @@ impl Bars {
                                             has_stem: note2.has_stem(),
                                             adjustment_x: *adjust_x,
                                             head_width: duration_get_headwidth(&note2.duration),
+                                            note_durations: None,
                                         };
 
                                         if beamgroup.notes.len() == 1 {
@@ -277,7 +281,7 @@ impl Bars {
                                             item.note2_beam = RItemBeam::Start(data);
                                         }
                                     } else {
-                                        let data = RItemBeamData {
+                                        let mut data = RItemBeamData {
                                             id: beamgroup.id,
                                             note_id: note2.id,
                                             note_position: note2.position,
@@ -289,12 +293,14 @@ impl Bars {
                                             has_stem: note2.has_stem(),
                                             adjustment_x: *adjust_x,
                                             head_width: duration_get_headwidth(&note2.duration),
+                                            note_durations: None,
                                         };
 
                                         note2_current_beamgroup_note_idx += 1;
                                         if note2_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
                                             item.note2_beam = RItemBeam::Middle(data);
                                         } else {
+                                            data.note_durations = Some(beamgroup.note_durations.clone());
                                             item.note2_beam = RItemBeam::End(data);
                                         }
                                     }

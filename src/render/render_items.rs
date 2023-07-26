@@ -117,7 +117,7 @@ pub enum RItemBeam {
     End(RItemBeamData),
 }
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct RItemBeamData {
     pub id: usize,
     pub note_id: usize,
@@ -130,6 +130,7 @@ pub struct RItemBeamData {
     pub has_stem: bool,
     pub adjustment_x: Option<ComplexXAdjustment>,
     pub head_width: f32,
+    pub note_durations: Option<Vec<Duration>>,
 }
 
 #[derive(Debug)]
@@ -621,6 +622,30 @@ impl RMatrix {
                         let nrect = NRectExt::new(rect, NRectType::DevStem("black".to_string()));
                         let mut nrects = item.nrects.as_mut().unwrap();
                         nrects.push(Rc::new(RefCell::new(nrect)));
+
+                        match item.note_beam {
+                            RItemBeam::Start(ref data) => {
+                                let y = match data.direction {
+                                    DirUD::Up => y,
+                                    DirUD::Down => y2,
+                                };
+                                let rect = NRect::new(0.0, y - SPACE_HALF, SPACE * 2.0, SPACE);
+                                let nrect = NRectExt::new(rect, NRectType::Spacer);
+                                let mut nrects = item.nrects.as_mut().unwrap();
+                                nrects.push(Rc::new(RefCell::new(nrect)));
+                            }
+                            RItemBeam::End(ref data) => {
+                                let y = match data.direction {
+                                    DirUD::Up => y,
+                                    DirUD::Down => y2,
+                                };
+                                let rect = NRect::new(0.0, y - SPACE_HALF, data.head_width, SPACE);
+                                let nrect = NRectExt::new(rect, NRectType::Spacer);
+                                let mut nrects = item.nrects.as_mut().unwrap();
+                                nrects.push(Rc::new(RefCell::new(nrect)));
+                            }
+                            _ => {}
+                        }
                     }
                     RItemBeam::Middle(ref data) => {
                         // println!("MIDDLE  upper");
@@ -663,6 +688,30 @@ impl RMatrix {
                         let nrect = NRectExt::new(rect, NRectType::DevStem("black".to_string()));
                         let mut nrects = item.nrects.as_mut().unwrap();
                         nrects.push(Rc::new(RefCell::new(nrect)));
+
+                        match item.note2_beam {
+                            RItemBeam::Start(ref data) => {
+                                let y = match data.direction {
+                                    DirUD::Up => y,
+                                    DirUD::Down => y2,
+                                };
+                                let rect = NRect::new(0.0, y - SPACE_HALF, SPACE * 2.0, SPACE);
+                                let nrect = NRectExt::new(rect, NRectType::Spacer);
+                                let mut nrects = item.nrects.as_mut().unwrap();
+                                nrects.push(Rc::new(RefCell::new(nrect)));
+                            }
+                            RItemBeam::End(ref data) => {
+                                let y = match data.direction {
+                                    DirUD::Up => y,
+                                    DirUD::Down => y2,
+                                };
+                                let rect = NRect::new(0.0, y - SPACE_HALF, data.head_width, SPACE);
+                                let nrect = NRectExt::new(rect, NRectType::Spacer);
+                                let mut nrects = item.nrects.as_mut().unwrap();
+                                nrects.push(Rc::new(RefCell::new(nrect)));
+                            }
+                            _ => {}
+                        }
                     }
                     RItemBeam::Middle(ref data) => {
                         // println!("MIDDLE  upper");
