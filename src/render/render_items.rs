@@ -123,10 +123,12 @@ pub struct RItemBeamData {
     pub note_id: usize,
     pub note_position: usize,
     pub direction: DirUD,
-    pub tip_level: f32,
     pub duration: Duration,
+
+    pub tip_level: f32,
     pub top_level: i8,
     pub bottom_level: i8,
+
     pub has_stem: bool,
     pub adjustment_x: Option<ComplexXAdjustment>,
     pub head_width: f32,
@@ -615,11 +617,14 @@ impl RMatrix {
                             DirUD::Up => ((data.tip_level - STEM_LENGTH) * SPACE_HALF, data.bottom_level as f32 * SPACE_HALF),
                             DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
                         };
+
                         item.note_beam_xyy2 = Some((adjust_x, y, y2));
                         let h = y2 - y;
 
                         let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
-                        let nrect = NRectExt::new(rect, NRectType::DevStem("black".to_string()));
+
+                        // spacer for stem
+                        let nrect = NRectExt::new(rect, NRectType::Spacer);
                         let mut nrects = item.nrects.as_mut().unwrap();
                         nrects.push(Rc::new(RefCell::new(nrect)));
 
@@ -684,11 +689,12 @@ impl RMatrix {
                         let h = y2 - y;
 
                         let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
-
-                        let nrect = NRectExt::new(rect, NRectType::DevStem("black".to_string()));
+                        // spacer for stem
+                        let nrect = NRectExt::new(rect, NRectType::Spacer);
                         let mut nrects = item.nrects.as_mut().unwrap();
                         nrects.push(Rc::new(RefCell::new(nrect)));
 
+                        // spacer for stem tips
                         match item.note2_beam {
                             RItemBeam::Start(ref data) => {
                                 let y = match data.direction {

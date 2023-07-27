@@ -9,10 +9,13 @@ pub const HEAD_WIDTH_WIDE: f32 = 1.65 * SPACE;
 pub const DOT_WIDTH: f32 = 0.8 * SPACE;
 pub const STEM_WIDTH: f32 = 3.0;
 pub const STEM_LENGTH: f32 = 8.2; // * SPACE_HALF
-pub const BEAM_HEIGHT: f32 = 15.0; //
+pub const BEAM_HEIGHT: f32 = 2.0; //
+pub const BEAM_SUB_DISTANCE: f32 = SPACE;
 pub const BEAM_COVER_STEM: f32 = 1.0;
 // pub const BEAM_HEIGHT_HALF: f32 = BEAM_HEIGHT / 2.0; //
 pub const FONT_SCALE_LYRICS: f32 = 0.08;
+
+pub const DEV_LINE_THICKNESS: f32 = 2.0;
 
 //------------------------------------------------------------
 pub const LINE: f32 = 2.7;
@@ -181,6 +184,35 @@ pub fn duration_get_dots(duration: &Duration) -> u8 {
         NV1DOT | NV2DOT | NV4DOT | NV8DOT | NV16DOT => 1,
         _ => 0,
     }
+}
+
+pub fn duration_to_beamtype(duration: &Duration) -> BeamType {
+    match *duration {
+        NV8 | NV8DOT | NV8TRI => BeamType::Beam8,
+        NV16 | NV16DOT | NV16TRI => BeamType::Beam16,
+        NV32 => BeamType::Beam32,
+        _ => BeamType::None,
+    }
+}
+
+pub fn durations_to_beamtypes(durations: &Vec<Duration>) -> BeamType {
+    let mut result = BeamType::None;
+    for duration in durations {
+        let beamtype = duration_to_beamtype(duration);
+        if beamtype as usize > result as usize {
+            result = beamtype;
+        }
+    }
+    result
+}
+
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+pub enum BeamType {
+    None = 0,
+    Beam8 = 8,
+    Beam16 = 16,
+    Beam32 = 32,
+    Beam64 = 34,
 }
 
 //============================================================
@@ -453,5 +485,12 @@ mod tests {
         let lowers = vec![NRect::new(0.0, 10.0, 10.0, 10.0)];
         let overlap_y = nrects_overlap_y(&uppers, &lowers);
         dbg!(overlap_y);
+    }
+
+    #[test]
+    fn durations() {
+        let durations = vec![NV16DOT, NV8];
+        let beamtype = durations_to_beamtypes(&durations);
+        dbg!(beamtype);
     }
 }
