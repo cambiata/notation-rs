@@ -188,9 +188,9 @@ pub fn duration_get_dots(duration: &Duration) -> u8 {
 
 pub fn duration_to_beamtype(duration: &Duration) -> BeamType {
     match *duration {
-        NV8 | NV8DOT | NV8TRI => BeamType::Beam8,
-        NV16 | NV16DOT | NV16TRI => BeamType::Beam16,
-        NV32 => BeamType::Beam32,
+        NV8 | NV8DOT | NV8TRI => BeamType::B8,
+        NV16 | NV16DOT | NV16TRI => BeamType::B16,
+        NV32 => BeamType::B32,
         _ => BeamType::None,
     }
 }
@@ -209,10 +209,10 @@ pub fn durations_to_beamtypes(durations: &Vec<Duration>) -> BeamType {
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub enum BeamType {
     None = 0,
-    Beam8 = 8,
-    Beam16 = 16,
-    Beam32 = 32,
-    Beam64 = 34,
+    B8 = 8,
+    B16 = 16,
+    B32 = 32,
+    B64 = 34,
 }
 
 //============================================================
