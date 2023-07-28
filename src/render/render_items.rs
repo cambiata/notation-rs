@@ -624,7 +624,7 @@ impl RMatrix {
                         let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
 
                         // spacer for stem
-                        let nrect = NRectExt::new(rect, NRectType::Spacer);
+                        let nrect = NRectExt::new(rect, NRectType::Spacer("stem upper".to_string()));
                         let mut nrects = item.nrects.as_mut().unwrap();
                         nrects.push(Rc::new(RefCell::new(nrect)));
 
@@ -635,7 +635,7 @@ impl RMatrix {
                                     DirUD::Down => y2,
                                 };
                                 let rect = NRect::new(0.0, y - SPACE_HALF, SPACE * 2.0, SPACE);
-                                let nrect = NRectExt::new(rect, NRectType::Spacer);
+                                let nrect = NRectExt::new(rect, NRectType::Spacer("stem upper".to_string()));
                                 let mut nrects = item.nrects.as_mut().unwrap();
                                 nrects.push(Rc::new(RefCell::new(nrect)));
                             }
@@ -645,7 +645,7 @@ impl RMatrix {
                                     DirUD::Down => y2,
                                 };
                                 let rect = NRect::new(0.0, y - SPACE_HALF, data.head_width, SPACE);
-                                let nrect = NRectExt::new(rect, NRectType::Spacer);
+                                let nrect = NRectExt::new(rect, NRectType::Spacer("stem upper".to_string()));
                                 let mut nrects = item.nrects.as_mut().unwrap();
                                 nrects.push(Rc::new(RefCell::new(nrect)));
                             }
@@ -690,7 +690,7 @@ impl RMatrix {
 
                         let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
                         // spacer for stem
-                        let nrect = NRectExt::new(rect, NRectType::Spacer);
+                        let nrect = NRectExt::new(rect, NRectType::Spacer("stem lower".to_string()));
                         let mut nrects = item.nrects.as_mut().unwrap();
                         nrects.push(Rc::new(RefCell::new(nrect)));
 
@@ -702,7 +702,7 @@ impl RMatrix {
                                     DirUD::Down => y2,
                                 };
                                 let rect = NRect::new(0.0, y - SPACE_HALF, SPACE * 2.0, SPACE);
-                                let nrect = NRectExt::new(rect, NRectType::Spacer);
+                                let nrect = NRectExt::new(rect, NRectType::Spacer("stem lower".to_string()));
                                 let mut nrects = item.nrects.as_mut().unwrap();
                                 nrects.push(Rc::new(RefCell::new(nrect)));
                             }
@@ -712,7 +712,7 @@ impl RMatrix {
                                     DirUD::Down => y2,
                                 };
                                 let rect = NRect::new(0.0, y - SPACE_HALF, data.head_width, SPACE);
-                                let nrect = NRectExt::new(rect, NRectType::Spacer);
+                                let nrect = NRectExt::new(rect, NRectType::Spacer("stem lower".to_string()));
                                 let mut nrects = item.nrects.as_mut().unwrap();
                                 nrects.push(Rc::new(RefCell::new(nrect)));
                             }
@@ -723,7 +723,58 @@ impl RMatrix {
                         // println!("MIDDLE  upper");
                     } // RItemBeam::End(ref data) => {
                 }
+
+                match item.note_beam {
+                    RItemBeam::Single(ref data) => {
+                        if let Some(nrect) = add_flag_spacer(data) {
+                            let mut nrects = item.nrects.as_mut().unwrap();
+                            nrects.push(Rc::new(RefCell::new(nrect)));
+                        }
+                    }
+                    _ => {}
+                }
+                match item.note2_beam {
+                    RItemBeam::Single(ref data) => {
+                        if let Some(nrect) = add_flag_spacer(data) {
+                            let mut nrects = item.nrects.as_mut().unwrap();
+                            nrects.push(Rc::new(RefCell::new(nrect)));
+                        }
+                    }
+                    _ => {}
+                }
             }
         }
     }
+}
+
+pub fn get_head_x_adjustment(data: &RItemBeamData) -> f32 {
+    let adjustment_x: f32 = if let Some(adjustment_x) = data.adjustment_x {
+        match adjustment_x {
+            ComplexXAdjustment::UpperRight(upper_right) => upper_right,
+            _ => 0.0,
+        }
+    } else {
+        0.0
+    };
+    let head_x = match data.direction {
+        DirUD::Down => 0.0 + STEM_WIDTH / 2.0,
+        DirUD::Up => data.head_width - STEM_WIDTH / 2.0,
+    };
+
+    adjustment_x + head_x
+}
+
+pub fn add_flag_spacer(data: &RItemBeamData) -> Option<NRectExt> {
+    let first_tip_y = (data.tip_level * SPACE_HALF) + (STEM_LENGTH * SPACE_HALF) * data.direction.sign();
+    let rect_y = match data.direction {
+        DirUD::Down => first_tip_y - FLAG_RECT_HEIGHT,
+        DirUD::Up => first_tip_y,
+    };
+    let rect_x = match data.direction {
+        DirUD::Up => get_head_x_adjustment(data),
+        DirUD::Down => -FLAG_RECT_WIDTH,
+    };
+    let rect = NRect::new(rect_x, rect_y, FLAG_RECT_WIDTH, FLAG_RECT_HEIGHT);
+    let nrect = NRectExt::new(rect, NRectType::Flag(duration_to_beamtype(&data.duration), data.direction));
+    Some(nrect)
 }

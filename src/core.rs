@@ -8,14 +8,17 @@ pub const HEAD_WIDTH_WHITE: f32 = 1.35 * SPACE;
 pub const HEAD_WIDTH_WIDE: f32 = 1.65 * SPACE;
 pub const DOT_WIDTH: f32 = 0.8 * SPACE;
 pub const STEM_WIDTH: f32 = 3.0;
+pub const STEM_WIDTH_HALF: f32 = STEM_WIDTH / 2.0;
 pub const STEM_LENGTH: f32 = 8.2; // * SPACE_HALF
+pub const STEM_HEAD_CORRECTION: f32 = 4.0;
 pub const BEAM_HEIGHT: f32 = 2.0; //
 pub const BEAM_SUB_DISTANCE: f32 = SPACE;
 pub const BEAM_COVER_STEM: f32 = 1.0;
 // pub const BEAM_HEIGHT_HALF: f32 = BEAM_HEIGHT / 2.0; //
 pub const FONT_SCALE_LYRICS: f32 = 0.08;
-
 pub const DEV_LINE_THICKNESS: f32 = 2.0;
+pub const FLAG_RECT_WIDTH: f32 = SPACE;
+pub const FLAG_RECT_HEIGHT: f32 = SPACE * 3.0;
 
 //------------------------------------------------------------
 pub const LINE: f32 = 2.7;
@@ -425,11 +428,12 @@ pub enum NRectType {
     Accidental(Accidental),
     Tie(Tie),
     LyricChar(char),
+    Flag(BeamType, DirUD),
     WIP(String),
     DevStem(String),
     DUMMY,
     Dev(bool, String),
-    Spacer,
+    Spacer(String),
     // DevRectRed,
     // DevRectBlue,
 }

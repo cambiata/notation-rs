@@ -30,14 +30,15 @@ fn main() {
     // let bar_data = QCode::bars("|clef G - | 0 /lyr $lyr:aa  ").unwrap();
     // let bar_data = QCode::bars("|clef G | -3 p % nv8 0,#2 7,9 7,9 0,2").unwrap();
     // let bar_data = QCode::bars("|clef G | nv16 0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16").unwrap();
-    // let bar_data = QCode::bars("|clef G - |  nv4 #3 nv16 3 b2 p 0 nv4 -2 nv8 -3 2 % nv4 p nv2dot 4 /lyr $lyr:aaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
+    let bar_data = QCode::bars("|clef G - |  nv4 #3 nv16 3 b2 p 0 nv4 -2 nv8 -3 2 % nv4 p nv2dot 4 /lyr $lyr:aaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
     // let bar_data = QCode::bars("nv8 -2 nv16 -3 -4 % nv16 3 2 nv8 4").unwrap();
     // let bar_data = QCode::bars("nv8 -2 nv16 -3 -4 ").unwrap();
     // let bar_data = QCode::bars("0 0 % nv8 3 5 5 3").unwrap();
-
     // let bar_data = QCode::bars("nv8dot 4# nv16 0 nv16 -4 nv8 1 nv16 2 nv16 4 3 5,3 1 nv8 -3 nv16 -4,-6 -5 ").unwrap();
     // let bar_data = QCode::bars("-2 -2 % nv16 1 #3 5 7 nv8 3 nv16 2 1 / nv8 4 -3 2 -6 |bl | nv16 -1 nv8 -2 nv16 -3 nv16 -4 nv8dot -2 % nv4dot 2 nv8 3 / nv8 0 2  4 1 |bl | nv8 3 p -4 -6 / 0 p ").unwrap();
-    let bar_data = QCode::bars("nv8 -1 nv16 -2 -3 nv8 -3 nv16 -4 -5 % nv16 1 2 nv8 3 / nv16 0 1 2 3  nv16 -2 -2 -3 -4 / nv16 0 1 2 3  nv16 -2 -2 -3 -4").unwrap();
+    // let bar_data = QCode::bars("nv8 -1 nv16 -2 -3 nv8 -3 nv16 -4 -5 % nv16 1 2 nv8 3 / nv16 0 1 nv8 3  nv16 -2 -2 -3 -4 / nv16 0 1 2 3  nv16 -2 -2 -3 -4").unwrap();
+    // let bar_data = QCode::bars("nv16 3 2 1 / nv16 3 2 1").unwrap();
+    let bar_data = QCode::bars("nv8 0 p 2 p nv16 0 p 2 p / nv8 0 p 2 p nv16 0 p 2 p").unwrap();
 
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.to_matrix(&bartemplate).unwrap();
