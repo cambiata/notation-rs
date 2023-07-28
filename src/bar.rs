@@ -214,6 +214,7 @@ impl Bars {
                                             adjustment_x: *adjust_x,
                                             head_width: duration_get_headwidth(&note.duration),
                                             note_durations: None,
+                                            lower_voice: false,
                                         };
 
                                         if beamgroup.notes.len() == 1 {
@@ -237,6 +238,7 @@ impl Bars {
                                             adjustment_x: *adjust_x,
                                             head_width: duration_get_headwidth(&note.duration),
                                             note_durations: None,
+                                            lower_voice: false,
                                         };
 
                                         if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
@@ -273,6 +275,7 @@ impl Bars {
                                             adjustment_x: *adjust_x,
                                             head_width: duration_get_headwidth(&note2.duration),
                                             note_durations: None,
+                                            lower_voice: true,
                                         };
 
                                         if beamgroup.notes.len() == 1 {
@@ -294,6 +297,7 @@ impl Bars {
                                             adjustment_x: *adjust_x,
                                             head_width: duration_get_headwidth(&note2.duration),
                                             note_durations: None,
+                                            lower_voice: true,
                                         };
 
                                         note2_current_beamgroup_note_idx += 1;
