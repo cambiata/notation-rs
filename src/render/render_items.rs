@@ -766,14 +766,15 @@ pub fn get_head_x_adjustment(data: &RItemBeamData) -> f32 {
 
 pub fn add_flag_spacer(data: &RItemBeamData) -> Option<NRectExt> {
     let first_tip_y = (data.tip_level * SPACE_HALF) + (STEM_LENGTH * SPACE_HALF) * data.direction.sign();
-    let rect_y = match data.direction {
-        DirUD::Down => first_tip_y - FLAG_RECT_HEIGHT,
-        DirUD::Up => first_tip_y,
-    };
     let rect_x = match data.direction {
-        DirUD::Up => get_head_x_adjustment(data),
-        DirUD::Down => -FLAG_RECT_WIDTH,
+        DirUD::Up => get_head_x_adjustment(data) + STEM_WIDTH_HALF,
+        DirUD::Down => STEM_WIDTH,
     };
+    let rect_y = match data.direction {
+        DirUD::Up => first_tip_y,
+        DirUD::Down => first_tip_y - FLAG_RECT_HEIGHT,
+    };
+
     let rect = NRect::new(rect_x, rect_y, FLAG_RECT_WIDTH, FLAG_RECT_HEIGHT);
     let nrect = NRectExt::new(rect, NRectType::Flag(duration_to_beamtype(&data.duration), data.direction));
     Some(nrect)

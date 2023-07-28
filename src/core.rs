@@ -7,18 +7,20 @@ pub const HEAD_WIDTH_BLACK: f32 = 1.3 * SPACE;
 pub const HEAD_WIDTH_WHITE: f32 = 1.35 * SPACE;
 pub const HEAD_WIDTH_WIDE: f32 = 1.65 * SPACE;
 pub const DOT_WIDTH: f32 = 0.8 * SPACE;
-pub const STEM_WIDTH: f32 = 3.0;
+pub const STEM_WIDTH: f32 = SPACE * 0.12;
 pub const STEM_WIDTH_HALF: f32 = STEM_WIDTH / 2.0;
 pub const STEM_LENGTH: f32 = 8.2; // * SPACE_HALF
 pub const STEM_HEAD_CORRECTION: f32 = 4.0;
-pub const BEAM_HEIGHT: f32 = 2.0; //
+pub const BEAM_HEIGHT: f32 = SPACE * 0.5; //
 pub const BEAM_SUB_DISTANCE: f32 = SPACE;
 pub const BEAM_COVER_STEM: f32 = 1.0;
 // pub const BEAM_HEIGHT_HALF: f32 = BEAM_HEIGHT / 2.0; //
 pub const FONT_SCALE_LYRICS: f32 = 0.08;
 pub const DEV_LINE_THICKNESS: f32 = 2.0;
-pub const FLAG_RECT_WIDTH: f32 = SPACE;
+// pub const FLAG_RECT_WIDTH_UP: f32 = SPACE;
+pub const FLAG_RECT_WIDTH: f32 = SPACE * 1.1;
 pub const FLAG_RECT_HEIGHT: f32 = SPACE * 3.0;
+pub const FLAG_X_ADJUST: f32 = SPACE * 0.15;
 
 //------------------------------------------------------------
 pub const LINE: f32 = 2.7;
@@ -50,7 +52,6 @@ pub enum Clef {
 pub type ClefSignature = Option<Clef>;
 
 // type ClefSignatures = Vec<ClefSignature>;
-
 //============================================================
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
