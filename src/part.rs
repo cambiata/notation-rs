@@ -1,4 +1,7 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    cell::Ref,
+    collections::{HashMap, HashSet},
+};
 
 use crate::prelude::{fonts::ebgaramond::GLYPH_HEIGHT, *};
 
@@ -40,9 +43,7 @@ impl Part {
                     self.create_complexes();
                     self.set_complex_durations();
                     self.set_beamgroups_directions(DirUAD::Auto);
-
                     self.calculate_beamgoups_properties();
-
                     self.set_note_directions();
                     self.create_complex_rects()?;
                 }
@@ -648,7 +649,6 @@ impl Part {
                 }
                 ComplexType::Two(ref upper, ref lower, ref adjust) => {
                     let pause_up = std::cmp::min(lower.borrow().top_level() - 5, -3);
-
                     let upper_placements = note_get_heads_placements(&upper.borrow())?;
                     let upper_adjust: f32 = match adjust.as_ref() {
                         Some(adjust) => match adjust {
@@ -659,9 +659,7 @@ impl Part {
                     };
 
                     rects = create_note_rectangles(rects, &upper.borrow(), &upper_placements, upper_adjust, pause_up as f32 * SPACE_HALF)?;
-
                     let pause_down = std::cmp::max(upper.borrow().bottom_level() + 5, 3);
-
                     let lower_placements = note_get_heads_placements(&lower.borrow())?;
                     let lower_adjust: f32 = match adjust.as_ref() {
                         Some(adjust) => match adjust {
@@ -672,7 +670,6 @@ impl Part {
                     };
 
                     rects = create_note_rectangles(rects, &lower.borrow(), &lower_placements, lower_adjust, pause_down as f32 * SPACE_HALF)?;
-
                     //==================================================================
                     let mut levels_accidentals = upper.borrow().levels_accidentals();
                     let lower_levels_accidentals = lower.borrow().levels_accidentals();
@@ -681,20 +678,6 @@ impl Part {
                     }
                     levels_accidentals.sort_by(|a, b| a.0.cmp(&b.0));
                     rects = create_accidentals_rectangles(rects, levels_accidentals)?;
-
-                    // dbg!(&levels_accidentals);
-                    // dbg!(&levels_accidentals);
-
-                    // let mut idx = 0;
-                    // while levels_accidentals.len() > 0 {
-                    //     let la = if idx % 2 == 0 {
-                    //         levels_accidentals.remove(0)
-                    //     } else {
-                    //         levels_accidentals.pop().unwrap()
-                    //     };
-                    //     dbg!(&la);
-                    //     idx += 1;
-                    // }
                 }
                 ComplexType::Upper(ref note, overflow) => {
                     let placements = note_get_heads_placements(&note.borrow())?;
@@ -704,6 +687,7 @@ impl Part {
                     let mut levels_accidentals = note.borrow().levels_accidentals();
                     levels_accidentals.sort_by(|a, b| a.0.cmp(&b.0));
                     rects = create_accidentals_rectangles(rects, levels_accidentals)?;
+                    // rects = create_note_flags(rects, &note.borrow(), 0.0);
                 }
                 ComplexType::Lower(ref note, overflow) => {
                     let placements = note_get_heads_placements(&note.borrow())?;
@@ -725,6 +709,30 @@ impl Part {
 
         Ok(())
     }
+}
+
+fn create_note_flag_spacers(mut rects: Vec<NRectExt>, note: &Note, adjust: f32) -> Vec<NRectExt> {
+    // Spacer rects for flags to be used in col spacing algorithm
+    let direction = note.beamgroup.as_ref().unwrap().borrow().direction.unwrap();
+    let head_width = duration_get_headwidth(&note.duration);
+    let duration = note.duration;
+
+    let y = match direction {
+        DirUD::Up => *&note.top_level() as f32 * SPACE_HALF - STEM_LENGTH * SPACE_HALF,
+        DirUD::Down => *&note.top_level() as f32 * SPACE_HALF + STEM_LENGTH * SPACE_HALF - FLAG_RECT_HEIGHT,
+    };
+
+    let y2 = y + FLAG_RECT_HEIGHT;
+
+    let x = match direction {
+        DirUD::Up => adjust + head_width,
+        DirUD::Down => adjust,
+    };
+
+    let rect = NRect::new(x, y, FLAG_RECT_WIDTH, y2 - y);
+    rects.push(NRectExt(rect, NRectType::Spacer("flag".to_string())));
+
+    rects
 }
 
 fn create_accidentals_rectangles(mut rects: Vec<NRectExt>, mut levels_accidentals: Vec<(i8, Accidental)>) -> Result<Vec<NRectExt>> {
@@ -759,16 +767,17 @@ fn create_accidentals_rectangles(mut rects: Vec<NRectExt>, mut levels_accidental
     Ok(rects)
 }
 
-pub fn create_note_rectangles(mut rects: Vec<NRectExt>, note: &Note, placements: &HeadsPlacement, adjust_right: f32, adjust_y: f32) -> Result<Vec<NRectExt>> {
+pub fn create_note_rectangles(mut rects: Vec<NRectExt>, note: &Note, placements: &HeadsPlacement, note_adjust_right: f32, pause_adjust_y: f32) -> Result<Vec<NRectExt>> {
     match note.ntype {
         NoteType::Heads(_) => {
-            rects = create_heads_and_dots_rectangles(rects, note, placements, adjust_right)?;
+            rects = create_heads_and_dots_rectangles(rects, note, placements, note_adjust_right)?;
+            rects = create_note_flag_spacers(rects, note, note_adjust_right);
         }
         NoteType::Pause => {
-            rects = create_pause_rectangles(rects, note, adjust_y)?;
+            rects = create_pause_rectangles(rects, note, pause_adjust_y)?;
         }
         NoteType::Lyric(_) => {
-            rects = create_lyric_rectangles(rects, note, adjust_y)?;
+            rects = create_lyric_rectangles(rects, note, pause_adjust_y)?;
         }
     }
     Ok(rects)

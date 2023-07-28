@@ -186,10 +186,11 @@ pub struct RMatrix {
     pub rows: Vec<Rc<RefCell<RRow>>>,
     pub width: f32,
     pub height: f32,
+    pub bartemplate: Option<BarTemplate>,
 }
 
 impl RMatrix {
-    pub fn new(colitems: Vec<Rc<RefCell<RCol>>>) -> Self {
+    pub fn new(colitems: Vec<Rc<RefCell<RCol>>>, bartemplate: Option<BarTemplate>) -> Self {
         let row_count = &colitems[0].borrow().items.len();
         let mut rows: Vec<Rc<RefCell<RRow>>> = vec![];
         let mut rowitems: Vec<Vec<Option<Rc<RefCell<RItem>>>>> = vec![vec![]; *row_count];
@@ -243,6 +244,7 @@ impl RMatrix {
             rows: rows,
             width: 0.0,
             height: 0.0,
+            bartemplate,
         }
     }
 
@@ -261,6 +263,7 @@ impl RMatrix {
     }
 
     pub fn calculate_col_spacing(&self, spacing_fn: SpacingFn) {
+        dbg!("Calculate col spacing");
         // spacing based on duration
         for col in self.cols.iter() {
             let mut col = col.borrow_mut();
@@ -447,67 +450,6 @@ impl RMatrix {
         self.height = last_row.y + item_h;
     }
 
-    // pub fn calculate_measurements(&mut self) {
-    //     // cols, rows, items
-    //     self.calculate_col_row_measurements();
-    // let mut x = 0.0;
-    // for col in &self.cols {
-    //     let mut col = col.borrow_mut();
-    //     let mut y = 0.0;
-    //     let mut rowidx = 0;
-    //     for item in &col.items {
-    //         if let Some(item) = item {
-    //             let mut item: RefMut<RItem> = item.borrow_mut();
-    //             item.coords = Some(NPoint::new(x, y));
-    //         }
-    //         let mut row = self.get_row(rowidx).unwrap().borrow_mut();
-    //         row.y = y;
-    //         y += row.distance_y.round();
-    //         rowidx += 1;
-    //     }
-    //     col.x = x;
-    //     x += col.distance_x.round();
-    //     //x += col.distance_x_after_allot;
-    // }
-
-    // // matrix size
-    // let last_col: Ref<RCol> = self.cols.last().unwrap().borrow();
-    // let mut item_w: f32 = -1000.0;
-    // for item in &last_col.items {
-    //     if let Some(item) = item {
-    //         let item: Ref<RItem> = item.borrow();
-    //         // for rect in item.rects.iter() {
-    //         //     item_w = item_w.max(rect.0 + rect.2);
-    //         // }
-
-    //         // let nrects = item.nrects.as_ref().unwrap();
-
-    //         for rect in item.nrects.as_ref().unwrap().iter() {
-    //             let rect: NRect = rect.borrow().0;
-    //             item_w = item_w.max(rect.0 + rect.2);
-    //         }
-    //     }
-    // }
-    // self.width = last_col.x + item_w;
-
-    // let last_row: Ref<RRow> = self.rows.last().unwrap().borrow();
-    // let mut item_h: f32 = -1000.0;
-    // for item in &last_row.items {
-    //     if let Some(item) = item {
-    //         let item: Ref<RItem> = item.borrow();
-    //         // for rect in item.rects.iter() {
-    //         //     item_h = item_h.max(rect.1 + rect.3);
-    //         // }
-
-    //         for rect in item.nrects.as_ref().unwrap().iter() {
-    //             let rect: NRect = rect.borrow().0;
-    //             item_h = item_h.max(rect.1 + rect.3);
-    //         }
-    //     }
-    // }
-    // self.height = last_row.y + item_h;
-    // }
-
     pub fn add_vertical_space(&self, add_space: f32) {
         if add_space <= 1.0 {
             return;
@@ -575,14 +517,6 @@ impl RMatrix {
     }
 
     pub fn calculate_beamgroups(&self) {
-        // for row in self.rows.iter() {
-        // for col in self.cols.iter() {
-        // let col = col.borrow();
-
-        // let mut note_start_level: f32 = 0.0;
-        // let mut note_x_positions: Vec<f32> = vec![];
-        // let mut beam_direction: DirUD = DirUD::Up;
-
         for row in self.rows.iter() {
             let row = row.borrow();
             for item in row.items.iter() {
@@ -728,7 +662,7 @@ impl RMatrix {
 
                 match item.note_beam {
                     RItemBeam::Single(ref data) => {
-                        if let Some(nrect) = add_flag_spacer(data) {
+                        if let Some(nrect) = add_flag(data) {
                             let mut nrects = item.nrects.as_mut().unwrap();
                             nrects.push(Rc::new(RefCell::new(nrect)));
                         }
@@ -737,7 +671,7 @@ impl RMatrix {
                 }
                 match item.note2_beam {
                     RItemBeam::Single(ref data) => {
-                        if let Some(nrect) = add_flag_spacer(data) {
+                        if let Some(nrect) = add_flag(data) {
                             let mut nrects = item.nrects.as_mut().unwrap();
                             nrects.push(Rc::new(RefCell::new(nrect)));
                         }
@@ -772,7 +706,9 @@ pub fn get_head_x_adjustment(data: &RItemBeamData) -> f32 {
     adjustment_x + head_x
 }
 
-pub fn add_flag_spacer(data: &RItemBeamData) -> Option<NRectExt> {
+pub fn add_flag(data: &RItemBeamData) -> Option<NRectExt> {
+    // Add actual flag rectangle
+    // The spcing rectangle is added
     if let BeamType::None = duration_to_beamtype(&data.duration) {
         return None;
     }
@@ -780,7 +716,7 @@ pub fn add_flag_spacer(data: &RItemBeamData) -> Option<NRectExt> {
     let first_tip_y = (data.tip_level * SPACE_HALF) + (STEM_LENGTH * SPACE_HALF) * data.direction.sign();
     let rect_x = match data.direction {
         DirUD::Up => get_head_x_adjustment(data) + STEM_WIDTH_HALF,
-        DirUD::Down => get_head_x_adjustment(data) + STEM_WIDTH,
+        DirUD::Down => get_head_x_adjustment(data) + STEM_WIDTH - 2.0,
     };
     let rect_y = match data.direction {
         DirUD::Up => first_tip_y,

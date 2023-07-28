@@ -18,14 +18,14 @@ pub const BEAM_COVER_STEM: f32 = 1.0;
 pub const FONT_SCALE_LYRICS: f32 = 0.08;
 pub const DEV_LINE_THICKNESS: f32 = 2.0;
 // pub const FLAG_RECT_WIDTH_UP: f32 = SPACE;
-pub const FLAG_RECT_WIDTH: f32 = SPACE * 1.1;
+pub const FLAG_RECT_WIDTH: f32 = SPACE * 1.4;
 pub const FLAG_RECT_HEIGHT: f32 = SPACE * 3.0;
 pub const FLAG_X_ADJUST: f32 = SPACE * 0.15;
 
 //------------------------------------------------------------
 pub const LINE: f32 = 2.7;
-//------------------------------------------------------------
 pub const NOTELINES_WIDTH: f32 = 1.0 * LINE;
+//------------------------------------------------------------
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub enum Accidental {

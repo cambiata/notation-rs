@@ -54,14 +54,17 @@ pub fn matrix_test3() -> RMatrix {
         None,
     );
 
-    let matrix = RMatrix::new(vec![
-        Rc::new(RefCell::new(col0)),
-        Rc::new(RefCell::new(col1)),
-        Rc::new(RefCell::new(col2)),
-        Rc::new(RefCell::new(col3)),
-        Rc::new(RefCell::new(col4)),
-        Rc::new(RefCell::new(col5)),
-    ]);
+    let matrix = RMatrix::new(
+        vec![
+            Rc::new(RefCell::new(col0)),
+            Rc::new(RefCell::new(col1)),
+            Rc::new(RefCell::new(col2)),
+            Rc::new(RefCell::new(col3)),
+            Rc::new(RefCell::new(col4)),
+            Rc::new(RefCell::new(col5)),
+        ],
+        None,
+    );
 
     matrix
 }
@@ -102,12 +105,10 @@ pub fn matrix_test1() -> RMatrix {
         Some(NV2),
     );
 
-    let matrix = RMatrix::new(vec![
-        Rc::new(RefCell::new(col0)),
-        Rc::new(RefCell::new(col1)),
-        Rc::new(RefCell::new(col2)),
-        Rc::new(RefCell::new(col3)),
-    ]);
+    let matrix = RMatrix::new(
+        vec![Rc::new(RefCell::new(col0)), Rc::new(RefCell::new(col1)), Rc::new(RefCell::new(col2)), Rc::new(RefCell::new(col3))],
+        None,
+    );
 
     matrix
 }
@@ -123,10 +124,7 @@ pub fn matrix_test2() -> RMatrix {
     );
     let col1 = RCol::new(
         vec![
-            Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(0.0, 0.0, 10.0, 10.0)],
-                NV2,
-            )))),
+            Some(Rc::new(RefCell::new(RItem::new(vec![NRect::new(0.0, 0.0, 10.0, 10.0)], NV2)))),
             Some(Rc::new(RefCell::new(RItem::new(r10(), NV4)))),
             //
         ],
@@ -135,19 +133,13 @@ pub fn matrix_test2() -> RMatrix {
     let col2 = RCol::new(
         vec![
             None, //
-            Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(0.0, 0.0, 10.0, 5.0)],
-                NV4,
-            )))),
+            Some(Rc::new(RefCell::new(RItem::new(vec![NRect::new(0.0, 0.0, 10.0, 5.0)], NV4)))),
         ],
         Some(NV4),
     );
     let col3 = RCol::new(
         vec![
-            Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(-0.0, 0.0, 20.0, 20.0)],
-                0,
-            )))),
+            Some(Rc::new(RefCell::new(RItem::new(vec![NRect::new(-0.0, 0.0, 20.0, 20.0)], 0)))),
             // Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
             None, //
         ],
@@ -156,14 +148,8 @@ pub fn matrix_test2() -> RMatrix {
 
     let col4 = RCol::new(
         vec![
-            Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(0.0, 0.0, 10.0, 30.0)],
-                NV2,
-            )))),
-            Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(0.0, 0.0, 10.0, 5.0)],
-                NV4,
-            )))),
+            Some(Rc::new(RefCell::new(RItem::new(vec![NRect::new(0.0, 0.0, 10.0, 30.0)], NV2)))),
+            Some(Rc::new(RefCell::new(RItem::new(vec![NRect::new(0.0, 0.0, 10.0, 5.0)], NV4)))),
             //
         ],
         Some(NV2),
@@ -171,23 +157,23 @@ pub fn matrix_test2() -> RMatrix {
 
     let col5 = RCol::new(
         vec![
-            Some(Rc::new(RefCell::new(RItem::new(
-                vec![NRect::new(0.0, 0.0, 5.0, 20.0)],
-                0,
-            )))),
+            Some(Rc::new(RefCell::new(RItem::new(vec![NRect::new(0.0, 0.0, 5.0, 20.0)], 0)))),
             Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
         ],
         None,
     );
 
-    let matrix = RMatrix::new(vec![
-        Rc::new(RefCell::new(col0)),
-        Rc::new(RefCell::new(col1)),
-        Rc::new(RefCell::new(col2)),
-        Rc::new(RefCell::new(col3)),
-        Rc::new(RefCell::new(col4)),
-        Rc::new(RefCell::new(col5)),
-    ]);
+    let matrix = RMatrix::new(
+        vec![
+            Rc::new(RefCell::new(col0)),
+            Rc::new(RefCell::new(col1)),
+            Rc::new(RefCell::new(col2)),
+            Rc::new(RefCell::new(col3)),
+            Rc::new(RefCell::new(col4)),
+            Rc::new(RefCell::new(col5)),
+        ],
+        None,
+    );
 
     matrix
 }

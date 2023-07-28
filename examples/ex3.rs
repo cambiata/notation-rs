@@ -42,7 +42,7 @@ fn main() {
     // let bar_data = QCode::bars("0 % 1 ").unwrap();
 
     let (bartemplate, bars) = bar_data;
-    let mut matrix = bars.to_matrix(&bartemplate).unwrap();
+    let mut matrix = bars.to_matrix(Some(bartemplate)).unwrap();
     bars.add_beamgroups_to_matrix_items();
 
     matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);

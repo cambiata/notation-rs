@@ -9,8 +9,14 @@ use crate::{complex, prelude::*};
 pub struct Bars(pub Vec<Rc<RefCell<Bar>>>);
 
 impl Bars {
-    pub fn to_matrix(&self, bartemplate: &BarTemplate) -> Result<RMatrix> {
-        // pub fn to_matrix(&self) -> Result<()> {
+    pub fn to_matrix(&self, bartemplate: Option<BarTemplate>) -> Result<RMatrix> {
+        let bartemplate = match bartemplate {
+            Some(bartemplate) => bartemplate,
+            None => {
+                return Err(Generic("Bartemplate is missing!".to_string()).into());
+            }
+        };
+
         let mut matrix_cols: Vec<Rc<RefCell<RCol>>> = vec![];
         for (baridx, bar) in self.0.iter().enumerate() {
             let bar = bar.borrow();
@@ -46,9 +52,6 @@ impl Bars {
                     positions2.push(duration);
                     let durations = positions2.windows(2).map(|w| w[1] - w[0]).collect::<Vec<_>>();
 
-                    // let complex_count = bar.complex_count();
-
-                    // for columnidx in 0..complex_count {
                     for (posidx, position) in positions.iter().enumerate() {
                         let mut colitems = vec![];
                         let mut colduration: Option<Duration> = None;
@@ -144,7 +147,19 @@ impl Bars {
             }
         }
 
-        let matrix = RMatrix::new(matrix_cols);
+        let matrix = RMatrix::new(matrix_cols, Some(bartemplate));
+
+        // for (rowidx, row) in matrix.rows.iter().enumerate() {
+        //     //
+        //     let row = row.borrow();
+        //     let template = bartemplate.0.get(rowidx).unwrap();
+        //     match template {
+        //         PartTemplate::Music => {
+        //             dbg!(row.y);
+        //         }
+        //         PartTemplate::Nonmusic => {}
+        //     }
+        // }
 
         Ok(matrix)
         // Ok(())
