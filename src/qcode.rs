@@ -69,11 +69,7 @@ impl QCode {
                 }
             }
 
-            let barpause_value: Option<Duration> = if barpause_value == 0 {
-                None
-            } else {
-                Some(barpause_value)
-            };
+            let barpause_value: Option<Duration> = if barpause_value == 0 { None } else { Some(barpause_value) };
 
             VoiceType::Barpause(barpause_value)
         } else {
@@ -102,18 +98,12 @@ impl QCode {
             2 => {
                 let voice1 = QCode::voice(segments[0])?;
                 let voice2 = QCode::voice(segments[1])?;
-                Ok(Voices::Two(
-                    Rc::new(RefCell::new(voice1)),
-                    Rc::new(RefCell::new(voice2)),
-                ))
+                Ok(Voices::Two(Rc::new(RefCell::new(voice1)), Rc::new(RefCell::new(voice2))))
             }
             3 => {
                 let voice1 = QCode::voice(segments[1])?;
                 let voice2 = QCode::voice(segments[2])?;
-                Ok(Voices::Two(
-                    Rc::new(RefCell::new(voice1)),
-                    Rc::new(RefCell::new(voice2)),
-                ))
+                Ok(Voices::Two(Rc::new(RefCell::new(voice1)), Rc::new(RefCell::new(voice2))))
             }
             _ => Err(Generic(format!("too many voices in code: {}", nr_of_voices)).into()),
         }
@@ -173,11 +163,7 @@ impl QCode {
 
             if let Some(first_bar_template) = &first_bar_template {
                 if bartemplate.0.len() > 0 && bartemplate != *first_bar_template {
-                    return Err(Generic(format!(
-                        "bar template mismatch: {:?} != {:?}",
-                        bartemplate, first_bar_template
-                    ))
-                    .into());
+                    return Err(Generic(format!("bar template mismatch: {:?} != {:?}", bartemplate, first_bar_template)).into());
                 }
             } else {
                 if !(bartemplate.0.is_empty()) {
@@ -194,19 +180,12 @@ impl QCode {
 
         //======================================================================
         // include vertical line first
-        bars.insert(
-            0,
-            Rc::new(RefCell::new(Bar::new(BarType::NonContent(
-                NonContentType::VerticalLine,
-            )))),
-        );
+        bars.insert(0, Rc::new(RefCell::new(Bar::new(BarType::NonContent(NonContentType::VerticalLine)))));
         // add vertical line to end
-        bars.push(Rc::new(RefCell::new(Bar::new(BarType::NonContent(
-            NonContentType::VerticalLine,
-        )))));
+        bars.push(Rc::new(RefCell::new(Bar::new(BarType::NonContent(NonContentType::VerticalLine)))));
         //======================================================================
 
-        Ok((first_bar_template.unwrap(), Bars(bars)))
+        Ok((first_bar_template.unwrap(), Bars::new(bars)))
     }
 
     pub fn bar(mut code: &str) -> Result<(BarTemplate, Bar)> {

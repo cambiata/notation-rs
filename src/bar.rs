@@ -1,4 +1,4 @@
-use std::cell::Ref;
+use std::cell::{Ref, RefMut};
 use std::hash::Hash;
 use std::rc::Rc;
 use std::{cell::RefCell, collections::HashMap};
@@ -6,10 +6,18 @@ use std::{cell::RefCell, collections::HashMap};
 use crate::{complex, prelude::*};
 
 #[derive(Debug, PartialEq)]
-pub struct Bars(pub Vec<Rc<RefCell<Bar>>>);
+// pub struct Bars(pub Vec<Rc<RefCell<Bar>>>);
+pub struct Bars {
+    pub items: Vec<Rc<RefCell<Bar>>>,
+    pub matrix: Option<RMatrix>,
+}
 
 impl Bars {
-    pub fn to_matrix(&self, bartemplate: Option<BarTemplate>) -> Result<RMatrix> {
+    pub fn new(items: Vec<Rc<RefCell<Bar>>>) -> Self {
+        Self { items, matrix: None }
+    }
+
+    pub fn create_matrix(&self, bartemplate: Option<BarTemplate>) -> Result<RMatrix> {
         let bartemplate = match bartemplate {
             Some(bartemplate) => bartemplate,
             None => {
@@ -18,7 +26,7 @@ impl Bars {
         };
 
         let mut matrix_cols: Vec<Rc<RefCell<RCol>>> = vec![];
-        for (baridx, bar) in self.0.iter().enumerate() {
+        for (baridx, bar) in self.items.iter().enumerate() {
             let bar = bar.borrow();
 
             match &bar.btype {
@@ -165,8 +173,8 @@ impl Bars {
         // Ok(())
     }
 
-    pub fn add_beamgroups_to_matrix_items(&self) {
-        for (baridx, bar) in self.0.iter().enumerate() {
+    pub fn matrix_add_beamgroups(&self) {
+        for (baridx, bar) in self.items.iter().enumerate() {
             let bar = bar.borrow();
             match bar.btype {
                 BarType::Standard(ref parts) => {
@@ -185,8 +193,6 @@ impl Bars {
                             if let Some(item) = &complex.matrix_item {
                                 let mut item = item.borrow_mut();
 
-                                //-----------------------------------------------------------------
-                                // start of refactor
                                 let note = match &complex.ctype {
                                     ComplexType::Single(ref note, _) | ComplexType::Upper(ref note, _) => Some(note),
                                     ComplexType::Two(ref note, _, _) => Some(note),
@@ -324,235 +330,52 @@ impl Bars {
                                         }
                                     }
                                 }
-                                // end of refactor
+                            }
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
 
-                                //====================================================================
+    pub fn matrix_add_ties(&self) {
+        for (baridx, bar) in self.items.iter().enumerate() {
+            let bar = bar.borrow();
+            match bar.btype {
+                BarType::Standard(ref parts) => {
+                    for part in parts {
+                        let part = part.borrow();
+                        let complexes = part.complexes.as_ref().expect("Part should have complexes!");
+                        for complex in complexes {
+                            let complex = complex.borrow();
 
-                                // start of original
-                                // match &complex.ctype {
-                                //     ComplexType::Upper(ref note, _) | ComplexType::Single(ref note, _) => {
-                                //         let note = &note.borrow();
-                                //         match note.ntype {
-                                //             NoteType::Heads(_) => {
-                                //                 let beamgroup_ref = note.beamgroup.as_ref().expect("Single note should have beamgroup!").clone();
-                                //                 let beamgroup = beamgroup_ref.borrow();
-                                //                 if beamgroup.id != note_current_beamgroup_id {
-                                //                     note_current_beamgroup_id = beamgroup.id;
-                                //                     note_current_beamgroup_note_idx = 0;
+                            if let Some(item) = &complex.matrix_item {
+                                let mut item: RefMut<RItem> = item.borrow_mut();
 
-                                //                     let data = RItemBeamData {
-                                //                         id: beamgroup.id,
-                                //                         note_id: note.id,
-                                //                         note_position: note.position,
-                                //                         direction: beamgroup.direction.unwrap(),
-                                //                         tip_level: beamgroup.start_level,
-                                //                         duration: note.duration,
-                                //                         top_level: note.top_level(),
-                                //                         bottom_level: note.bottom_level(),
-                                //                         has_stem: note.has_stem(),
-                                //                         adjustment_x: None,
-                                //                         head_width: duration_get_headwidth(&note.duration),
-                                //                     };
+                                let note = match &complex.ctype {
+                                    ComplexType::Single(ref note, _) | ComplexType::Upper(ref note, _) => Some(note),
+                                    ComplexType::Two(ref note, _, _) => Some(note),
+                                    _ => None,
+                                };
 
-                                //                     if beamgroup.notes.len() == 1 {
-                                //                         item.note_beam = RItemBeam::Single(data);
-                                //                     } else {
-                                //                         item.note_beam = RItemBeam::Start(data);
-                                //                     }
-                                //                 } else {
-                                //                     note_current_beamgroup_note_idx += 1;
+                                let note2 = match &complex.ctype {
+                                    ComplexType::Two(_, ref note2, _) => Some(note2),
+                                    ComplexType::Lower(ref note2, _) => Some(note2),
+                                    _ => None,
+                                };
 
-                                //                     let data = RItemBeamData {
-                                //                         id: beamgroup.id,
-                                //                         note_id: note.id,
-                                //                         note_position: note.position,
-                                //                         direction: beamgroup.direction.unwrap(),
-                                //                         tip_level: beamgroup.end_level,
-                                //                         duration: note.duration,
-                                //                         top_level: note.top_level(),
-                                //                         bottom_level: note.bottom_level(),
-                                //                         has_stem: note.has_stem(),
-                                //                         adjustment_x: None,
-                                //                         head_width: duration_get_headwidth(&note.duration),
-                                //                     };
+                                let adjust_x = match &complex.ctype {
+                                    ComplexType::Two(_, _, adjust_x) => adjust_x,
+                                    _ => &None,
+                                };
 
-                                //                     if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
-                                //                         item.note_beam = RItemBeam::Middle(beamgroup.id, note.top_level(), note.bottom_level());
-                                //                     } else {
-                                //                         item.note_beam = RItemBeam::End(data);
-                                //                     }
-                                //                 }
-                                //             }
-                                //             _ => {}
-                                //         }
-                                //     }
-                                //     ComplexType::Lower(ref note2, _) => {
-                                //         let note2 = &note2.borrow();
-                                //         match note2.ntype {
-                                //             NoteType::Heads(_) => {
-                                //                 let beamgroup_ref = note2.beamgroup.as_ref().expect("Lower note should have beamgroup!").clone();
-                                //                 let beamgroup = beamgroup_ref.borrow();
-                                //                 if beamgroup.id != note2_current_beamgroup_id {
-                                //                     note2_current_beamgroup_id = beamgroup.id;
-                                //                     note2_current_beamgroup_note_idx = 0;
-
-                                //                     let data = RItemBeamData {
-                                //                         id: beamgroup.id,
-                                //                         note_id: note2.id,
-                                //                         note_position: note2.position,
-                                //                         direction: beamgroup.direction.unwrap(),
-                                //                         tip_level: beamgroup.start_level,
-                                //                         duration: note2.duration,
-                                //                         top_level: note2.top_level(),
-                                //                         bottom_level: note2.bottom_level(),
-                                //                         has_stem: note2.has_stem(),
-                                //                         adjustment_x: None,
-                                //                         head_width: duration_get_headwidth(&note2.duration),
-                                //                     };
-
-                                //                     if beamgroup.notes.len() == 1 {
-                                //                         item.note2_beam = RItemBeam::Single(data);
-                                //                     } else {
-                                //                         item.note2_beam = RItemBeam::Start(data);
-                                //                     }
-                                //                 } else {
-                                //                     let data = RItemBeamData {
-                                //                         id: beamgroup.id,
-                                //                         note_id: note2.id,
-                                //                         note_position: note2.position,
-                                //                         direction: beamgroup.direction.unwrap(),
-                                //                         tip_level: beamgroup.end_level,
-                                //                         duration: note2.duration,
-                                //                         top_level: note2.top_level(),
-                                //                         bottom_level: note2.bottom_level(),
-                                //                         has_stem: note2.has_stem(),
-                                //                         adjustment_x: None,
-                                //                         head_width: duration_get_headwidth(&note2.duration),
-                                //                     };
-
-                                //                     note2_current_beamgroup_note_idx += 1;
-                                //                     if note2_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
-                                //                         item.note2_beam = RItemBeam::Middle(beamgroup.id, note2.top_level(), note2.bottom_level());
-                                //                     } else {
-                                //                         item.note2_beam = RItemBeam::End(data);
-                                //                     }
-                                //                 }
-                                //             }
-                                //             _ => {}
-                                //         }
-                                //     }
-
-                                //     ComplexType::Two(ref note, ref note2, ref adjustment_x) => {
-                                //         let note = &note.borrow();
-                                //         match note.ntype {
-                                //             NoteType::Heads(_) => {
-                                //                 let beamgroup_ref = note.beamgroup.as_ref().expect("Upper note should have beamgroup!").clone();
-                                //                 let beamgroup = beamgroup_ref.borrow();
-                                //                 if beamgroup.id != note_current_beamgroup_id {
-                                //                     note_current_beamgroup_id = beamgroup.id;
-                                //                     note_current_beamgroup_note_idx = 0;
-
-                                //                     let data = RItemBeamData {
-                                //                         id: beamgroup.id,
-                                //                         note_id: note.id,
-                                //                         note_position: note.position,
-                                //                         direction: beamgroup.direction.unwrap(),
-                                //                         tip_level: beamgroup.start_level,
-                                //                         duration: note.duration,
-                                //                         top_level: note.top_level(),
-                                //                         bottom_level: note.bottom_level(),
-                                //                         has_stem: note.has_stem(),
-                                //                         adjustment_x: *adjustment_x,
-                                //                         head_width: duration_get_headwidth(&note.duration),
-                                //                     };
-
-                                //                     if beamgroup.notes.len() == 1 {
-                                //                         item.note_beam = RItemBeam::Single(data);
-                                //                     } else {
-                                //                         item.note_beam = RItemBeam::Start(data);
-                                //                     }
-                                //                 } else {
-                                //                     let data = RItemBeamData {
-                                //                         id: beamgroup.id,
-                                //                         note_id: note.id,
-                                //                         note_position: note.position,
-                                //                         direction: beamgroup.direction.unwrap(),
-                                //                         tip_level: beamgroup.end_level,
-                                //                         duration: note.duration,
-                                //                         top_level: note.top_level(),
-                                //                         bottom_level: note.bottom_level(),
-                                //                         has_stem: note.has_stem(),
-                                //                         adjustment_x: *adjustment_x,
-                                //                         head_width: duration_get_headwidth(&note.duration),
-                                //                     };
-
-                                //                     note_current_beamgroup_note_idx += 1;
-                                //                     if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
-                                //                         item.note_beam = RItemBeam::Middle(beamgroup.id, note.top_level(), note.bottom_level());
-                                //                     } else {
-                                //                         item.note_beam = RItemBeam::End(data);
-                                //                     }
-                                //                 }
-                                //             }
-                                //             _ => {}
-                                //         }
-
-                                //         let note2 = &note2.borrow();
-                                //         match note2.ntype {
-                                //             NoteType::Heads(_) => {
-                                //                 let beamgroup_ref = note2.beamgroup.as_ref().expect("Lower note should have beamgroup!").clone();
-                                //                 let beamgroup = beamgroup_ref.borrow();
-                                //                 if beamgroup.id != note2_current_beamgroup_id {
-                                //                     note2_current_beamgroup_id = beamgroup.id;
-                                //                     note2_current_beamgroup_note_idx = 0;
-
-                                //                     let data = RItemBeamData {
-                                //                         id: beamgroup.id,
-                                //                         note_id: note2.id,
-                                //                         note_position: note2.position,
-                                //                         direction: beamgroup.direction.unwrap(),
-                                //                         tip_level: beamgroup.start_level,
-                                //                         duration: note2.duration,
-                                //                         top_level: note2.top_level(),
-                                //                         bottom_level: note2.bottom_level(),
-                                //                         has_stem: note2.has_stem(),
-                                //                         adjustment_x: *adjustment_x,
-                                //                         head_width: duration_get_headwidth(&note2.duration),
-                                //                     };
-
-                                //                     if beamgroup.notes.len() == 1 {
-                                //                         item.note2_beam = RItemBeam::Single(data);
-                                //                     } else {
-                                //                         item.note2_beam = RItemBeam::Start(data);
-                                //                     }
-                                //                 } else {
-                                //                     let data = RItemBeamData {
-                                //                         id: beamgroup.id,
-                                //                         note_id: note2.id,
-                                //                         note_position: note2.position,
-                                //                         direction: beamgroup.direction.unwrap(),
-                                //                         tip_level: beamgroup.end_level,
-                                //                         duration: note2.duration,
-                                //                         top_level: note2.top_level(),
-                                //                         bottom_level: note2.bottom_level(),
-                                //                         has_stem: note2.has_stem(),
-                                //                         adjustment_x: *adjustment_x,
-                                //                         head_width: duration_get_headwidth(&note2.duration),
-                                //                     };
-
-                                //                     note2_current_beamgroup_note_idx += 1;
-                                //                     if note2_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
-                                //                         item.note2_beam = RItemBeam::Middle(beamgroup.id, note2.top_level(), note2.bottom_level());
-                                //                     } else {
-                                //                         item.note2_beam = RItemBeam::End(data);
-                                //                     }
-                                //                 }
-                                //             }
-                                //             _ => {}
-                                //         }
-                                //     }
-                                // }
-                                // end of original
+                                if let Some(note) = note {
+                                    let note = note.borrow();
+                                    if !note.is_heads() {
+                                        continue;
+                                    }
+                                }
                             }
                         }
                     }
@@ -629,6 +452,6 @@ mod testsbars {
         let bar_data = QCode::bars(" 0 ").unwrap();
         // QCode::bars("|clefs G F - | 0 % 1 / 0 /lyr $lyr:aaa | 0 / 0 /lyr $lyr:bbb").unwrap();
         let (bartemplate, bars) = bar_data;
-        bars.to_matrix(&bartemplate).unwrap();
+        bars.create_matrix(Some(bartemplate)).unwrap();
     }
 }

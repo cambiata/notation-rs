@@ -137,7 +137,7 @@ pub struct RItemBeamData {
     pub lower_voice: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct RCol {
     pub duration: Duration,
     pub items: Vec<Option<Rc<RefCell<RItem>>>>,
@@ -168,7 +168,7 @@ impl RCol {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct RRow {
     pub items: Vec<Option<Rc<RefCell<RItem>>>>,
     pub distance_y: f32,
@@ -180,7 +180,7 @@ impl RRow {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct RMatrix {
     pub cols: Vec<Rc<RefCell<RCol>>>,
     pub rows: Vec<Rc<RefCell<RRow>>>,
