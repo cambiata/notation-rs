@@ -177,3 +177,28 @@ pub fn matrix_test2() -> RMatrix {
 
     matrix
 }
+
+pub fn qitem(x: f32, w: f32, dur: Duration) -> Option<Rc<RefCell<RItem>>> {
+    // Some(Rc::new(RefCell::new(RItem::new(
+    //     vec![NRect::new(x, 0.0, w, 10.0)],
+    //     dur,
+    // ))))
+
+    Some(Rc::new(RefCell::new(RItem::new_with_nrectsext(vec![NRect::new(x, 0.0, w, 10.0)], dur))))
+}
+
+pub fn xitem(x: f32, w: f32, h: f32, dur: Duration) -> Option<Rc<RefCell<RItem>>> {
+    // Some(Rc::new(RefCell::new(RItem::new(
+    //     vec![NRect::new(x, 0.0, w, h)],
+    //     dur,
+    // ))))
+    Some(Rc::new(RefCell::new(RItem::new_with_nrectsext(vec![NRect::new(x, 0.0, w, h)], dur))))
+}
+
+pub fn r10() -> Vec<NRect> {
+    vec![NRect::new(0.0, 0.0, 10.0, 10.0)]
+}
+
+pub fn r20() -> Vec<NRect> {
+    vec![NRect::new(0.0, 0.0, 10.0, 20.0)]
+}

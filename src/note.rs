@@ -29,9 +29,10 @@ pub struct Note {
     pub voice: Option<Rc<RefCell<Voice>>>,
     pub beamgroup: Option<Rc<RefCell<Beamgroup>>>,
     pub direction: Option<DirUD>,
-
     pub ties: Vec<TieData>,
     pub ties_to: Vec<TieToData>,
+
+    pub adjust_x: Option<(f32, f32)>,
 }
 
 impl Note {
@@ -72,6 +73,7 @@ impl Note {
             direction: None,
             ties,
             ties_to,
+            adjust_x: None,
         }
     }
 
@@ -156,6 +158,13 @@ impl Note {
     pub fn get_head(&self, level: i8) -> Option<Rc<RefCell<Head>>> {
         match &self.ntype {
             NoteType::Heads(heads) => heads.get_head(level),
+            _ => None,
+        }
+    }
+
+    pub fn get_heads(&self) -> Option<Vec<Rc<RefCell<Head>>>> {
+        match &self.ntype {
+            NoteType::Heads(heads) => Some(heads.heads.clone()),
             _ => None,
         }
     }

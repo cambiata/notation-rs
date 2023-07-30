@@ -3,7 +3,10 @@ use std::{
     collections::{HashMap, HashSet},
 };
 
-use crate::prelude::{fonts::ebgaramond::GLYPH_HEIGHT, *};
+use crate::{
+    head,
+    prelude::{fonts::ebgaramond::GLYPH_HEIGHT, *},
+};
 
 pub type Parts = Vec<Rc<RefCell<Part>>>;
 
@@ -414,9 +417,10 @@ impl Part {
             },
         }
 
-        if !complexes.is_empty() {
-            self.complexes = Some(complexes.into_iter().map(|item| Rc::new(RefCell::new(item))).collect::<Vec<_>>());
-        }
+        // if !complexes.is_empty() {
+        self.complexes = Some(complexes.into_iter().map(|item| Rc::new(RefCell::new(item))).collect::<Vec<_>>());
+        self.set_note_adjust_x_info().unwrap();
+        // }
     }
 
     pub fn set_beamgroups_directions(&self, force_overflow_dir: DirUAD) -> Option<()> {
@@ -703,6 +707,55 @@ impl Part {
             if !rects.is_empty() {
                 for nrect in rects {
                     complex.rects.push(Rc::new(RefCell::new(nrect)));
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    fn set_note_adjust_x_info(&self) -> Result<()> {
+        if self.complexes.is_none() {
+            return Ok(());
+        }        
+        let complexes = self.complexes.as_ref().unwrap();
+
+        for (idx, complex) in complexes.into_iter().enumerate() {
+            let mut complex = complex.borrow_mut();
+            match complex.ctype {
+                ComplexType::Single(ref note, _) | ComplexType::Upper(ref note, _) | ComplexType::Lower(ref note, _) => {
+                    let mut note = note.borrow_mut();
+                    let head_width = duration_get_headwidth(&note.duration);
+                    note.adjust_x = Some((head_width, 0.0));
+                }
+                ComplexType::Two(ref upper, ref lower, ref adjust) => {
+                    // upper
+                    let mut upper = upper.borrow_mut();
+                    let head_width = duration_get_headwidth(&upper.duration);
+
+                    let upper_adjust: f32 = match adjust.as_ref() {
+                        Some(adjust) => match adjust {
+                            ComplexXAdjustment::UpperRight(upper_right) => *upper_right,
+                            ComplexXAdjustment::LowerRight(lower_right) => 0.0,
+                        },
+                        None => 0.0,
+                    };
+
+                    upper.adjust_x = Some((head_width, upper_adjust));
+
+                    // lower
+                    let mut lower = lower.borrow_mut();
+                    let head_width = duration_get_headwidth(&lower.duration);
+
+                    let lower_adjust: f32 = match adjust.as_ref() {
+                        Some(adjust) => match adjust {
+                            ComplexXAdjustment::UpperRight(upper_right) => 0.0,
+                            ComplexXAdjustment::LowerRight(lower_right) => *lower_right,
+                        },
+                        None => 0.0,
+                    };
+
+                    lower.adjust_x = Some((head_width, lower_adjust));
                 }
             }
         }

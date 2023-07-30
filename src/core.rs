@@ -21,7 +21,8 @@ pub const DEV_LINE_THICKNESS: f32 = 2.0;
 pub const FLAG_RECT_WIDTH: f32 = SPACE * 1.4;
 pub const FLAG_RECT_HEIGHT: f32 = SPACE * 3.0;
 pub const FLAG_X_ADJUST: f32 = SPACE * 0.15;
-
+pub const TIE_FROM_WIDTH: f32 = SPACE * 0.5;
+pub const TIE_TO_WIDTH: f32 = SPACE * 0.5;
 //------------------------------------------------------------
 pub const LINE: f32 = 2.7;
 pub const NOTELINES_WIDTH: f32 = 1.0 * LINE;
@@ -446,7 +447,7 @@ pub enum NRectType {
     Pause(PauseShape),
     Clef(Clef),
     Accidental(Accidental),
-    Tie(Tie),
+    Tie(Tie, DirUD, TiePlacement),
     TieTo(TieTo),
     LyricChar(char),
     Flag(BeamType, DirUD),

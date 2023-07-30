@@ -1,9 +1,6 @@
 use crate::prelude::*;
 
-pub fn complex_calculate_x_adjustment(
-    upper: &RefCell<Note>,
-    lower: &RefCell<Note>,
-) -> Option<ComplexXAdjustment> {
+pub fn complex_calculate_x_adjustment(upper: &RefCell<Note>, lower: &RefCell<Note>) -> Option<ComplexXAdjustment> {
     let upper = upper.borrow();
     let lower = lower.borrow();
 
@@ -31,9 +28,7 @@ pub fn complex_calculate_x_adjustment(
 
             if level_diff < 0 {
                 // upper is lower than lower
-                Some(ComplexXAdjustment::UpperRight(
-                    lower_head_width + lower_dots_width,
-                ))
+                Some(ComplexXAdjustment::UpperRight(lower_head_width + lower_dots_width))
             } else if level_diff == 0 {
                 // same level
                 let same_duration = upper.duration == lower.duration;
@@ -44,9 +39,7 @@ pub fn complex_calculate_x_adjustment(
                 }
             } else if level_diff == 1 {
                 // lower is one lower than upper
-                Some(ComplexXAdjustment::LowerRight(
-                    upper_head_width + upper_dots_width,
-                ))
+                Some(ComplexXAdjustment::LowerRight(upper_head_width + upper_dots_width))
             } else {
                 // level_diff > 1
                 None
@@ -66,24 +59,14 @@ pub fn note_get_heads_placements(note: &Note) -> Result<HeadsPlacement> {
 
             let levels_heads = heads.levels();
             if levels_heads.len() == 1 {
-                return Ok(vec![(
-                    levels_heads[0],
-                    HeadPlacement::Center,
-                    heads.heads[0].clone(),
-                )]);
+                return Ok(vec![(levels_heads[0], HeadPlacement::Center, heads.heads[0].clone())]);
             }
 
             //------------------------------------------------------------
             let mut result: HeadsPlacement = Vec::new();
             return match dir {
                 DirUD::Up => {
-                    for (idx, level_pair) in levels_heads
-                        .into_iter()
-                        .rev()
-                        .collect::<Vec<i8>>()
-                        .windows(2)
-                        .enumerate()
-                    {
+                    for (idx, level_pair) in levels_heads.into_iter().rev().collect::<Vec<i8>>().windows(2).enumerate() {
                         let lower_level = level_pair[0];
                         let upper_level = level_pair[1];
                         let diff = lower_level - upper_level;
@@ -93,42 +76,22 @@ pub fn note_get_heads_placements(note: &Note) -> Result<HeadsPlacement> {
                         if idx == 0 {
                             result.push((lower_level, HeadPlacement::Center, head.clone()));
                             if diff < 2 {
-                                result.push((
-                                    upper_level,
-                                    HeadPlacement::Right,
-                                    upper_head.clone(),
-                                ));
+                                result.push((upper_level, HeadPlacement::Right, upper_head.clone()));
                             } else {
-                                result.push((
-                                    upper_level,
-                                    HeadPlacement::Center,
-                                    upper_head.clone(),
-                                ));
+                                result.push((upper_level, HeadPlacement::Center, upper_head.clone()));
                             }
                         } else {
                             let (current_level, current_placement, current_head) = &result[idx];
                             match diff {
                                 0 | 1 => {
                                     if let HeadPlacement::Center = current_placement {
-                                        result.push((
-                                            upper_level,
-                                            HeadPlacement::Right,
-                                            upper_head.clone(),
-                                        ));
+                                        result.push((upper_level, HeadPlacement::Right, upper_head.clone()));
                                     } else {
-                                        result.push((
-                                            upper_level,
-                                            HeadPlacement::Center,
-                                            upper_head.clone(),
-                                        ));
+                                        result.push((upper_level, HeadPlacement::Center, upper_head.clone()));
                                     }
                                 }
                                 _ => {
-                                    result.push((
-                                        upper_level,
-                                        HeadPlacement::Center,
-                                        upper_head.clone(),
-                                    ));
+                                    result.push((upper_level, HeadPlacement::Center, upper_head.clone()));
                                 }
                             }
                         }
@@ -148,36 +111,20 @@ pub fn note_get_heads_placements(note: &Note) -> Result<HeadsPlacement> {
                             if diff < 2 {
                                 result.push((lower_level, HeadPlacement::Left, lower_head.clone()));
                             } else {
-                                result.push((
-                                    lower_level,
-                                    HeadPlacement::Center,
-                                    lower_head.clone(),
-                                ));
+                                result.push((lower_level, HeadPlacement::Center, lower_head.clone()));
                             }
                         } else {
                             let (current_level, current_placement, current_head) = &result[idx];
                             match diff {
                                 0 | 1 => {
                                     if let HeadPlacement::Center = current_placement {
-                                        result.push((
-                                            lower_level,
-                                            HeadPlacement::Left,
-                                            lower_head.clone(),
-                                        ));
+                                        result.push((lower_level, HeadPlacement::Left, lower_head.clone()));
                                     } else {
-                                        result.push((
-                                            lower_level,
-                                            HeadPlacement::Center,
-                                            lower_head.clone(),
-                                        ));
+                                        result.push((lower_level, HeadPlacement::Center, lower_head.clone()));
                                     }
                                 }
                                 _ => {
-                                    result.push((
-                                        lower_level,
-                                        HeadPlacement::Center,
-                                        lower_head.clone(),
-                                    ));
+                                    result.push((lower_level, HeadPlacement::Center, lower_head.clone()));
                                 }
                             }
                         }
