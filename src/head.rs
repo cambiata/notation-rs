@@ -30,6 +30,7 @@ pub struct Head {
     pub level: i8,
     pub accidental: Option<Accidental>,
     pub tie: Option<Tie>,
+    pub tie_to: Option<TieTo>,
     // calculated
     pub placement: HeadPlacement,
 }
@@ -38,21 +39,19 @@ impl Head {
     pub fn new(level: i8) -> Self {
         Self {
             level,
-            tie: None,
             accidental: None,
+            tie: None,
+            tie_to: None,
             placement: HeadPlacement::Center,
         }
     }
 
-    pub fn new_with_attributes(
-        level: i8,
-        accidental: Option<Accidental>,
-        tie: Option<Tie>,
-    ) -> Self {
+    pub fn new_with_attributes(level: i8, accidental: Option<Accidental>, tie: Option<Tie>, tie_to: Option<TieTo>) -> Self {
         Self {
             level,
             accidental,
             tie,
+            tie_to,
             placement: HeadPlacement::Center,
         }
     }
@@ -64,6 +63,7 @@ impl Default for Head {
             level: 0,
             accidental: None,
             tie: None,
+            tie_to: None,
             placement: HeadPlacement::Center,
         }
     }
@@ -79,10 +79,7 @@ pub struct Heads {
 impl Heads {
     pub fn new(mut heads: Vec<Head>) -> Self {
         heads.sort_by_key(|item| item.level);
-        let heads: Vec<Rc<RefCell<Head>>> = heads
-            .into_iter()
-            .map(|item| Rc::new(RefCell::new(item)))
-            .collect();
+        let heads: Vec<Rc<RefCell<Head>>> = heads.into_iter().map(|item| Rc::new(RefCell::new(item))).collect();
         let top = heads[0].borrow().level;
         let bottom = heads[heads.len() - 1].borrow().level;
 
@@ -94,10 +91,7 @@ impl Heads {
     }
 
     pub fn levels_heads(&self) -> Vec<(i8, Rc<RefCell<Head>>)> {
-        self.heads
-            .iter()
-            .map(|head| (head.borrow().level, head.clone()))
-            .collect()
+        self.heads.iter().map(|head| (head.borrow().level, head.clone())).collect()
     }
 
     // pub fn levels_accidentals(&self) -> Vec<(i8, Accidental)> {
@@ -119,10 +113,7 @@ impl Heads {
         for head in &self.heads {
             let head = head.borrow();
             if head.accidental.is_some() {
-                result.push((
-                    head.level.clone(),
-                    head.accidental.as_ref().unwrap().clone(),
-                ));
+                result.push((head.level.clone(), head.accidental.as_ref().unwrap().clone()));
             }
         }
         result

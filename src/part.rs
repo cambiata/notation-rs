@@ -965,11 +965,7 @@ impl PartType {
     }
 }
 
-#[derive(Debug, PartialEq)]
-pub enum Voices {
-    One(Rc<RefCell<Voice>>),
-    Two(Rc<RefCell<Voice>>, Rc<RefCell<Voice>>),
-}
+
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum PartTemplate {

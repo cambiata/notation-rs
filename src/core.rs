@@ -43,6 +43,24 @@ pub enum Tie {
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub struct TieData {
+    pub level: i8,
+    pub ttype: Tie,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub enum TieTo {
+    ResolveTieFrom,
+    LetRing,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub struct TieToData {
+    pub level: i8,
+    pub ttype: TieTo,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub enum Clef {
     G,
     F,

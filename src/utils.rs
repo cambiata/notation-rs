@@ -46,6 +46,16 @@ pub fn parse_tie(s: &str) -> Option<Tie> {
     if s.contains("_") {
         return Some(Tie::Standard);
     }
+    if s[1..].contains("~") {
+        return Some(Tie::LetRing);
+    }
+    None
+}
+
+pub(crate) fn parse_tie_to(s: &str) -> Option<TieTo> {
+    if s.starts_with("~") {
+        return Some(TieTo::LetRing);
+    }
     None
 }
 

@@ -16,11 +16,7 @@ impl Voice {
             VoiceType::Barpause(v) => v.unwrap_or(0),
             VoiceType::Notes(notes) => notes.duration,
         };
-        Self {
-            duration,
-            vtype,
-            beamgroups: None,
-        }
+        Self { duration, vtype, beamgroups: None }
     }
 
     pub fn create_beamgroups(&mut self, pattern: &BeamingPattern) {
@@ -44,6 +40,12 @@ impl Voice {
 pub enum VoiceType {
     Barpause(Option<Duration>), // val
     Notes(Notes),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum Voices {
+    One(Rc<RefCell<Voice>>),
+    Two(Rc<RefCell<Voice>>, Rc<RefCell<Voice>>),
 }
 
 #[derive(Debug)]

@@ -39,29 +39,31 @@ fn main() {
     // let bar_data = QCode::bars("nv16 3 2 1 / nv16 3 2 1").unwrap();
     // let bar_data = QCode::bars("nv8 0 p 2 p nv16 0 p 2 p % nv8 1 p 1 p / nv8 0 p 2 p nv16 0 p 2 p").unwrap();
     // let bar_data = QCode::bars("0 % 1 ").unwrap();
+    // let bar_data = QCode::bars("5 4 3 2 1 0 -1 -2 -3 -4 -5 ").unwrap();
+    // let bar_data = QCode::bars("5 nv8 5 5 nv16 5 5 5 5 nv4 4 nv8 4 4 nv16 4 4 4 4").unwrap();
 
-    let bar_data = QCode::bars("5 4 3 2 1 0 -1 -2 -3 -4 -5 ").unwrap();
-    let bar_data = QCode::bars("5 nv8 5 5 nv16 5 5 5 5 nv4 4 nv8 4 4 nv16 4 4 4 4").unwrap();
+    let bar_data = QCode::bars(" -2_ -2 p -2_ |bl | -2 p -2_ -1").unwrap();
+    // let bar_data = QCode::bars(" nv2 ~-2_ nv4 -3 % nv4 0_ nv2 1").unwrap();
 
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
     bars.matrix_add_beamgroups();
+    bars.resolve_ties(); // WIP
     bars.matrix_add_ties();
 
     matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);
-    // matrix.calculate_col_row_item_measurements();
-
     matrix.calculate_beamgroups();
+
     matrix.calculate_row_spacing();
     matrix.calculate_col_row_item_measurements();
     matrix.calculate_matrix_size();
-
-    matrix_to_svg(&matrix, "./examples/ex3A.svg");
+    let svg = matrix_to_svg(&matrix, true);
+    std::fs::write("./examples/ex3A.svg", svg).unwrap();
 
     matrix.add_horizontal_space(100.0);
     matrix.add_vertical_space(50.0);
     matrix.calculate_col_row_item_measurements();
     matrix.calculate_matrix_size();
-
-    // matrix_to_svg(&matrix, "./examples/ex3B.svg");
+    let svg = matrix_to_svg(&matrix, true);
+    std::fs::write("./examples/ex3B.svg", svg).unwrap();
 }

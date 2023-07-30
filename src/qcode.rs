@@ -34,7 +34,9 @@ impl QCode {
                         let level = crate::utils::parse_string_to_int(segment)?;
                         let accidental = crate::utils::parse_accidental(segment);
                         let tie = crate::utils::parse_tie(segment);
-                        heads.push(Head::new_with_attributes(level as i8, accidental, tie));
+                        let tie_to = crate::utils::parse_tie_to(segment);
+                        let head = Head::new_with_attributes(level as i8, accidental, tie, tie_to);
+                        heads.push(head);
                         // , HeadAttributes {}
                     }
 
@@ -197,7 +199,9 @@ impl QCode {
             let bar = Bar::new(BarType::NonContent(NonContentType::Barline));
             return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("mul") {
-            todo!("multi rest");
+            // todo!("multi rest");
+            let bar = Bar::new(BarType::MultiRest(0));
+            return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("cle") {
             let code = code.split(' ').skip(1).collect::<Vec<_>>().join(" ");
             let segments = code.split(' ').collect::<Vec<_>>();

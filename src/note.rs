@@ -1,4 +1,4 @@
-use std::fmt::Formatter;
+use std::{cell::Ref, fmt::Formatter};
 
 use crate::prelude::*;
 
@@ -29,10 +29,37 @@ pub struct Note {
     pub voice: Option<Rc<RefCell<Voice>>>,
     pub beamgroup: Option<Rc<RefCell<Beamgroup>>>,
     pub direction: Option<DirUD>,
+
+    pub ties: Vec<TieData>,
+    pub ties_to: Vec<TieToData>,
 }
 
 impl Note {
     pub fn new(mut ntype: NoteType, duration: Duration) -> Self {
+        let mut ties: Vec<TieData> = Vec::new();
+        let mut ties_to: Vec<TieToData> = Vec::new();
+
+        match ntype {
+            NoteType::Heads(ref mut heads) => {
+                for head in heads.heads.iter() {
+                    let head: Ref<Head> = head.borrow();
+                    if let Some(tie) = &head.tie {
+                        ties.push(TieData {
+                            ttype: tie.clone(),
+                            level: head.level,
+                        });
+                    }
+                    if let Some(tie) = &head.tie_to {
+                        ties_to.push(TieToData {
+                            ttype: tie.clone(),
+                            level: head.level,
+                        });
+                    }
+                }
+            }
+            _ => {}
+        }
+
         Self {
             id: ID_COUNTER.fetch_add(1, Ordering::Relaxed),
             ntype,
@@ -43,6 +70,8 @@ impl Note {
             beamgroup: None,
             voice: None,
             direction: None,
+            ties,
+            ties_to,
         }
     }
 
@@ -94,7 +123,16 @@ impl Note {
             _ => false,
         }
     }
+
+    pub fn is_pause(&self) -> bool {
+        match &self.ntype {
+            NoteType::Pause => true,
+            _ => false,
+        }
+    }
 }
+
+pub type NotesChunk = Vec<Rc<RefCell<Note>>>;
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub enum SyllableType {

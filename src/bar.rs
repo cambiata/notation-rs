@@ -1,9 +1,11 @@
+use itertools::Itertools;
 use std::cell::{Ref, RefMut};
+use std::collections::BTreeMap;
 use std::hash::Hash;
 use std::rc::Rc;
 use std::{cell::RefCell, collections::HashMap};
 
-use crate::{complex, prelude::*};
+use crate::{complex, part, prelude::*};
 
 #[derive(Debug, PartialEq)]
 // pub struct Bars(pub Vec<Rc<RefCell<Bar>>>);
@@ -346,43 +348,244 @@ impl Bars {
                 BarType::Standard(ref parts) => {
                     for part in parts {
                         let part = part.borrow();
-                        let complexes = part.complexes.as_ref().expect("Part should have complexes!");
-                        for complex in complexes {
-                            let complex = complex.borrow();
+                        let complexes: &Vec<Rc<RefCell<Complex>>> = part.complexes.as_ref().expect("Part should have complexes!");
+                        for (left, right) in complexes.into_iter().tuples::<(&Rc<RefCell<Complex>>, &Rc<RefCell<Complex>>)>() {
+                            let left_complex: Ref<Complex> = left.borrow();
+                            let right_complex: Ref<Complex> = right.borrow();
 
-                            if let Some(item) = &complex.matrix_item {
-                                let mut item: RefMut<RItem> = item.borrow_mut();
+                            // .into_iter().tuples()
+                            // let complex = complex.borrow();
+                            // if let Some(item) = &complex.matrix_item {
+                            //     let mut item: RefMut<RItem> = item.borrow_mut();
 
-                                let note = match &complex.ctype {
-                                    ComplexType::Single(ref note, _) | ComplexType::Upper(ref note, _) => Some(note),
-                                    ComplexType::Two(ref note, _, _) => Some(note),
-                                    _ => None,
-                                };
+                            //     let note = match &complex.ctype {
+                            //         ComplexType::Single(ref note, _) | ComplexType::Upper(ref note, _) => Some(note),
+                            //         ComplexType::Two(ref note, _, _) => Some(note),
+                            //         _ => None,
+                            //     };
 
-                                let note2 = match &complex.ctype {
-                                    ComplexType::Two(_, ref note2, _) => Some(note2),
-                                    ComplexType::Lower(ref note2, _) => Some(note2),
-                                    _ => None,
-                                };
+                            //     let note2 = match &complex.ctype {
+                            //         ComplexType::Two(_, ref note2, _) => Some(note2),
+                            //         ComplexType::Lower(ref note2, _) => Some(note2),
+                            //         _ => None,
+                            //     };
 
-                                let adjust_x = match &complex.ctype {
-                                    ComplexType::Two(_, _, adjust_x) => adjust_x,
-                                    _ => &None,
-                                };
+                            //     let adjust_x = match &complex.ctype {
+                            //         ComplexType::Two(_, _, adjust_x) => adjust_x,
+                            //         _ => &None,
+                            //     };
 
-                                if let Some(note) = note {
-                                    let note = note.borrow();
-                                    if !note.is_heads() {
-                                        continue;
-                                    }
-                                }
-                            }
+                            //     if let Some(note) = note {
+                            //         // note 1
+                            //         let note = note.borrow();
+                            //         if !note.is_heads() {
+                            //             continue;
+                            //         }
+                            //     }
+
+                            //     if let Some(note2) = note2 {
+                            //         // note 1
+                            //         let note2 = note2.borrow();
+                            //         if !note2.is_heads() {
+                            //             continue;
+                            //         }
+                            //     }
+                            // }
                         }
                     }
                 }
                 _ => {}
             }
         }
+    }
+
+    pub fn parts_count(&self) -> Option<usize> {
+        let mut part_count = 0;
+
+        for (baridx, bar) in self.items.iter().enumerate() {
+            let bar = bar.borrow();
+            match bar.btype {
+                BarType::Standard(ref parts) => {
+                    for (partidx, part) in parts.iter().enumerate() {
+                        part_count += 1;
+                    }
+                }
+                _ => {}
+            }
+        }
+        if part_count == 0 {
+            println!("No parts were found! parts_count == 0");
+            return None;
+        }
+        Some(part_count)
+    }
+
+    pub fn resolve_ties(&self) {
+        let items = self.consecutive_note_chunks();
+        for item in items {
+            dbg!(item.0, item.1, item.2.len());
+        }
+    }
+
+    pub fn consecutive_note_chunks(&self) -> Vec<(usize, usize, NotesChunk)> {
+        // (partidx, voiceidx, notes)
+        let parts_count = self.parts_count().unwrap_or(0);
+
+        let mut chunk_indexes: BTreeMap<usize, usize> = BTreeMap::new();
+        let mut chunk_notes: BTreeMap<usize, Vec<Rc<RefCell<Note>>>> = BTreeMap::new();
+
+        for partidx in 0..parts_count {
+            let part_voice_id = (partidx + 1) * 1_000_000;
+            chunk_indexes.insert(part_voice_id, 0);
+            let part_voice_id = (partidx + 1) * 1_000_000 + 1_000;
+            chunk_indexes.insert(part_voice_id, 0);
+        }
+
+        for (baridx, bar) in self.items.iter().enumerate() {
+            dbg!(&baridx);
+            let bar = bar.borrow();
+            match bar.btype {
+                BarType::Standard(ref parts) => {
+                    for (partidx, part) in parts.iter().enumerate() {
+                        let mut part = part.borrow_mut();
+                        match part.ptype {
+                            PartType::Music(ref pmtype) => {
+                                match pmtype {
+                                    PartMusicType::Voices(ref voices) => match voices {
+                                        Voices::One(ref voice) => {
+                                            let voice = voice.borrow();
+                                            let part_voice_id = (partidx + 1) * 1_000_000;
+                                            if !chunk_indexes.contains_key(&part_voice_id) {
+                                                chunk_indexes.insert(part_voice_id, 0);
+                                            }
+
+                                            match voice.vtype {
+                                                VoiceType::Notes(ref notes) => {
+                                                    for (noteidx, note) in notes.items.iter().enumerate() {
+                                                        let part_voice_current_id = part_voice_id + *chunk_indexes.get(&part_voice_id).unwrap();
+
+                                                        let note_ = note.borrow();
+                                                        if !note_.is_pause() {
+                                                            println!("Note {part_voice_id}/{part_voice_current_id}: {partidx}:{}", 0);
+
+                                                            if !chunk_notes.contains_key(&part_voice_current_id) {
+                                                                chunk_notes.insert(part_voice_current_id, vec![note.clone()]);
+                                                            } else {
+                                                                chunk_notes.get_mut(&part_voice_current_id).unwrap().push(note.clone());
+                                                            }
+                                                        } else {
+                                                            println!("Note {part_voice_id} not heads! - increase chunk_indexe");
+                                                            chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
+                                                        }
+                                                    }
+                                                }
+                                                _ => {
+                                                    println!("{partidx}:{} Not VoiceType::Notes", 0);
+                                                    chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
+                                                    let part_voice2_id = (partidx + 1) * 1_000_000 + 1_000;
+                                                    chunk_indexes.insert(part_voice2_id, chunk_indexes.get(&part_voice2_id).unwrap() + 1);
+                                                }
+                                            }
+                                        }
+                                        Voices::Two(ref upper, ref lower) => {
+                                            let upper = upper.borrow();
+                                            let part_voice_id = (partidx + 1) * 1_000_000;
+                                            if !chunk_indexes.contains_key(&part_voice_id) {
+                                                chunk_indexes.insert(part_voice_id, 0);
+                                            }
+
+                                            match upper.vtype {
+                                                VoiceType::Notes(ref notes) => {
+                                                    for (noteidx, note) in notes.items.iter().enumerate() {
+                                                        let note_ = note.borrow_mut();
+                                                        let part_voice_current_id = part_voice_id + *chunk_indexes.get(&part_voice_id).unwrap();
+                                                        if !note_.is_pause() {
+                                                            println!("Note {part_voice_id}/{part_voice_current_id}: {partidx}:{}", 0);
+                                                            if !chunk_notes.contains_key(&part_voice_current_id) {
+                                                                chunk_notes.insert(part_voice_current_id, vec![note.clone()]);
+                                                            } else {
+                                                                chunk_notes.get_mut(&part_voice_current_id).unwrap().push(note.clone());
+                                                            }
+                                                        } else {
+                                                            println!("Note not heads!");
+                                                            chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
+                                                        }
+                                                    }
+                                                }
+                                                _ => {
+                                                    println!("{partidx}:{} Not VoiceType::Notes", 0);
+                                                    chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
+                                                }
+                                            }
+
+                                            let lower = lower.borrow();
+                                            let part_voice_id = (partidx + 1) * 1_000_000 + 1_000;
+                                            if !chunk_indexes.contains_key(&part_voice_id) {
+                                                chunk_indexes.insert(part_voice_id, 0);
+                                            }
+
+                                            match lower.vtype {
+                                                VoiceType::Notes(ref notes) => {
+                                                    for (noteidx, note) in notes.items.iter().enumerate() {
+                                                        let note_ = note.borrow_mut();
+                                                        let part_voice_current_id = part_voice_id + *chunk_indexes.get(&part_voice_id).unwrap();
+                                                        if !note_.is_pause() {
+                                                            println!("Note {part_voice_id}/{part_voice_current_id}: {partidx}:{}", 1);
+                                                            if !chunk_notes.contains_key(&part_voice_current_id) {
+                                                                chunk_notes.insert(part_voice_current_id, vec![note.clone()]);
+                                                            } else {
+                                                                chunk_notes.get_mut(&part_voice_current_id).unwrap().push(note.clone());
+                                                            }
+                                                        } else {
+                                                            println!("Note {part_voice_id} not heads!");
+                                                            chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
+                                                        }
+                                                    }
+                                                }
+                                                _ => {
+                                                    println!("{partidx}:{} Not VoiceType::Notes", 1);
+                                                    chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
+                                                }
+                                            }
+                                            //
+                                        }
+                                    },
+
+                                    _ => {
+                                        println!("{partidx} Not PartMusicType::Voices");
+                                    }
+                                }
+                            }
+                            _ => {
+                                println!("{partidx} Not PartType::Music");
+                            }
+                        }
+                    }
+                    //
+                }
+                BarType::MultiRest(_) => {
+                    for partidx in 0..parts_count {
+                        let part_voice_id = (partidx + 1) * 1_000_000;
+                        chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
+                        let part_voice_id = (partidx + 1) * 1_000_000 + 1_000;
+                        chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
+                    }
+                }
+
+                BarType::NonContent(_) => {
+                    println!("BarType::NonContent +  this should NOT cause new chunks!");
+                }
+            }
+        }
+
+        let mut result: Vec<(usize, usize, NotesChunk)> = Vec::new();
+        for (key, value) in chunk_notes {
+            let partidx = key / 1000000;
+            let voiceidx = (key - 1000000) / 1000;
+            // dbg!(key, partidx, voiceidx);
+            result.push((partidx, voiceidx, value));
+        }
+        result
     }
 }
 
@@ -453,5 +656,12 @@ mod testsbars {
         // QCode::bars("|clefs G F - | 0 % 1 / 0 /lyr $lyr:aaa | 0 / 0 /lyr $lyr:bbb").unwrap();
         let (bartemplate, bars) = bar_data;
         bars.create_matrix(Some(bartemplate)).unwrap();
+    }
+
+    #[test]
+    fn resolve() {
+        let bar_data = QCode::bars(" 0 1 2 | bp | 3 4 ").unwrap();
+        let (bartemplate, bars) = bar_data;
+        bars.resolve_ties();
     }
 }

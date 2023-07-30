@@ -1,4 +1,4 @@
-use std::fmt::Formatter;
+use std::{cell::Ref, fmt::Formatter};
 
 use crate::prelude::*;
 
@@ -9,32 +9,61 @@ pub struct Complex {
     pub ctype: ComplexType,
     pub position: Position,
     pub duration: Duration,
-
     pub rects: Vec<Rc<RefCell<NRectExt>>>,
-
     pub matrix_item: Option<Rc<RefCell<RItem>>>,
+    // pub ties: Vec<TieData>,
+    // pub ties_to: Vec<TieToData>,
 }
 
 impl Complex {
     pub fn new(ctype: ComplexType, position: Position) -> Self {
-        // let mut duration = 0;
-        // let mut position = 0;
-        // match &notes.len() {
-        //     0 => panic!("Complex must have at least one note"),
-        //     1 => {
-        //         position = notes[0].borrow().position;
-        //         duration = notes[0].borrow().duration;
-        //     }
-        //     2 => {
-        //         if notes[0].borrow().position != notes[1].borrow().position {
-        //             panic!("Complex notes must have same position and duration");
+        // // collect ties from heads------------------------------------------------
+        // let mut ties: Vec<TieData> = Vec::new();
+        // let mut ties_to: Vec<TieToData> = Vec::new();
+        // let mut do_ties = |heads: &Heads| {
+        //     for head in heads.heads.iter() {
+        //         let head: Ref<Head> = head.borrow();
+        //         if let Some(tie) = &head.tie {
+        //             ties.push(TieData {
+        //                 ttype: tie.clone(),
+        //                 level: head.level,
+        //             });
         //         }
-        //         position = notes[0].borrow().position;
-        //         duration = std::cmp::max(notes[0].borrow().duration, notes[1].borrow().duration);
+        //         if let Some(tie) = &head.tie_to {
+        //             ties_to.push(TieToData {
+        //                 ttype: tie.clone(),
+        //                 level: head.level,
+        //             });
+        //         }
         //     }
-        //     _ => panic!("Complex must have at most two notes"),
+        // };
+        // match &ctype {
+        //     ComplexType::Single(note, _) | ComplexType::Upper(note, _) | ComplexType::Lower(note, _) => match &note.borrow().ntype {
+        //         NoteType::Heads(heads) => {
+        //             do_ties(&heads);
+        //         }
+        //         _ => {}
+        //     },
+        //     ComplexType::Two(upper, lower, _) => {
+        //         //
+        //         match &upper.borrow().ntype {
+        //             NoteType::Heads(heads) => {
+        //                 do_ties(&heads);
+        //             }
+        //             _ => {}
+        //         }
+        //         match &lower.borrow().ntype {
+        //             NoteType::Heads(heads) => {
+        //                 do_ties(&heads);
+        //             }
+        //             _ => {}
+        //         }
+        //     }
         // }
 
+        // // ------------------------------------------------------
+        // dbg!(&ties);
+        // dbg!(&ties_to);
         Self {
             id: ID_COUNTER.fetch_add(1, Ordering::Relaxed),
             position,
