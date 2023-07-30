@@ -159,17 +159,7 @@ impl Bars {
 
         let matrix = RMatrix::new(matrix_cols, Some(bartemplate));
 
-        // for (rowidx, row) in matrix.rows.iter().enumerate() {
-        //     //
-        //     let row = row.borrow();
-        //     let template = bartemplate.0.get(rowidx).unwrap();
-        //     match template {
-        //         PartTemplate::Music => {
-        //             dbg!(row.y);
-        //         }
-        //         PartTemplate::Nonmusic => {}
-        //     }
-        // }
+        self.resolve_ties(); // WIP
 
         Ok(matrix)
         // Ok(())
@@ -349,48 +339,43 @@ impl Bars {
                     for part in parts {
                         let part = part.borrow();
                         let complexes: &Vec<Rc<RefCell<Complex>>> = part.complexes.as_ref().expect("Part should have complexes!");
-                        for (left, right) in complexes.into_iter().tuples::<(&Rc<RefCell<Complex>>, &Rc<RefCell<Complex>>)>() {
-                            let left_complex: Ref<Complex> = left.borrow();
-                            let right_complex: Ref<Complex> = right.borrow();
 
-                            // .into_iter().tuples()
-                            // let complex = complex.borrow();
-                            // if let Some(item) = &complex.matrix_item {
-                            //     let mut item: RefMut<RItem> = item.borrow_mut();
+                        for complex in complexes {
+                            let complex = complex.borrow();
 
-                            //     let note = match &complex.ctype {
-                            //         ComplexType::Single(ref note, _) | ComplexType::Upper(ref note, _) => Some(note),
-                            //         ComplexType::Two(ref note, _, _) => Some(note),
-                            //         _ => None,
-                            //     };
+                            if let Some(item) = &complex.matrix_item {
+                                let mut item: RefMut<RItem> = item.borrow_mut();
+                                // let coords = item.coords.unwrap();
 
-                            //     let note2 = match &complex.ctype {
-                            //         ComplexType::Two(_, ref note2, _) => Some(note2),
-                            //         ComplexType::Lower(ref note2, _) => Some(note2),
-                            //         _ => None,
-                            //     };
+                                match &complex.ctype {
+                                    ComplexType::Single(note, _) | ComplexType::Upper(note, _) | ComplexType::Lower(note, _) => {
+                                        let note = note.borrow();
+                                        for tie in &note.ties {
+                                            let rect: NRect = NRect::new(SPACE, 0.0 + tie.level as f32 * SPACE_HALF - SPACE_HALF, SPACE, SPACE);
+                                            // rects.push(NRectExt(rect, NRectType::Tie(head.borrow().tie.as_ref().unwrap().clone())));
+                                            let nrects = item.nrects.as_mut();
+                                            if nrects.is_none() {
+                                                item.nrects = Some(vec![]);
+                                            }
+                                            item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(rect, NRectType::Tie(tie.ttype.clone())))));
+                                        }
 
-                            //     let adjust_x = match &complex.ctype {
-                            //         ComplexType::Two(_, _, adjust_x) => adjust_x,
-                            //         _ => &None,
-                            //     };
+                                        for tie_to in &note.ties_to {
+                                            let rect: NRect = NRect::new(0.0, 0.0 + tie_to.level as f32 * SPACE_HALF - SPACE_HALF, SPACE, SPACE);
+                                            let nrects = item.nrects.as_mut();
+                                            if nrects.is_none() {
+                                                item.nrects = Some(vec![]);
+                                            }
+                                            item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(rect, NRectType::TieTo(tie_to.ttype.clone())))));
+                                        }
 
-                            //     if let Some(note) = note {
-                            //         // note 1
-                            //         let note = note.borrow();
-                            //         if !note.is_heads() {
-                            //             continue;
-                            //         }
-                            //     }
-
-                            //     if let Some(note2) = note2 {
-                            //         // note 1
-                            //         let note2 = note2.borrow();
-                            //         if !note2.is_heads() {
-                            //             continue;
-                            //         }
-                            //     }
-                            // }
+                                        //
+                                    }
+                                    ComplexType::Two(note, note2, _) => {
+                                        //
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -422,8 +407,101 @@ impl Bars {
 
     pub fn resolve_ties(&self) {
         let items = self.consecutive_note_chunks();
+
         for item in items {
-            dbg!(item.0, item.1, item.2.len());
+            // println!("partidx {}, voiceidx {} -------------------------------", item.0, item.1);
+            // dbg!(item.0, item.1, item.2.len());
+            let notes = item.2;
+
+            match notes.len() {
+                1 => {
+                    let mut note = notes[0].borrow_mut();
+
+                    if note.ties.len() > 0 {
+                        let mut ties_to_change_to_unresolved: Vec<usize> = Vec::new();
+                        for (tiedataidx, tiedata) in note.ties.iter().enumerate() {
+                            let level = tiedata.level;
+                            let mut ttype = &tiedata.ttype;
+
+                            match ttype {
+                                Tie::Standard => {
+                                    println!("Standard tie in a one note chunk - should be let ring {}", tiedataidx);
+                                    ties_to_change_to_unresolved.push(tiedataidx);
+                                }
+                                _ => {}
+                            }
+                        }
+
+                        if ties_to_change_to_unresolved.len() > 0 {
+                            for idx in ties_to_change_to_unresolved {
+                                // let level = note.ties[idx].level;
+                                note.ties[idx].ttype = Tie::UnresolvedInChunk;
+                            }
+                        }
+                    }
+                }
+                _ => {
+                    for (noteidx, (left, right)) in notes.iter().tuples().enumerate() {
+                        println!("noteidx:{}, :{}", noteidx, notes.len());
+                        let mut left = left.borrow_mut();
+                        if left.ties.len() > 0 {
+                            let mut ties_to_change_to_unresolved: Vec<usize> = Vec::new();
+                            let mut right: RefMut<Note> = right.borrow_mut();
+
+                            for (tiedataidx, tiedata) in left.ties.iter().enumerate() {
+                                let level = tiedata.level;
+                                let ttype = &tiedata.ttype;
+                                if right.has_level(level) {
+                                    if let Some(tie_to) = right.get_level_tie_to(level) {
+                                        println!("Right Level  has a tie_to! {:?}", tie_to);
+                                    } else {
+                                        right.ties_to.push(TieToData { level, ttype: TieTo::ResolveTieFrom });
+                                    }
+                                } else {
+                                    println!("Right Level {} does not exist!", level);
+                                    println!("Turn left tie into a let ring one...");
+                                    match ttype {
+                                        Tie::Standard => {
+                                            println!("Standard tie in a one note chunk - should be unresolved {}", tiedataidx);
+                                            ties_to_change_to_unresolved.push(tiedataidx);
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+
+                            if ties_to_change_to_unresolved.len() > 0 {
+                                for idx in ties_to_change_to_unresolved {
+                                    // let level = note.ties[idx].level;
+                                    left.ties[idx].ttype = Tie::UnresolvedInChunk;
+                                }
+                            }
+
+                            // take care of last note in chunk -----------------------------------
+                            if noteidx == notes.len() - 2 {
+                                let mut right_ties_to_change_to_unresolved: Vec<usize> = Vec::new();
+                                println!("HAHA");
+                                for (tiedataidx, tiedata) in right.ties.iter().enumerate() {
+                                    match tiedata.ttype {
+                                        Tie::Standard => {
+                                            println!("Standard tie in a one note chunk - should be unresolved {}", tiedataidx);
+                                            right_ties_to_change_to_unresolved.push(tiedataidx);
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                                if right_ties_to_change_to_unresolved.len() > 0 {
+                                    for idx in right_ties_to_change_to_unresolved {
+                                        // let level = note.ties[idx].level;
+                                        right.ties[idx].ttype = Tie::UnresolvedInChunk;
+                                    }
+                                }
+                            }
+                            //-----------------------------------------------------------------------
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -442,7 +520,6 @@ impl Bars {
         }
 
         for (baridx, bar) in self.items.iter().enumerate() {
-            dbg!(&baridx);
             let bar = bar.borrow();
             match bar.btype {
                 BarType::Standard(ref parts) => {
@@ -466,7 +543,7 @@ impl Bars {
 
                                                         let note_ = note.borrow();
                                                         if !note_.is_pause() {
-                                                            println!("Note {part_voice_id}/{part_voice_current_id}: {partidx}:{}", 0);
+                                                            // println!("Note {part_voice_id}/{part_voice_current_id}: {partidx}:{}", 0);
 
                                                             if !chunk_notes.contains_key(&part_voice_current_id) {
                                                                 chunk_notes.insert(part_voice_current_id, vec![note.clone()]);
@@ -474,13 +551,13 @@ impl Bars {
                                                                 chunk_notes.get_mut(&part_voice_current_id).unwrap().push(note.clone());
                                                             }
                                                         } else {
-                                                            println!("Note {part_voice_id} not heads! - increase chunk_indexe");
+                                                            // println!("Note {part_voice_id} not heads! - increase chunk_indexe");
                                                             chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
                                                         }
                                                     }
                                                 }
                                                 _ => {
-                                                    println!("{partidx}:{} Not VoiceType::Notes", 0);
+                                                    // println!("{partidx}:{} Not VoiceType::Notes", 0);
                                                     chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
                                                     let part_voice2_id = (partidx + 1) * 1_000_000 + 1_000;
                                                     chunk_indexes.insert(part_voice2_id, chunk_indexes.get(&part_voice2_id).unwrap() + 1);
@@ -500,20 +577,20 @@ impl Bars {
                                                         let note_ = note.borrow_mut();
                                                         let part_voice_current_id = part_voice_id + *chunk_indexes.get(&part_voice_id).unwrap();
                                                         if !note_.is_pause() {
-                                                            println!("Note {part_voice_id}/{part_voice_current_id}: {partidx}:{}", 0);
+                                                            // println!("Note {part_voice_id}/{part_voice_current_id}: {partidx}:{}", 0);
                                                             if !chunk_notes.contains_key(&part_voice_current_id) {
                                                                 chunk_notes.insert(part_voice_current_id, vec![note.clone()]);
                                                             } else {
                                                                 chunk_notes.get_mut(&part_voice_current_id).unwrap().push(note.clone());
                                                             }
                                                         } else {
-                                                            println!("Note not heads!");
+                                                            // println!("Note not heads!");
                                                             chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
                                                         }
                                                     }
                                                 }
                                                 _ => {
-                                                    println!("{partidx}:{} Not VoiceType::Notes", 0);
+                                                    // println!("{partidx}:{} Not VoiceType::Notes", 0);
                                                     chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
                                                 }
                                             }
@@ -530,20 +607,20 @@ impl Bars {
                                                         let note_ = note.borrow_mut();
                                                         let part_voice_current_id = part_voice_id + *chunk_indexes.get(&part_voice_id).unwrap();
                                                         if !note_.is_pause() {
-                                                            println!("Note {part_voice_id}/{part_voice_current_id}: {partidx}:{}", 1);
+                                                            // println!("Note {part_voice_id}/{part_voice_current_id}: {partidx}:{}", 1);
                                                             if !chunk_notes.contains_key(&part_voice_current_id) {
                                                                 chunk_notes.insert(part_voice_current_id, vec![note.clone()]);
                                                             } else {
                                                                 chunk_notes.get_mut(&part_voice_current_id).unwrap().push(note.clone());
                                                             }
                                                         } else {
-                                                            println!("Note {part_voice_id} not heads!");
+                                                            // println!("Note {part_voice_id} not heads!");
                                                             chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
                                                         }
                                                     }
                                                 }
                                                 _ => {
-                                                    println!("{partidx}:{} Not VoiceType::Notes", 1);
+                                                    // println!("{partidx}:{} Not VoiceType::Notes", 1);
                                                     chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
                                                 }
                                             }
@@ -552,12 +629,12 @@ impl Bars {
                                     },
 
                                     _ => {
-                                        println!("{partidx} Not PartMusicType::Voices");
+                                        // println!("{partidx} Not PartMusicType::Voices");
                                     }
                                 }
                             }
                             _ => {
-                                println!("{partidx} Not PartType::Music");
+                                // println!("{partidx} Not PartType::Music");
                             }
                         }
                     }
@@ -573,7 +650,7 @@ impl Bars {
                 }
 
                 BarType::NonContent(_) => {
-                    println!("BarType::NonContent +  this should NOT cause new chunks!");
+                    // println!("BarType::NonContent +  this should NOT cause new chunks!");
                 }
             }
         }

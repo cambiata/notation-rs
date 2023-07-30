@@ -263,7 +263,6 @@ impl RMatrix {
     }
 
     pub fn calculate_col_spacing(&self, spacing_fn: SpacingFn) {
-        dbg!("Calculate col spacing");
         // spacing based on duration
         for col in self.cols.iter() {
             let mut col = col.borrow_mut();

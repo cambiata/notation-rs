@@ -130,6 +130,35 @@ impl Note {
             _ => false,
         }
     }
+
+    pub fn has_level(&self, level: i8) -> bool {
+        match &self.ntype {
+            NoteType::Heads(heads) => heads.has_level(level),
+            _ => false,
+        }
+    }
+
+    pub fn has_tie_to(&self, level: i8) -> Option<TieToData> {
+        for tie_to in self.ties_to.iter() {
+            if tie_to.level == level {
+                return Some(tie_to.clone());
+            }
+        }
+        None
+    }
+    pub fn get_level_tie_to(&self, level: i8) -> Option<TieTo> {
+        match &self.ntype {
+            NoteType::Heads(heads) => heads.get_level_tie_to(level),
+            _ => None,
+        }
+    }
+
+    pub fn get_head(&self, level: i8) -> Option<Rc<RefCell<Head>>> {
+        match &self.ntype {
+            NoteType::Heads(heads) => heads.get_head(level),
+            _ => None,
+        }
+    }
 }
 
 pub type NotesChunk = Vec<Rc<RefCell<Note>>>;

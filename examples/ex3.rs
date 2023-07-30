@@ -41,17 +41,18 @@ fn main() {
     // let bar_data = QCode::bars("0 % 1 ").unwrap();
     // let bar_data = QCode::bars("5 4 3 2 1 0 -1 -2 -3 -4 -5 ").unwrap();
     // let bar_data = QCode::bars("5 nv8 5 5 nv16 5 5 5 5 nv4 4 nv8 4 4 nv16 4 4 4 4").unwrap();
-
-    let bar_data = QCode::bars(" -2_ -2 p -2_ |bl | -2 p -2_ -1").unwrap();
+    // let bar_data = QCode::bars(" -2_,-3 -2 p ~1,~2 -2_ |bl | -2 p -2_ -1").unwrap();
     // let bar_data = QCode::bars(" nv2 ~-2_ nv4 -3 % nv4 0_ nv2 1").unwrap();
+
+    let bar_data = QCode::bars(" 0_,2_ ~1,2").unwrap();
 
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
     bars.matrix_add_beamgroups();
-    bars.resolve_ties(); // WIP
     bars.matrix_add_ties();
 
     matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);
+    bars.matrix_add_ties();
     matrix.calculate_beamgroups();
 
     matrix.calculate_row_spacing();

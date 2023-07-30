@@ -130,6 +130,33 @@ impl Heads {
         result
     }
 
+    pub fn has_level(&self, level: i8) -> bool {
+        for head in &self.heads {
+            if head.borrow().level == level {
+                return true;
+            }
+        }
+        false
+    }
+
+    pub fn get_level_tie_to(&self, level: i8) -> Option<TieTo> {
+        for head in &self.heads {
+            if head.borrow().level == level {
+                return head.borrow().tie_to.clone();
+            }
+        }
+        None
+    }
+
+    pub fn get_head(&self, level: i8) -> Option<Rc<RefCell<Head>>> {
+        for head in &self.heads {
+            if head.borrow().level == level {
+                return Some(head.clone());
+            }
+        }
+        None
+    }
+
     // pub fn head_from_level(&self, level: i8) -> Option<Rc<RefCell<Head>>> {
     //     for head in &self.heads {
     //         if head.borrow().level == level {

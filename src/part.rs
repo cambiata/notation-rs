@@ -837,12 +837,16 @@ pub fn create_heads_and_dots_rectangles(mut rects: Vec<NRectExt>, note: &Note, p
             // current_x += dots_width;
         }
 
-        // Ties
+        // if head.borrow().tie.is_some() {
+        //     let rect: NRect = NRect::new(current_x, *level as f32 * SPACE_HALF - SPACE_HALF, SPACE, SPACE);
+        //     rects.push(NRectExt(rect, NRectType::Tie(head.borrow().tie.as_ref().unwrap().clone())));
+        // }
 
-        if head.borrow().tie.is_some() {
-            let rect: NRect = NRect::new(current_x, *level as f32 * SPACE_HALF - SPACE_HALF, SPACE, SPACE);
-            rects.push(NRectExt(rect, NRectType::Tie(head.borrow().tie.as_ref().unwrap().clone())));
-        }
+        // if head.borrow().tie_to.is_some() {
+        //     let rect: NRect = NRect::new(current_x - note_width - SPACE, *level as f32 * SPACE_HALF - SPACE_HALF, SPACE, SPACE);
+        //     let tie_to = head.borrow().tie_to.as_ref().unwrap();
+        //     rects.push(NRectExt(rect, NRectType::TieTo(head.borrow().tie_to.as_ref().unwrap().clone())));
+        // }
     }
 
     Ok(rects)
@@ -964,8 +968,6 @@ impl PartType {
         duration
     }
 }
-
-
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum PartTemplate {

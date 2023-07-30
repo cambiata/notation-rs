@@ -40,6 +40,7 @@ pub enum Accidental {
 pub enum Tie {
     Standard,
     LetRing,
+    UnresolvedInChunk,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
@@ -446,6 +447,7 @@ pub enum NRectType {
     Clef(Clef),
     Accidental(Accidental),
     Tie(Tie),
+    TieTo(TieTo),
     LyricChar(char),
     Flag(BeamType, DirUD),
     WIP(String),
