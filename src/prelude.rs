@@ -8,8 +8,11 @@ pub use crate::note::*;
 pub use crate::part::*;
 pub use crate::part::*;
 pub use crate::qcode::*;
-pub use crate::render::*;
-pub use crate::render_items::*;
+pub use crate::render::{
+    items::{rcol::*, ritem::*, rmatrix::*, rrow::*, rutils::*},
+    *,
+};
+// pub use crate::render_items::*;
 pub use crate::testdata::*;
 pub use crate::voice::*;
 
