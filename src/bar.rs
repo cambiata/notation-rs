@@ -412,7 +412,7 @@ impl Bars {
                                                 ComplexType::Two(_, _, _) => todo!(),
                                             };
 
-                                            let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - SPACE_HALF, TIE_FROM_WIDTH, SPACE);
+                                            let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_FROM_WIDTH, TIE_SPACE);
                                             let nrects = item.nrects.as_mut();
                                             if nrects.is_none() {
                                                 item.nrects = Some(vec![]);
@@ -425,7 +425,7 @@ impl Bars {
                                         }
 
                                         for tie_to in &note.ties_to {
-                                            let rect: NRect = NRect::new(-TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - SPACE_HALF, TIE_TO_WIDTH, SPACE);
+                                            let rect: NRect = NRect::new(-TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_TO_WIDTH, TIE_SPACE);
                                             let nrects = item.nrects.as_mut();
                                             if nrects.is_none() {
                                                 item.nrects = Some(vec![]);
@@ -435,7 +435,7 @@ impl Bars {
                                         //
                                     }
 
-                                    ComplexType::Two(note, note2, _) => {
+                                    ComplexType::Two(note, note2, adjust) => {
                                         // upper
                                         let note = note.borrow();
                                         let note_direction = note.direction.unwrap();
@@ -444,7 +444,7 @@ impl Bars {
                                         let ties_count = &note.ties.len();
                                         let mut tieidx = 0;
                                         for tie in &note.ties {
-                                            let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - SPACE_HALF, TIE_FROM_WIDTH, SPACE);
+                                            let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_FROM_WIDTH, TIE_SPACE);
                                             let nrects = item.nrects.as_mut();
                                             if nrects.is_none() {
                                                 item.nrects = Some(vec![]);
@@ -458,7 +458,7 @@ impl Bars {
                                         }
 
                                         for tie_to in &note.ties_to {
-                                            let rect: NRect = NRect::new(-TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - SPACE_HALF, TIE_TO_WIDTH, SPACE);
+                                            let rect: NRect = NRect::new(adjust_x - TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_TO_WIDTH, TIE_SPACE);
                                             let nrects = item.nrects.as_mut();
                                             if nrects.is_none() {
                                                 item.nrects = Some(vec![]);
@@ -474,7 +474,7 @@ impl Bars {
                                         let ties_count = &note2.ties.len();
                                         let mut tieidx = 0;
                                         for tie in &note2.ties {
-                                            let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - SPACE_HALF, TIE_FROM_WIDTH, SPACE);
+                                            let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_FROM_WIDTH, TIE_SPACE);
                                             let nrects = item.nrects.as_mut();
                                             if nrects.is_none() {
                                                 item.nrects = Some(vec![]);
@@ -490,7 +490,7 @@ impl Bars {
                                         }
 
                                         for tie_to in &note2.ties_to {
-                                            let rect: NRect = NRect::new(-TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - SPACE_HALF, TIE_TO_WIDTH, SPACE);
+                                            let rect: NRect = NRect::new(adjust_x + -TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_TO_WIDTH, TIE_SPACE);
                                             let nrects = item.nrects.as_mut();
                                             if nrects.is_none() {
                                                 item.nrects = Some(vec![]);

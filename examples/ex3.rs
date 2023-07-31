@@ -49,7 +49,10 @@ fn main() {
 
     // let bar_data = QCode::bars(" -4#_,0_,2_ -4,0,2  ").unwrap();
     let bar_data = QCode::bars(" 0 1_,3_,5_ 1,3,5 -1_,-3_,-5_ -1,-3,-5 ").unwrap();
-    let bar_data = QCode::bars(" -1_ -1 -1_,-3_ -1,-3 1_ 1 1_,3_ 1,3 | -2_ -2 -2_,-4_ -2,-4 % 2_ 2 2_,4_ 2,4 ").unwrap();
+    // let bar_data = QCode::bars(" -1_ -1 -1_,-3_ -1,-3 1_ 1 1_,3_ 1,3 | -2_ -2 -2_,-4_ -2,-4 % 2_ 2 2_,4_ 2,4 ").unwrap();
+
+    let bar_data = QCode::bars("|clef G | nv4 0_ 0 2_ 2 nv16 3_,5_ 3,5 3 3_ |bl | 3 ").unwrap();
+    let bar_data = QCode::bars(" 0_ 0 % 1_ 1  | bp % 0 0 | 0 0 % bp ").unwrap();
 
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
@@ -62,7 +65,7 @@ fn main() {
     matrix.calculate_row_spacing();
     matrix.calculate_col_row_item_measurements();
     matrix.calculate_matrix_size();
-    let svg = matrix_to_svg(&matrix, true);
+    let svg = matrix_to_svg(&matrix, false);
     std::fs::write("./examples/ex3A.svg", svg).unwrap();
 
     // matrix.add_horizontal_space(100.0);

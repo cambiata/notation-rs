@@ -21,11 +21,20 @@ pub const DEV_LINE_THICKNESS: f32 = 2.0;
 pub const FLAG_RECT_WIDTH: f32 = SPACE * 1.4;
 pub const FLAG_RECT_HEIGHT: f32 = SPACE * 3.0;
 pub const FLAG_X_ADJUST: f32 = SPACE * 0.15;
-pub const TIE_FROM_WIDTH: f32 = SPACE * 0.5;
-pub const TIE_TO_WIDTH: f32 = SPACE * 0.5;
-//------------------------------------------------------------
+pub const TIE_FROM_WIDTH: f32 = SPACE * 0.3;
+pub const TIE_TO_WIDTH: f32 = SPACE * 0.3;
+pub const TIE_SPACE: f32 = SPACE * 1.4;
+pub const TIE_SPACE_HALF: f32 = TIE_SPACE * 0.5; // * 1.3;
+                                                 // pub const TIE_SPACE_: f32 = TIE_SPACE; // * 1.3;
+                                                 //------------------------------------------------------------
 pub const LINE: f32 = 2.7;
 pub const NOTELINES_WIDTH: f32 = 1.0 * LINE;
+
+pub const TIE_HEIGHT: f32 = SPACE * 0.6;
+pub const TIE_THICKNESS: f32 = SPACE * 0.15;
+pub const TIE_SEGMENTS: u8 = 15;
+pub const TIE_ADJUST_X: f32 = SPACE * 0.3;
+
 //------------------------------------------------------------
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
