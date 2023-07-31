@@ -366,7 +366,9 @@ impl Bars {
                                         for tie in &note.ties {
                                             let tie_direction = match &complex.ctype {
                                                 ComplexType::Single(_, _) => {
-                                                    if tieidx < &note.ties.len() / 2 {
+                                                    if note.ties.len() == 1 {
+                                                        note_direction.flip()
+                                                    } else if tieidx < &note.ties.len() / 2 {
                                                         DirUD::Up
                                                     } else {
                                                         DirUD::Down
@@ -379,7 +381,12 @@ impl Bars {
 
                                             let tie_placement = match &complex.ctype {
                                                 ComplexType::Single(_, _) => {
-                                                    if tieidx == 0 {
+                                                    if (note.ties.len() == 1) {
+                                                        match note_direction {
+                                                            DirUD::Up => TiePlacement::Bottom,
+                                                            DirUD::Down => TiePlacement::Top,
+                                                        }
+                                                    } else if tieidx == 0 {
                                                         TiePlacement::Top
                                                     } else if tieidx == ties_count - 1 {
                                                         TiePlacement::Bottom
@@ -410,10 +417,10 @@ impl Bars {
                                             if nrects.is_none() {
                                                 item.nrects = Some(vec![]);
                                             }
-                                            item.nrects
-                                                .as_mut()
-                                                .unwrap()
-                                                .push(Rc::new(RefCell::new(NRectExt(rect, NRectType::Tie(tie.ttype.clone(), tie_direction, tie_placement)))));
+                                            item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(
+                                                rect,
+                                                NRectType::TieFrom(note.id, tie.level, tie.ttype.clone(), note.duration, note_direction, tie_direction, tie_placement),
+                                            ))));
                                             tieidx += 1;
                                         }
 
@@ -444,10 +451,10 @@ impl Bars {
                                             }
                                             let tie_direction = DirUD::Up;
                                             let tie_placement = if tieidx == 0 { TiePlacement::Top } else { TiePlacement::Mid };
-                                            item.nrects
-                                                .as_mut()
-                                                .unwrap()
-                                                .push(Rc::new(RefCell::new(NRectExt(rect, NRectType::Tie(tie.ttype.clone(), tie_direction, tie_placement)))));
+                                            item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(
+                                                rect,
+                                                NRectType::TieFrom(note.id, tie.level, tie.ttype.clone(), note.duration, note_direction, tie_direction, tie_placement),
+                                            ))));
                                         }
 
                                         for tie_to in &note.ties_to {
@@ -476,10 +483,10 @@ impl Bars {
                                             let tie_direction = DirUD::Down;
                                             let tie_placement = if tieidx == ties_count - 1 { TiePlacement::Bottom } else { TiePlacement::Mid };
 
-                                            item.nrects
-                                                .as_mut()
-                                                .unwrap()
-                                                .push(Rc::new(RefCell::new(NRectExt(rect, NRectType::Tie(tie.ttype.clone(), tie_direction, tie_placement)))));
+                                            item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(
+                                                rect,
+                                                NRectType::TieFrom(note2.id, tie.level, tie.ttype.clone(), note.duration, note_direction, tie_direction, tie_placement),
+                                            ))));
                                         }
 
                                         for tie_to in &note2.ties_to {
@@ -540,7 +547,7 @@ impl Bars {
                             let mut ttype = &tiedata.ttype;
 
                             match ttype {
-                                Tie::Standard => {
+                                TieFromType::Standard => {
                                     // println!("Standard tie in a one note chunk - should be let ring {}", tiedataidx);
                                     ties_to_change_to_unresolved.push(tiedataidx);
                                 }
@@ -550,7 +557,7 @@ impl Bars {
 
                         if ties_to_change_to_unresolved.len() > 0 {
                             for idx in ties_to_change_to_unresolved {
-                                note.ties[idx].ttype = Tie::UnresolvedInChunk;
+                                note.ties[idx].ttype = TieFromType::UnresolvedInChunk;
                             }
                         }
                     }
@@ -569,13 +576,18 @@ impl Bars {
                                     if let Some(tie_to) = right.get_level_tie_to(level) {
                                         // println!("Right Level  has a tie_to! {:?}", tie_to);
                                     } else {
-                                        right.ties_to.push(TieToData { level, ttype: TieTo::ResolveTieFrom });
+                                        let right_id = right.id;
+                                        right.ties_to.push(TieToData {
+                                            note_id: right_id,
+                                            level,
+                                            ttype: TieToType::ResolveTieFrom(left.id, level),
+                                        });
                                     }
                                 } else {
                                     // println!("Right Level {} does not exist!", level);
                                     // println!("Turn left tie into a let ring one...");
                                     match ttype {
-                                        Tie::Standard => {
+                                        TieFromType::Standard => {
                                             // println!("Standard tie in a one note chunk - should be unresolved {}", tiedataidx);
                                             ties_to_change_to_unresolved.push(tiedataidx);
                                         }
@@ -587,7 +599,7 @@ impl Bars {
                             if ties_to_change_to_unresolved.len() > 0 {
                                 for idx in ties_to_change_to_unresolved {
                                     // let level = note.ties[idx].level;
-                                    left.ties[idx].ttype = Tie::UnresolvedInChunk;
+                                    left.ties[idx].ttype = TieFromType::UnresolvedInChunk;
                                 }
                             }
 
@@ -596,7 +608,7 @@ impl Bars {
                                 let mut right_ties_to_change_to_unresolved: Vec<usize> = Vec::new();
                                 for (tiedataidx, tiedata) in right.ties.iter().enumerate() {
                                     match tiedata.ttype {
-                                        Tie::Standard => {
+                                        TieFromType::Standard => {
                                             // println!("Standard tie in a one note chunk - should be unresolved {}", tiedataidx);
                                             right_ties_to_change_to_unresolved.push(tiedataidx);
                                         }
@@ -606,7 +618,7 @@ impl Bars {
                                 if right_ties_to_change_to_unresolved.len() > 0 {
                                     for idx in right_ties_to_change_to_unresolved {
                                         // let level = note.ties[idx].level;
-                                        right.ties[idx].ttype = Tie::UnresolvedInChunk;
+                                        right.ties[idx].ttype = TieFromType::UnresolvedInChunk;
                                     }
                                 }
                             }

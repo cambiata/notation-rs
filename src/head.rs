@@ -29,8 +29,8 @@ pub type HeadsPlacement = Vec<(i8, HeadPlacement, Rc<RefCell<Head>>)>;
 pub struct Head {
     pub level: i8,
     pub accidental: Option<Accidental>,
-    pub tie: Option<Tie>,
-    pub tie_to: Option<TieTo>,
+    pub tie: Option<TieFromType>,
+    pub tie_to: Option<TieToType>,
     // calculated
     pub placement: HeadPlacement,
 }
@@ -46,7 +46,7 @@ impl Head {
         }
     }
 
-    pub fn new_with_attributes(level: i8, accidental: Option<Accidental>, tie: Option<Tie>, tie_to: Option<TieTo>) -> Self {
+    pub fn new_with_attributes(level: i8, accidental: Option<Accidental>, tie: Option<TieFromType>, tie_to: Option<TieToType>) -> Self {
         Self {
             level,
             accidental,
@@ -119,8 +119,8 @@ impl Heads {
         result
     }
 
-    pub fn levels_ties(&self) -> Vec<(i8, Tie)> {
-        let mut result: Vec<(i8, Tie)> = Vec::new();
+    pub fn levels_ties(&self) -> Vec<(i8, TieFromType)> {
+        let mut result: Vec<(i8, TieFromType)> = Vec::new();
         for head in &self.heads {
             let head = head.borrow();
             if head.tie.is_some() {
@@ -139,7 +139,7 @@ impl Heads {
         false
     }
 
-    pub fn get_level_tie_to(&self, level: i8) -> Option<TieTo> {
+    pub fn get_level_tie_to(&self, level: i8) -> Option<TieToType> {
         for head in &self.heads {
             if head.borrow().level == level {
                 return head.borrow().tie_to.clone();

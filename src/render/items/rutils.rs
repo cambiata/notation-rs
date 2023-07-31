@@ -45,4 +45,5 @@ pub fn add_flag(data: &RItemBeamData) -> Option<NRectExt> {
     let rect = NRect::new(rect_x, rect_y, FLAG_RECT_WIDTH, FLAG_RECT_HEIGHT);
     let nrect = NRectExt::new(rect, NRectType::Flag(duration_to_beamtype(&data.duration), data.direction));
     Some(nrect)
+    // None
 }

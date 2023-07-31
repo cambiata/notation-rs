@@ -42,19 +42,19 @@ pub fn parse_accidental(s: &str) -> Option<Accidental> {
     None
 }
 
-pub fn parse_tie(s: &str) -> Option<Tie> {
+pub fn parse_tie(s: &str) -> Option<TieFromType> {
     if s.contains("_") {
-        return Some(Tie::Standard);
+        return Some(TieFromType::Standard);
     }
     if s[1..].contains("~") {
-        return Some(Tie::LetRing);
+        return Some(TieFromType::LetRing);
     }
     None
 }
 
-pub(crate) fn parse_tie_to(s: &str) -> Option<TieTo> {
+pub(crate) fn parse_tie_to(s: &str) -> Option<TieToType> {
     if s.starts_with("~") {
-        return Some(TieTo::LetRing);
+        return Some(TieToType::LetRing);
     }
     None
 }

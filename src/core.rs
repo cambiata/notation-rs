@@ -38,7 +38,7 @@ pub enum Accidental {
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
-pub enum Tie {
+pub enum TieFromType {
     Standard,
     LetRing,
     UnresolvedInChunk,
@@ -46,20 +46,22 @@ pub enum Tie {
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct TieData {
+    pub note_id: usize,
     pub level: i8,
-    pub ttype: Tie,
+    pub ttype: TieFromType,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
-pub enum TieTo {
-    ResolveTieFrom,
+pub enum TieToType {
+    ResolveTieFrom(usize, i8),
     LetRing,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct TieToData {
+    pub note_id: usize,
     pub level: i8,
-    pub ttype: TieTo,
+    pub ttype: TieToType,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
@@ -85,6 +87,12 @@ impl DirUD {
         match self {
             DirUD::Up => -1.0,
             DirUD::Down => 1.0,
+        }
+    }
+    pub fn flip(&self) -> DirUD {
+        match self {
+            DirUD::Up => DirUD::Down,
+            DirUD::Down => DirUD::Up,
         }
     }
 }
@@ -390,7 +398,7 @@ impl NRectExt {
 
     pub fn is_tie_from(&self) -> bool {
         match self.1 {
-            NRectType::Tie(_, _, _) => true,
+            NRectType::TieFrom(_, _, _, _, _, _, _) => true,
             _ => false,
         }
     }
@@ -461,8 +469,8 @@ pub enum NRectType {
     Pause(PauseShape),
     Clef(Clef),
     Accidental(Accidental),
-    Tie(Tie, DirUD, TiePlacement),
-    TieTo(TieTo),
+    TieFrom(usize, i8, TieFromType, Duration, DirUD, DirUD, TiePlacement),
+    TieTo(TieToType),
     LyricChar(char),
     Flag(BeamType, DirUD),
     WIP(String),

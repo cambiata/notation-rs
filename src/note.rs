@@ -37,6 +37,7 @@ pub struct Note {
 
 impl Note {
     pub fn new(mut ntype: NoteType, duration: Duration) -> Self {
+        let id = ID_COUNTER.fetch_add(1, Ordering::Relaxed);
         let mut ties: Vec<TieData> = Vec::new();
         let mut ties_to: Vec<TieToData> = Vec::new();
 
@@ -46,12 +47,14 @@ impl Note {
                     let head: Ref<Head> = head.borrow();
                     if let Some(tie) = &head.tie {
                         ties.push(TieData {
+                            note_id: id,
                             ttype: tie.clone(),
                             level: head.level,
                         });
                     }
                     if let Some(tie) = &head.tie_to {
                         ties_to.push(TieToData {
+                            note_id: id,
                             ttype: tie.clone(),
                             level: head.level,
                         });
@@ -62,7 +65,7 @@ impl Note {
         }
 
         Self {
-            id: ID_COUNTER.fetch_add(1, Ordering::Relaxed),
+            id,
             ntype,
             duration,
             attr: NoteAttributes { color: None },
@@ -148,7 +151,7 @@ impl Note {
         }
         None
     }
-    pub fn get_level_tie_to(&self, level: i8) -> Option<TieTo> {
+    pub fn get_level_tie_to(&self, level: i8) -> Option<TieToType> {
         match &self.ntype {
             NoteType::Heads(heads) => heads.get_level_tie_to(level),
             _ => None,

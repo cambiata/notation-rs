@@ -717,7 +717,7 @@ impl Part {
     fn set_note_adjust_x_info(&self) -> Result<()> {
         if self.complexes.is_none() {
             return Ok(());
-        }        
+        }
         let complexes = self.complexes.as_ref().unwrap();
 
         for (idx, complex) in complexes.into_iter().enumerate() {
@@ -766,6 +766,11 @@ impl Part {
 
 fn create_note_flag_spacers(mut rects: Vec<NRectExt>, note: &Note, adjust: f32) -> Vec<NRectExt> {
     // Spacer rects for flags to be used in col spacing algorithm
+
+    if duration_to_beamtype(&note.duration) == BeamType::None {
+        return rects;
+    }
+
     let direction = note.beamgroup.as_ref().unwrap().borrow().direction.unwrap();
     let head_width = duration_get_headwidth(&note.duration);
     let duration = note.duration;

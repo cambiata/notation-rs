@@ -1,24 +1,186 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 322.7 117.13571">
-    <line x1="1.35" y1="1.3499985" x2="321.35" y2="1.3499985" stroke="black" stroke-width="2.7"/>
-    <line x1="1.35" y1="26.349998" x2="321.35" y2="26.349998" stroke="black" stroke-width="2.7"/>
-    <line x1="1.35" y1="51.35" x2="321.35" y2="51.35" stroke="black" stroke-width="2.7"/>
-    <line x1="1.35" y1="76.35" x2="321.35" y2="76.35" stroke="black" stroke-width="2.7"/>
-    <line x1="1.35" y1="101.35" x2="321.35" y2="101.35" stroke="black" stroke-width="2.7"/>
-    <rect x="1.35" y="46.35" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
-    <rect x="11.35" y="13.849998" width="33.75" height="25" stroke="red" stroke-width="1" fill="none"/>
-    <path d="M 36.25 16.25 Q 33.35 16.25 24.000002 22.8 Q 14.650001 29.349998 14.650001 32.35 Q 14.650001 34.449997 16.45 35.449997 Q 18.25 36.449997 20.750002 36.449997 Q 23.65 36.449997 33 29.899998 Q 42.35 23.349998 42.35 20.349998 Q 42.35 18.25 40.55 17.25 Q 38.75 16.25 36.25 16.25 Z M 11.35 30.149998 Q 11.35 22.949999 17.550001 17.8 Q 23.750002 12.649998 32.55 12.649998 Q 35.55 12.649998 38.15 13.25 Q 40.75 13.849998 43.15 16.25 Q 45.55 18.649998 45.55 22.55 Q 45.55 29.749998 39.35 34.899998 Q 33.15 40.05 24.35 40.05 Q 21.35 40.05 18.75 39.449997 Q 16.15 38.85 13.75 36.449997 Q 11.35 34.05 11.35 30.149998 Z " fill="black"/>
-    <rect x="11.35" y="40.63571" width="35" height="75" stroke="red" stroke-width="1" fill="none"/>
-    <rect x="45.1" y="13.849998" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
-    <rect x="45.1" y="13.849998" width="12.5" height="25" fill="green"/>
-    <rect x="11.35" y="26.349998" width="3" height="89.28571" stroke="red" stroke-width="1" fill="none"/>
-    <rect x="161.35" y="13.849998" width="33.75" height="25" stroke="red" stroke-width="1" fill="none"/>
-    <path d="M 186.25 16.25 Q 183.35 16.25 174 22.8 Q 164.65001 29.349998 164.65001 32.35 Q 164.65001 34.449997 166.45001 35.449997 Q 168.25 36.449997 170.75 36.449997 Q 173.65001 36.449997 183 29.899998 Q 192.35 23.349998 192.35 20.349998 Q 192.35 18.25 190.55 17.25 Q 188.75 16.25 186.25 16.25 Z M 161.35 30.149998 Q 161.35 22.949999 167.55 17.8 Q 173.75 12.649998 182.55 12.649998 Q 185.55 12.649998 188.15001 13.25 Q 190.75 13.849998 193.15001 16.25 Q 195.55 18.649998 195.55 22.55 Q 195.55 29.749998 189.35 34.899998 Q 183.15001 40.05 174.35 40.05 Q 171.35 40.05 168.75 39.449997 Q 166.15001 38.85 163.75 36.449997 Q 161.35 34.05 161.35 30.149998 Z " fill="black"/>
-    <rect x="161.35" y="40.63571" width="35" height="75" stroke="red" stroke-width="1" fill="none"/>
-    <rect x="148.85" y="13.849998" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
-    <rect x="148.85" y="13.849998" width="12.5" height="25" fill="lime"/>
-    <rect x="161.35" y="26.349998" width="3" height="89.28571" stroke="red" stroke-width="1" fill="none"/>
-    <rect x="311.35" y="46.35" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
-    <line x1="12.85" y1="30.349998" x2="12.85" y2="115.63571" stroke="black" stroke-width="3"/>
-    <line x1="162.85" y1="30.349998" x2="162.85" y2="115.63571" stroke="black" stroke-width="3"/>
-    <rect x="0" y="0" width="322.7" height="117.13571" stroke="black" stroke-width="1" fill="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1282.7 281.5714">
+    <line x1="1.35" y1="90.785706" x2="1281.35" y2="90.785706" stroke="black" stroke-width="2.7"/>
+    <line x1="1.35" y1="115.785706" x2="1281.35" y2="115.785706" stroke="black" stroke-width="2.7"/>
+    <line x1="1.35" y1="140.7857" x2="1281.35" y2="140.7857" stroke="black" stroke-width="2.7"/>
+    <line x1="1.35" y1="165.7857" x2="1281.35" y2="165.7857" stroke="black" stroke-width="2.7"/>
+    <line x1="1.35" y1="190.7857" x2="1281.35" y2="190.7857" stroke="black" stroke-width="2.7"/>
+    <rect x="1.35" y="135.7857" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="11.35" y="115.785706" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 11.35 131.6857 Q 11.35 125.68571 17.95 120.135704 Q 24.550001 114.58571 31.45 114.58571 Q 34.25 114.58571 36.8 115.285706 Q 39.35 115.9857 41.65 118.4857 Q 43.95 120.9857 43.95 124.885704 Q 43.95 130.38571 37.25 136.1857 Q 30.550001 141.9857 23.85 141.9857 Q 21.050001 141.9857 18.5 141.2857 Q 15.950001 140.58571 13.650001 138.08571 Q 11.35 135.58571 11.35 131.6857 Z " fill="black"/>
+    <rect x="43.85" y="115.785706" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="43.85" y="115.785706" width="12.5" height="25" fill="green"/>
+    <rect x="11.35" y="128.2857" width="3" height="89.28571" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="116.35" y="115.785706" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 116.35 131.6857 Q 116.35 125.68571 122.95 120.135704 Q 129.55 114.58571 136.45001 114.58571 Q 139.25 114.58571 141.8 115.285706 Q 144.35 115.9857 146.65001 118.4857 Q 148.95001 120.9857 148.95001 124.885704 Q 148.95001 130.38571 142.25 136.1857 Q 135.55 141.9857 128.85 141.9857 Q 126.049995 141.9857 123.5 141.2857 Q 120.95 140.58571 118.65 138.08571 Q 116.35 135.58571 116.35 131.6857 Z " fill="black"/>
+    <rect x="103.85" y="115.785706" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="103.85" y="115.785706" width="12.5" height="25" fill="lime"/>
+    <rect x="116.35" y="128.2857" width="3" height="89.28571" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="221.35" y="90.785706" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 221.35 106.68571 Q 221.35 100.68571 227.95001 95.135704 Q 234.55 89.58571 241.45001 89.58571 Q 244.25 89.58571 246.8 90.285706 Q 249.35 90.9857 251.65001 93.4857 Q 253.95001 95.9857 253.95001 99.885704 Q 253.95001 105.385704 247.25 111.18571 Q 240.55 116.9857 233.85 116.9857 Q 231.05 116.9857 228.5 116.285706 Q 225.95001 115.58571 223.65001 113.08571 Q 221.35 110.58571 221.35 106.68571 Z " fill="black"/>
+    <rect x="221.35" y="115.785706" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 221.35 131.6857 Q 221.35 125.68571 227.95001 120.135704 Q 234.55 114.58571 241.45001 114.58571 Q 244.25 114.58571 246.8 115.285706 Q 249.35 115.9857 251.65001 118.4857 Q 253.95001 120.9857 253.95001 124.885704 Q 253.95001 130.38571 247.25 136.1857 Q 240.55 141.9857 233.85 141.9857 Q 231.05 141.9857 228.5 141.2857 Q 225.95001 140.58571 223.65001 138.08571 Q 221.35 135.58571 221.35 131.6857 Z " fill="black"/>
+    <rect x="253.85" y="90.785706" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="253.85" y="90.785706" width="12.5" height="25" fill="green"/>
+    <rect x="253.85" y="115.785706" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="253.85" y="115.785706" width="12.5" height="25" fill="green"/>
+    <rect x="221.35" y="103.285706" width="3" height="114.28571" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="326.35" y="90.785706" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 326.35 106.68571 Q 326.35 100.68571 332.95 95.135704 Q 339.55002 89.58571 346.45 89.58571 Q 349.25 89.58571 351.80002 90.285706 Q 354.35 90.9857 356.65 93.4857 Q 358.95 95.9857 358.95 99.885704 Q 358.95 105.385704 352.25 111.18571 Q 345.55002 116.9857 338.85 116.9857 Q 336.05002 116.9857 333.5 116.285706 Q 330.95 115.58571 328.65 113.08571 Q 326.35 110.58571 326.35 106.68571 Z " fill="black"/>
+    <rect x="326.35" y="115.785706" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 326.35 131.6857 Q 326.35 125.68571 332.95 120.135704 Q 339.55002 114.58571 346.45 114.58571 Q 349.25 114.58571 351.80002 115.285706 Q 354.35 115.9857 356.65 118.4857 Q 358.95 120.9857 358.95 124.885704 Q 358.95 130.38571 352.25 136.1857 Q 345.55002 141.9857 338.85 141.9857 Q 336.05002 141.9857 333.5 141.2857 Q 330.95 140.58571 328.65 138.08571 Q 326.35 135.58571 326.35 131.6857 Z " fill="black"/>
+    <rect x="313.85" y="90.785706" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="313.85" y="90.785706" width="12.5" height="25" fill="lime"/>
+    <rect x="313.85" y="115.785706" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="313.85" y="115.785706" width="12.5" height="25" fill="lime"/>
+    <rect x="326.35" y="103.285706" width="3" height="114.28571" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="431.35" y="140.7857" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 431.35 156.6857 Q 431.35 150.6857 437.95 145.13571 Q 444.55002 139.58571 451.45 139.58571 Q 454.25 139.58571 456.80002 140.2857 Q 459.35 140.9857 461.65 143.4857 Q 463.95 145.9857 463.95 149.88571 Q 463.95 155.38571 457.25 161.1857 Q 450.55002 166.9857 443.85 166.9857 Q 441.05002 166.9857 438.5 166.2857 Q 435.95 165.58571 433.65 163.08571 Q 431.35 160.58571 431.35 156.6857 Z " fill="black"/>
+    <rect x="463.85" y="140.7857" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="463.85" y="140.7857" width="12.5" height="25" fill="green"/>
+    <rect x="460.85" y="63.999992" width="3" height="89.28571" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="536.35" y="140.7857" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 536.35 156.6857 Q 536.35 150.6857 542.94995 145.13571 Q 549.55 139.58571 556.44995 139.58571 Q 559.25 139.58571 561.8 140.2857 Q 564.35 140.9857 566.64996 143.4857 Q 568.94995 145.9857 568.94995 149.88571 Q 568.94995 155.38571 562.25 161.1857 Q 555.55 166.9857 548.85 166.9857 Q 546.05 166.9857 543.5 166.2857 Q 540.94995 165.58571 538.64996 163.08571 Q 536.35 160.58571 536.35 156.6857 Z " fill="black"/>
+    <rect x="523.85" y="140.7857" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="523.85" y="140.7857" width="12.5" height="25" fill="lime"/>
+    <rect x="565.85" y="63.999992" width="3" height="89.28571" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="641.35" y="165.7857" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 641.35 181.6857 Q 641.35 175.6857 647.94995 170.13571 Q 654.55 164.58571 661.44995 164.58571 Q 664.25 164.58571 666.8 165.2857 Q 669.35 165.9857 671.64996 168.4857 Q 673.94995 170.9857 673.94995 174.88571 Q 673.94995 180.38571 667.25 186.1857 Q 660.55 191.9857 653.85 191.9857 Q 651.05 191.9857 648.5 191.2857 Q 645.94995 190.58571 643.64996 188.08571 Q 641.35 185.58571 641.35 181.6857 Z " fill="black"/>
+    <rect x="641.35" y="140.7857" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 641.35 156.6857 Q 641.35 150.6857 647.94995 145.13571 Q 654.55 139.58571 661.44995 139.58571 Q 664.25 139.58571 666.8 140.2857 Q 669.35 140.9857 671.64996 143.4857 Q 673.94995 145.9857 673.94995 149.88571 Q 673.94995 155.38571 667.25 161.1857 Q 660.55 166.9857 653.85 166.9857 Q 651.05 166.9857 648.5 166.2857 Q 645.94995 165.58571 643.64996 163.08571 Q 641.35 160.58571 641.35 156.6857 Z " fill="black"/>
+    <rect x="673.85" y="140.7857" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="673.85" y="140.7857" width="12.5" height="25" fill="green"/>
+    <rect x="673.85" y="165.7857" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="673.85" y="165.7857" width="12.5" height="25" fill="green"/>
+    <rect x="670.85" y="63.999992" width="3" height="114.28571" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="746.35" y="165.7857" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 746.35 181.6857 Q 746.35 175.6857 752.94995 170.13571 Q 759.55 164.58571 766.44995 164.58571 Q 769.25 164.58571 771.8 165.2857 Q 774.35 165.9857 776.64996 168.4857 Q 778.94995 170.9857 778.94995 174.88571 Q 778.94995 180.38571 772.25 186.1857 Q 765.55 191.9857 758.85 191.9857 Q 756.05 191.9857 753.5 191.2857 Q 750.94995 190.58571 748.64996 188.08571 Q 746.35 185.58571 746.35 181.6857 Z " fill="black"/>
+    <rect x="746.35" y="140.7857" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 746.35 156.6857 Q 746.35 150.6857 752.94995 145.13571 Q 759.55 139.58571 766.44995 139.58571 Q 769.25 139.58571 771.8 140.2857 Q 774.35 140.9857 776.64996 143.4857 Q 778.94995 145.9857 778.94995 149.88571 Q 778.94995 155.38571 772.25 161.1857 Q 765.55 166.9857 758.85 166.9857 Q 756.05 166.9857 753.5 166.2857 Q 750.94995 165.58571 748.64996 163.08571 Q 746.35 160.58571 746.35 156.6857 Z " fill="black"/>
+    <rect x="733.85" y="140.7857" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="733.85" y="140.7857" width="12.5" height="25" fill="lime"/>
+    <rect x="733.85" y="165.7857" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="733.85" y="165.7857" width="12.5" height="25" fill="lime"/>
+    <rect x="775.85" y="63.999992" width="3" height="114.28571" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="851.35" y="103.285706" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 851.35 119.18571 Q 851.35 113.18571 857.94995 107.635704 Q 864.55 102.08571 871.44995 102.08571 Q 874.25 102.08571 876.8 102.785706 Q 879.35 103.4857 881.64996 105.9857 Q 883.94995 108.4857 883.94995 112.385704 Q 883.94995 117.885704 877.25 123.68571 Q 870.55 129.4857 863.85 129.4857 Q 861.05 129.4857 858.5 128.7857 Q 855.94995 128.08571 853.64996 125.58571 Q 851.35 123.08571 851.35 119.18571 Z " fill="black"/>
+    <rect x="851.35" y="153.2857" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 851.35 169.1857 Q 851.35 163.1857 857.94995 157.63571 Q 864.55 152.08571 871.44995 152.08571 Q 874.25 152.08571 876.8 152.7857 Q 879.35 153.4857 881.64996 155.9857 Q 883.94995 158.4857 883.94995 162.38571 Q 883.94995 167.88571 877.25 173.6857 Q 870.55 179.4857 863.85 179.4857 Q 861.05 179.4857 858.5 178.7857 Q 855.94995 178.08571 853.64996 175.58571 Q 851.35 173.08571 851.35 169.1857 Z " fill="black"/>
+    <rect x="883.85" y="103.285706" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="883.85" y="103.285706" width="12.5" height="25" fill="green"/>
+    <rect x="883.85" y="153.2857" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="883.85" y="153.2857" width="12.5" height="25" fill="green"/>
+    <rect x="880.85" y="26.5" width="3" height="89.285706" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="851.35" y="165.7857" width="3" height="89.285706" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="956.35" y="103.285706" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 956.35 119.18571 Q 956.35 113.18571 962.94995 107.635704 Q 969.55 102.08571 976.44995 102.08571 Q 979.25 102.08571 981.8 102.785706 Q 984.35 103.4857 986.64996 105.9857 Q 988.94995 108.4857 988.94995 112.385704 Q 988.94995 117.885704 982.25 123.68571 Q 975.55 129.4857 968.85 129.4857 Q 966.05 129.4857 963.5 128.7857 Q 960.94995 128.08571 958.64996 125.58571 Q 956.35 123.08571 956.35 119.18571 Z " fill="black"/>
+    <rect x="956.35" y="153.2857" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 956.35 169.1857 Q 956.35 163.1857 962.94995 157.63571 Q 969.55 152.08571 976.44995 152.08571 Q 979.25 152.08571 981.8 152.7857 Q 984.35 153.4857 986.64996 155.9857 Q 988.94995 158.4857 988.94995 162.38571 Q 988.94995 167.88571 982.25 173.6857 Q 975.55 179.4857 968.85 179.4857 Q 966.05 179.4857 963.5 178.7857 Q 960.94995 178.08571 958.64996 175.58571 Q 956.35 173.08571 956.35 169.1857 Z " fill="black"/>
+    <rect x="943.85" y="103.285706" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="943.85" y="103.285706" width="12.5" height="25" fill="lime"/>
+    <rect x="943.85" y="153.2857" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="943.85" y="153.2857" width="12.5" height="25" fill="lime"/>
+    <rect x="985.85" y="26.5" width="3" height="89.285706" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="956.35" y="165.7857" width="3" height="89.285706" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="1061.35" y="103.285706" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 1061.35 119.18571 Q 1061.35 113.18571 1067.95 107.635704 Q 1074.5499 102.08571 1081.45 102.08571 Q 1084.25 102.08571 1086.7999 102.785706 Q 1089.35 103.4857 1091.65 105.9857 Q 1093.95 108.4857 1093.95 112.385704 Q 1093.95 117.885704 1087.25 123.68571 Q 1080.5499 129.4857 1073.85 129.4857 Q 1071.0499 129.4857 1068.5 128.7857 Q 1065.95 128.08571 1063.65 125.58571 Q 1061.35 123.08571 1061.35 119.18571 Z " fill="black"/>
+    <rect x="1061.35" y="78.285706" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 1061.35 94.18571 Q 1061.35 88.18571 1067.95 82.635704 Q 1074.5499 77.08571 1081.45 77.08571 Q 1084.25 77.08571 1086.7999 77.785706 Q 1089.35 78.4857 1091.65 80.9857 Q 1093.95 83.4857 1093.95 87.385704 Q 1093.95 92.885704 1087.25 98.68571 Q 1080.5499 104.4857 1073.85 104.4857 Q 1071.0499 104.4857 1068.5 103.785706 Q 1065.95 103.08571 1063.65 100.58571 Q 1061.35 98.08571 1061.35 94.18571 Z " fill="black"/>
+    <rect x="1061.35" y="153.2857" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 1061.35 169.1857 Q 1061.35 163.1857 1067.95 157.63571 Q 1074.5499 152.08571 1081.45 152.08571 Q 1084.25 152.08571 1086.7999 152.7857 Q 1089.35 153.4857 1091.65 155.9857 Q 1093.95 158.4857 1093.95 162.38571 Q 1093.95 167.88571 1087.25 173.6857 Q 1080.5499 179.4857 1073.85 179.4857 Q 1071.0499 179.4857 1068.5 178.7857 Q 1065.95 178.08571 1063.65 175.58571 Q 1061.35 173.08571 1061.35 169.1857 Z " fill="black"/>
+    <rect x="1061.35" y="178.2857" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 1061.35 194.1857 Q 1061.35 188.1857 1067.95 182.63571 Q 1074.5499 177.08571 1081.45 177.08571 Q 1084.25 177.08571 1086.7999 177.7857 Q 1089.35 178.4857 1091.65 180.9857 Q 1093.95 183.4857 1093.95 187.38571 Q 1093.95 192.88571 1087.25 198.6857 Q 1080.5499 204.4857 1073.85 204.4857 Q 1071.0499 204.4857 1068.5 203.7857 Q 1065.95 203.08571 1063.65 200.58571 Q 1061.35 198.08571 1061.35 194.1857 Z " fill="black"/>
+    <rect x="1093.85" y="78.285706" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="1093.85" y="78.285706" width="12.5" height="25" fill="green"/>
+    <rect x="1093.85" y="103.285706" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="1093.85" y="103.285706" width="12.5" height="25" fill="green"/>
+    <rect x="1093.85" y="153.2857" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="1093.85" y="153.2857" width="12.5" height="25" fill="green"/>
+    <rect x="1093.85" y="178.2857" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="1093.85" y="178.2857" width="12.5" height="25" fill="green"/>
+    <rect x="1090.85" y="1.5" width="3" height="114.285706" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="1061.35" y="165.7857" width="3" height="114.285706" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="1166.35" y="103.285706" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 1166.35 119.18571 Q 1166.35 113.18571 1172.95 107.635704 Q 1179.5499 102.08571 1186.45 102.08571 Q 1189.25 102.08571 1191.7999 102.785706 Q 1194.35 103.4857 1196.65 105.9857 Q 1198.95 108.4857 1198.95 112.385704 Q 1198.95 117.885704 1192.25 123.68571 Q 1185.5499 129.4857 1178.85 129.4857 Q 1176.0499 129.4857 1173.5 128.7857 Q 1170.95 128.08571 1168.65 125.58571 Q 1166.35 123.08571 1166.35 119.18571 Z " fill="black"/>
+    <rect x="1166.35" y="78.285706" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 1166.35 94.18571 Q 1166.35 88.18571 1172.95 82.635704 Q 1179.5499 77.08571 1186.45 77.08571 Q 1189.25 77.08571 1191.7999 77.785706 Q 1194.35 78.4857 1196.65 80.9857 Q 1198.95 83.4857 1198.95 87.385704 Q 1198.95 92.885704 1192.25 98.68571 Q 1185.5499 104.4857 1178.85 104.4857 Q 1176.0499 104.4857 1173.5 103.785706 Q 1170.95 103.08571 1168.65 100.58571 Q 1166.35 98.08571 1166.35 94.18571 Z " fill="black"/>
+    <rect x="1166.35" y="153.2857" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 1166.35 169.1857 Q 1166.35 163.1857 1172.95 157.63571 Q 1179.5499 152.08571 1186.45 152.08571 Q 1189.25 152.08571 1191.7999 152.7857 Q 1194.35 153.4857 1196.65 155.9857 Q 1198.95 158.4857 1198.95 162.38571 Q 1198.95 167.88571 1192.25 173.6857 Q 1185.5499 179.4857 1178.85 179.4857 Q 1176.0499 179.4857 1173.5 178.7857 Q 1170.95 178.08571 1168.65 175.58571 Q 1166.35 173.08571 1166.35 169.1857 Z " fill="black"/>
+    <rect x="1166.35" y="178.2857" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 1166.35 194.1857 Q 1166.35 188.1857 1172.95 182.63571 Q 1179.5499 177.08571 1186.45 177.08571 Q 1189.25 177.08571 1191.7999 177.7857 Q 1194.35 178.4857 1196.65 180.9857 Q 1198.95 183.4857 1198.95 187.38571 Q 1198.95 192.88571 1192.25 198.6857 Q 1185.5499 204.4857 1178.85 204.4857 Q 1176.0499 204.4857 1173.5 203.7857 Q 1170.95 203.08571 1168.65 200.58571 Q 1166.35 198.08571 1166.35 194.1857 Z " fill="black"/>
+    <rect x="1153.85" y="78.285706" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="1153.85" y="78.285706" width="12.5" height="25" fill="lime"/>
+    <rect x="1153.85" y="103.285706" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="1153.85" y="103.285706" width="12.5" height="25" fill="lime"/>
+    <rect x="1153.85" y="153.2857" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="1153.85" y="153.2857" width="12.5" height="25" fill="lime"/>
+    <rect x="1153.85" y="178.2857" width="12.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="1153.85" y="178.2857" width="12.5" height="25" fill="lime"/>
+    <rect x="1195.85" y="1.5" width="3" height="114.285706" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="1166.35" y="165.7857" width="3" height="114.285706" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="1271.35" y="135.7857" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
+    <line x1="12.85" y1="132.2857" x2="12.85" y2="217.57141" stroke="black" stroke-width="3"/>
+    <line x1="117.85" y1="132.2857" x2="117.85" y2="217.57141" stroke="black" stroke-width="3"/>
+    <line x1="222.85" y1="107.285706" x2="222.85" y2="217.57141" stroke="black" stroke-width="3"/>
+    <line x1="327.85" y1="107.285706" x2="327.85" y2="217.57141" stroke="black" stroke-width="3"/>
+    <line x1="462.35" y1="63.999992" x2="462.35" y2="149.2857" stroke="black" stroke-width="3"/>
+    <line x1="567.35" y1="63.999992" x2="567.35" y2="149.2857" stroke="black" stroke-width="3"/>
+    <line x1="672.35" y1="63.999992" x2="672.35" y2="174.2857" stroke="black" stroke-width="3"/>
+    <line x1="777.35" y1="63.999992" x2="777.35" y2="174.2857" stroke="black" stroke-width="3"/>
+    <line x1="882.35" y1="26.499992" x2="882.35" y2="111.785706" stroke="black" stroke-width="3"/>
+    <line x1="852.85" y1="169.7857" x2="852.85" y2="255.07141" stroke="black" stroke-width="3"/>
+    <line x1="987.35" y1="26.499992" x2="987.35" y2="111.785706" stroke="black" stroke-width="3"/>
+    <line x1="957.85" y1="169.7857" x2="957.85" y2="255.07141" stroke="black" stroke-width="3"/>
+    <line x1="1092.35" y1="1.5" x2="1092.35" y2="111.785706" stroke="black" stroke-width="3"/>
+    <line x1="1062.85" y1="169.7857" x2="1062.85" y2="280.0714" stroke="black" stroke-width="3"/>
+    <line x1="1197.35" y1="1.5" x2="1197.35" y2="111.785706" stroke="black" stroke-width="3"/>
+    <line x1="1167.85" y1="169.7857" x2="1167.85" y2="280.0714" stroke="black" stroke-width="3"/>
+    <ellipse cx="43.85" cy="115.785706" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="116.35" cy="115.785706" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="68.01666" cy="103.285706" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="92.183334" cy="103.285706" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="253.85" cy="90.785706" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="326.35" cy="90.785706" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="278.01666" cy="78.285706" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="302.18335" cy="78.285706" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="253.85" cy="140.7857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="313.85" cy="140.7857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="273.85" cy="153.2857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="293.85" cy="153.2857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="463.85" cy="165.7857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="536.35" cy="165.7857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="488.01666" cy="178.2857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="512.18335" cy="178.2857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="686.35" cy="140.7857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="746.35" cy="140.7857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="706.35" cy="128.2857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="726.35" cy="128.2857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="673.85" cy="190.7857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="746.35" cy="190.7857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="698.01666" cy="203.2857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="722.1833" cy="203.2857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="896.35" cy="103.285706" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="956.35" cy="103.285706" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="916.35" cy="90.785706" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="936.35" cy="90.785706" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="883.85" cy="178.2857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="943.85" cy="178.2857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="903.85" cy="190.7857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="923.85" cy="190.7857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="1106.35" cy="78.285706" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="1166.35" cy="78.285706" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="1126.35" cy="65.785706" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="1146.35" cy="65.785706" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="1106.35" cy="103.285706" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="1166.35" cy="103.285706" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="1126.35" cy="90.785706" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="1146.35" cy="90.785706" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="1106.35" cy="165.7857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="1153.85" cy="165.7857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="1122.1833" cy="178.2857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="1138.0166" cy="178.2857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="1106.35" cy="190.7857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="1153.85" cy="190.7857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <ellipse cx="1122.1833" cy="203.2857" rx="5" ry="5" stroke="green" stroke-width="1" fill="none"/>
+    <ellipse cx="1138.0166" cy="203.2857" rx="5" ry="5" stroke="lime" stroke-width="1" fill="none"/>
+    <rect x="0" y="0" width="1282.7" height="281.5714" stroke="black" stroke-width="1" fill="none"/>
 </svg>
