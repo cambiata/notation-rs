@@ -138,7 +138,7 @@ impl Bars {
                                 match clefsig {
                                     Some(clef) => {
                                         let (y, h) = match clef {
-                                            Clef::G => (-116.0, 186.0),
+                                            Clef::G => (-90.0, 186.0),
                                             Clef::F => (-50.0, 84.0),
                                             Clef::C => (-50.0, 100.0),
                                         };
