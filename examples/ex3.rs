@@ -51,7 +51,7 @@ fn main() {
     // let bar_data = QCode::bars(" -1_ -1 -1_,-3_ -1,-3 1_ 1 1_,3_ 1,3 | -2_ -2 -2_,-4_ -2,-4 % 2_ 2 2_,4_ 2,4 ").unwrap();
     let bar_data = QCode::bars("|clef G | nv4 0_ 0 2_ 2 nv16 3_,5_ 3,5 3 3_ |bl | 3 ").unwrap();
     let bar_data = QCode::bars(" 0 3 % 1_ 1  | bp % 0 0 | 0 0 nv16 0_,2_ 0,2 ").unwrap();
-    let bar_data = QCode::bars("|clef G F | 2 / -2 ").unwrap();
+    let bar_data = QCode::bars("nv4 2 0 % nv16 #3 n3 3_ 3 ").unwrap();
 
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();

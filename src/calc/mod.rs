@@ -39,7 +39,7 @@ pub fn complex_calculate_x_adjustment(upper: &RefCell<Note>, lower: &RefCell<Not
                 }
             } else if level_diff == 1 {
                 // lower is one lower than upper
-                Some(ComplexXAdjustment::LowerRight(upper_head_width + upper_dots_width))
+                Some(ComplexXAdjustment::LowerRight(upper_head_width + upper_dots_width - HEADS_DIAGONAL_ADJUST))
             } else {
                 // level_diff > 1
                 None

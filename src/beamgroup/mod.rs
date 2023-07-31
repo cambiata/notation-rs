@@ -52,6 +52,10 @@ impl Beamgroup {
             DirUD::Up
         }
     }
+
+    pub fn is_single_note(&self) -> bool {
+        self.notes.len() == 1
+    }
 }
 
 pub type Beamgroups = Vec<Rc<RefCell<Beamgroup>>>;

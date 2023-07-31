@@ -503,7 +503,6 @@ impl Part {
                 }
             }
         }
-
         None
     }
 
@@ -829,7 +828,10 @@ pub fn create_note_rectangles(mut rects: Vec<NRectExt>, note: &Note, placements:
     match note.ntype {
         NoteType::Heads(_) => {
             rects = create_heads_and_dots_rectangles(rects, note, placements, note_adjust_right)?;
-            rects = create_note_flag_spacers(rects, note, note_adjust_right);
+
+            if note.beamgroup.as_ref().unwrap().borrow_mut().is_single_note() && duration_to_beamtype(&note.duration) == BeamType::None {
+                rects = create_note_flag_spacers(rects, note, note_adjust_right);
+            }
         }
         NoteType::Pause => {
             rects = create_pause_rectangles(rects, note, pause_adjust_y)?;
@@ -849,33 +851,6 @@ pub fn create_heads_and_dots_rectangles(mut rects: Vec<NRectExt>, note: &Note, p
     let dots_width = dots_nr as f32 * DOT_WIDTH;
     let note_width: f32 = duration_get_headwidth(&note.duration);
 
-    // DevStem
-
-    // if note.has_stem() {
-    //     let dir = note.beamgroup.as_ref().unwrap().borrow().direction;
-
-    //     const DEV_STEM_LENGHT: f32 = 6.5;
-    //     let stem_length = (note.bottom_level() as f32 - note.top_level() as f32 + 0.5 + DEV_STEM_LENGHT) * SPACE_HALF;
-    //     if let Some(d) = dir {
-    //         match d {
-    //             DirUD::Up => {
-    //                 let rect: NRect = NRect::new(
-    //                     adjust_right + note_width - STEM_WIDTH,
-    //                     note.top_level() as f32 * SPACE_HALF - SPACE_HALF - (DEV_STEM_LENGHT * SPACE_HALF),
-    //                     STEM_WIDTH,
-    //                     stem_length,
-    //                 );
-    //                 rects.push(NRectExt(rect, NRectType::DevStem("red".to_string())));
-    //                 //
-    //             }
-    //             DirUD::Down => {
-    //                 let rect: NRect = NRect::new(adjust_right, note.top_level() as f32 * SPACE_HALF, STEM_WIDTH, stem_length);
-    //                 rects.push(NRectExt(rect, NRectType::DevStem("red".to_string())));
-    //             }
-    //         }
-    //     }
-    // };
-
     // Heads
 
     for placement in placements {
@@ -885,6 +860,11 @@ pub fn create_heads_and_dots_rectangles(mut rects: Vec<NRectExt>, note: &Note, p
 
         let rect: NRect = NRect::new(current_x, *level as f32 * SPACE_HALF - SPACE_HALF, note_width, SPACE);
         rects.push(NRectExt(rect, NRectType::Head(*note_head_type, *note_shape)));
+
+        // extra head spacer to the right of head
+        let rect: NRect = NRect::new(current_x + note_width, *level as f32 * SPACE_HALF - SPACE_HALF, HEAD_SPACER, SPACE);
+        rects.push(NRectExt(rect, NRectType::Spacer("head-extra-space".to_string())));
+
         current_x += note_width;
 
         // Dots
