@@ -387,6 +387,20 @@ impl NRectExt {
     pub fn new(nrect: NRect, nrect_type: NRectType) -> Self {
         Self(nrect, nrect_type)
     }
+
+    pub fn is_tie_from(&self) -> bool {
+        match self.1 {
+            NRectType::Tie(_, _, _) => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_tie_to(&self) -> bool {
+        match self.1 {
+            NRectType::TieTo(_) => true,
+            _ => false,
+        }
+    }
 }
 
 //============================================================

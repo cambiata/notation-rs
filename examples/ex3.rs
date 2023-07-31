@@ -8,7 +8,10 @@
 
 use graphics::{glyphs::ebgaramond::*, prelude::*};
 use notation_rs::prelude::*;
-use render_notation::render::dev::*;
+
+use render_notation::prelude::*;
+// use render_notation::render::elements::*;
+// use render_notation::render::output::*;
 
 fn main() {
     // let bar_data = QCode::bars("|clef G F - | 0,1,4 1 / 0 0 /lyr $lyr:aa $lyr:c |bl | #0 nv8 1 b2 / 0 0 /lyr nv4dot $lyr:bbb nv8 $lyr:c").unwrap();
@@ -44,7 +47,8 @@ fn main() {
     // let bar_data = QCode::bars(" -2_,-3 -2 p ~1,~2 -2_ |bl | -2 p -2_ -1").unwrap();
     // let bar_data = QCode::bars(" nv2 ~-2_ nv4 -3 % nv4 0_ nv2 1").unwrap();
 
-    let bar_data = QCode::bars(" -3_,0_,2_ 0  ").unwrap();
+    // let bar_data = QCode::bars(" -4#_,0_,2_ -4,0,2  ").unwrap();
+    let bar_data = QCode::bars(" nv2 -2_ -2 ").unwrap();
 
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
