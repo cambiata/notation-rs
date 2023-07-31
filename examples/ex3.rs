@@ -46,13 +46,12 @@ fn main() {
     // let bar_data = QCode::bars("5 nv8 5 5 nv16 5 5 5 5 nv4 4 nv8 4 4 nv16 4 4 4 4").unwrap();
     // let bar_data = QCode::bars(" -2_,-3 -2 p ~1,~2 -2_ |bl | -2 p -2_ -1").unwrap();
     // let bar_data = QCode::bars(" nv2 ~-2_ nv4 -3 % nv4 0_ nv2 1").unwrap();
-
     // let bar_data = QCode::bars(" -4#_,0_,2_ -4,0,2  ").unwrap();
     let bar_data = QCode::bars(" 0 1_,3_,5_ 1,3,5 -1_,-3_,-5_ -1,-3,-5 ").unwrap();
     // let bar_data = QCode::bars(" -1_ -1 -1_,-3_ -1,-3 1_ 1 1_,3_ 1,3 | -2_ -2 -2_,-4_ -2,-4 % 2_ 2 2_,4_ 2,4 ").unwrap();
-
     let bar_data = QCode::bars("|clef G | nv4 0_ 0 2_ 2 nv16 3_,5_ 3,5 3 3_ |bl | 3 ").unwrap();
-    let bar_data = QCode::bars(" 0_ 0 % 1_ 1  | bp % 0 0 | 0 0 % bp ").unwrap();
+    let bar_data = QCode::bars(" 0 3 % 1_ 1  | bp % 0 0 | 0 0 nv16 0_,2_ 0,2 ").unwrap();
+    let bar_data = QCode::bars("|clef G F | 2 / -2 ").unwrap();
 
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
@@ -68,10 +67,10 @@ fn main() {
     let svg = matrix_to_svg(&matrix, false);
     std::fs::write("./examples/ex3A.svg", svg).unwrap();
 
-    // matrix.add_horizontal_space(100.0);
-    // matrix.add_vertical_space(50.0);
-    // matrix.calculate_col_row_item_measurements();
-    // matrix.calculate_matrix_size();
-    // let svg = matrix_to_svg(&matrix, true);
-    // std::fs::write("./examples/ex3B.svg", svg).unwrap();
+    matrix.add_horizontal_space(100.0);
+    matrix.add_vertical_space(50.0);
+    matrix.calculate_col_row_item_measurements();
+    matrix.calculate_matrix_size();
+    let svg = matrix_to_svg(&matrix, true);
+    std::fs::write("./examples/ex3B.svg", svg).unwrap();
 }

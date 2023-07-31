@@ -103,7 +103,10 @@ impl Bars {
                         let mut colitems = vec![];
                         for parttemplate in bartemplate.0.iter() {
                             let item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
-                                vec![Rc::new(RefCell::new(NRectExt::new(NRect::new(0., -5.0, 10., 10.), NRectType::WIP("VerticalLine".to_string()))))],
+                                vec![Rc::new(RefCell::new(NRectExt::new(
+                                    NRect::new(0., -SPACE * 2.0 - VERTICAL_SPACE_ABOVE, 10., SPACE * 4.0 + VERTICAL_SPACE_ABOVE + VERTICAL_SPACE_BELOW),
+                                    NRectType::WIP("VerticalLine".to_string()),
+                                )))],
                                 0,
                             ))));
                             colitems.push(item);
@@ -381,7 +384,7 @@ impl Bars {
 
                                             let tie_placement = match &complex.ctype {
                                                 ComplexType::Single(_, _) => {
-                                                    if (note.ties.len() == 1) {
+                                                    if note.ties.len() == 1 {
                                                         match note_direction {
                                                             DirUD::Up => TiePlacement::Bottom,
                                                             DirUD::Down => TiePlacement::Top,
