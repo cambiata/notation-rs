@@ -852,7 +852,7 @@ pub enum NonContentType {
 mod testsbars {
     use crate::{prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT};
     use graphics::{glyphs::ebgaramond::*, prelude::*};
-    use render_notation::render::dev::*;
+    use render_notation::render::output::*;
 
     #[test]
     fn example() {
