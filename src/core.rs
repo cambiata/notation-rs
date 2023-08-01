@@ -31,7 +31,6 @@ pub const TIE_THICKNESS: f32 = SPACE * 0.15;
 pub const TIE_SEGMENTS: u8 = 15;
 pub const TIE_ADJUST_X: f32 = SPACE * 0.3;
 
-// pub const LINE: f32 = 2.7;
 pub const NOTELINES_WIDTH: f32 = SPACE * 0.1;
 pub const VERTICAL_SPACE_ABOVE: f32 = SPACE * 1.0;
 pub const VERTICAL_SPACE_BELOW: f32 = SPACE * 1.0;
