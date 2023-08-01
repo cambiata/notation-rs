@@ -35,6 +35,7 @@ pub const TIE_ADJUST_X: f32 = SPACE * 0.3;
 pub const NOTELINES_WIDTH: f32 = SPACE * 0.1;
 pub const VERTICAL_SPACE_ABOVE: f32 = SPACE * 1.0;
 pub const VERTICAL_SPACE_BELOW: f32 = SPACE * 1.0;
+pub const LEDGERLINE_OVERHANG: f32 = SPACE * 0.25;
 
 //------------------------------------------------------------
 
@@ -488,6 +489,7 @@ pub enum NRectType {
     DUMMY,
     Dev(bool, String),
     Spacer(String),
+    HelpLine,
     // DevRectRed,
     // DevRectBlue,
 }

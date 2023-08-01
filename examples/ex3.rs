@@ -47,11 +47,14 @@ fn main() {
     // let bar_data = QCode::bars(" -2_,-3 -2 p ~1,~2 -2_ |bl | -2 p -2_ -1").unwrap();
     // let bar_data = QCode::bars(" nv2 ~-2_ nv4 -3 % nv4 0_ nv2 1").unwrap();
     // let bar_data = QCode::bars(" -4#_,0_,2_ -4,0,2  ").unwrap();
-    let bar_data = QCode::bars(" 0 1_,3_,5_ 1,3,5 -1_,-3_,-5_ -1,-3,-5 ").unwrap();
+    // let bar_data = QCode::bars(" 0 1_,3_,5_ 1,3,5 -1_,-3_,-5_ -1,-3,-5 ").unwrap();
     // let bar_data = QCode::bars(" -1_ -1 -1_,-3_ -1,-3 1_ 1 1_,3_ 1,3 | -2_ -2 -2_,-4_ -2,-4 % 2_ 2 2_,4_ 2,4 ").unwrap();
-    let bar_data = QCode::bars("|clef G | nv4 0_ 0 2_ 2 nv16 3_,5_ 3,5 3 3_ |bl | 3 ").unwrap();
-    let bar_data = QCode::bars(" 0 3 % 1_ 1  | bp % 0 0 | 0 0 nv16 0_,2_ 0,2 ").unwrap();
-    let bar_data = QCode::bars("|clef G | nv4 2 0 % nv16 #3 n3 3_ 3 ").unwrap();
+    // let bar_data = QCode::bars("|clef G | nv4 0_ 0 2_ 2 nv16 3_,5_ 3,5 3 3_ |bl | 3 ").unwrap();
+    // let bar_data = QCode::bars(" 0 3 % 1_ 1  | bp % 0 0 | 0 0 nv16 0_,2_ 0,2 ").unwrap();
+    // let bar_data = QCode::bars("|clef G | nv4 2 0 % nv16 #3 n3 3_ 3 ").unwrap();
+
+    let bar_data = QCode::bars("2,4,6,7,9").unwrap();
+    let bar_data = QCode::bars("nv1 #7,n8 -7,-8").unwrap();
 
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();

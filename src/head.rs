@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Copy, Clone, Eq, Hash)]
 pub enum HeadPlacement {
     Left,
     Center,

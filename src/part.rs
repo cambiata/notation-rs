@@ -3,6 +3,8 @@ use std::{
     collections::{HashMap, HashSet},
 };
 
+use itertools::Itertools;
+
 use crate::{
     head,
     prelude::{fonts::ebgaramond::GLYPH_HEIGHT, *},
@@ -874,18 +876,85 @@ pub fn create_heads_and_dots_rectangles(mut rects: Vec<NRectExt>, note: &Note, p
             rects.push(NRectExt(rect, NRectType::Dotted(dots_nr)));
             // current_x += dots_width;
         }
-
-        // if head.borrow().tie.is_some() {
-        //     let rect: NRect = NRect::new(current_x, *level as f32 * SPACE_HALF - SPACE_HALF, SPACE, SPACE);
-        //     rects.push(NRectExt(rect, NRectType::Tie(head.borrow().tie.as_ref().unwrap().clone())));
-        // }
-
-        // if head.borrow().tie_to.is_some() {
-        //     let rect: NRect = NRect::new(current_x - note_width - SPACE, *level as f32 * SPACE_HALF - SPACE_HALF, SPACE, SPACE);
-        //     let tie_to = head.borrow().tie_to.as_ref().unwrap();
-        //     rects.push(NRectExt(rect, NRectType::TieTo(head.borrow().tie_to.as_ref().unwrap().clone())));
-        // }
     }
+
+    let under = placements.iter().filter(|f| f.0 >= 6).map(|f| (f.0, f.1)).collect::<Vec<_>>();
+    if under.len() > 0 {
+        let max_level = under.iter().map(|f| f.0).max().unwrap() as usize;
+        let mut a: Vec<Option<(i8, HeadPlacement)>> = vec![None; max_level as usize - 6 + 1];
+        for item in &under {
+            a[item.0 as usize - 6] = Some(*item);
+        }
+        let mut x = -LEDGERLINE_OVERHANG;
+        let mut x2 = note_width + LEDGERLINE_OVERHANG;
+        let w = x2 - x;
+        for (idx, item) in a.iter().rev().enumerate() {
+            if let Some((level, place)) = a[idx] {
+                match place {
+                    HeadPlacement::Left => {
+                        x -= note_width;
+                    }
+                    HeadPlacement::Center => {}
+                    HeadPlacement::Right => {
+                        x2 += note_width;
+                    }
+                }
+            }
+            let w = x2 - x;
+
+            let level = max_level - idx;
+            if level % 2 == 0 {
+                let rect: NRect = NRect::new(x, level as f32 * SPACE_HALF - (NOTELINES_WIDTH / 2.0), w, NOTELINES_WIDTH);
+                rects.push(NRectExt(rect, NRectType::HelpLine));
+            }
+        }
+    }
+
+    let over = placements.iter().filter(|f| f.0 <= -6).map(|f| (f.0, f.1)).collect::<Vec<_>>();
+    if over.len() > 0 {
+        let min_level: i32 = over.iter().map(|f| f.0).min().unwrap() as i32;
+        let lev = min_level.abs() as usize - 5;
+        let mut a: Vec<Option<(i8, HeadPlacement)>> = vec![None; lev];
+        for item in &over {
+            a[item.0.abs() as usize - 6] = Some(*item);
+        }
+        let mut x = -LEDGERLINE_OVERHANG;
+        let mut x2 = note_width + LEDGERLINE_OVERHANG;
+        let w = x2 - x;
+        for (idx, item) in a.iter().rev().enumerate() {
+            if let Some((level, place)) = a[idx] {
+                for (level, place) in item {
+                    match place {
+                        HeadPlacement::Left => {
+                            x -= note_width;
+                        }
+                        HeadPlacement::Center => {}
+                        HeadPlacement::Right => {
+                            x2 += note_width;
+                        }
+                    }
+                }
+            }
+            let w = x2 - x;
+            let level: i32 = min_level + idx as i32;
+            if level % 2 == 0 {
+                let rect: NRect = NRect::new(x, level as f32 * SPACE_HALF - (NOTELINES_WIDTH / 2.0), w, NOTELINES_WIDTH);
+                rects.push(NRectExt(rect, NRectType::HelpLine));
+            }
+        }
+    }
+
+    // let max_level = placements.iter().map(|f| f.0).max().unwrap();
+    // if (max_level >= 6) {
+    //     for line_level in (6..=max_level).step_by(2) {
+    //         dbg!(&line_level);
+    //         // let rect: NRect = NRect::new(0.0, line_level as f32 * SPACE_HALF - SPACE_HALF, note_width, SPACE);
+    //         // rects.push(NRectExt(rect, NRectType::HelpLine));
+    //     }
+    // }
+
+    // let min_level = placements.iter().map(|f| f.0).min().unwrap();
+    // dbg! {max_level, min_level};
 
     Ok(rects)
 }
