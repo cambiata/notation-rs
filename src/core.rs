@@ -18,6 +18,7 @@ pub const BEAM_SUB_DISTANCE: f32 = SPACE;
 pub const BEAM_COVER_STEM: f32 = 1.0;
 pub const LYRICS_FONT_SCALE: f32 = 0.06;
 pub const LYRICS_FONT_EXTRA_CHAR_SPACE: f32 = SPACE * 0.1;
+pub const LYRICS_OFF_AXIS: f32 = 3.0;
 pub const DEV_LINE_THICKNESS: f32 = 2.0;
 pub const FLAG_RECT_WIDTH: f32 = SPACE * 1.4;
 pub const FLAG_RECT_HEIGHT: f32 = SPACE * 3.0;
@@ -45,6 +46,8 @@ pub const ACCIDENTAL_WIDTH_FLAT: f32 = SPACE * 1.1;
 pub const ACCIDENTAL_WIDTH_NATURAL: f32 = SPACE * 1.0;
 pub const ACCIDENTAL_WIDTH_DBLSHARP: f32 = SPACE * 1.5;
 pub const ACCIDENTAL_WIDTH_DBLFLAT: f32 = SPACE * 1.5;
+
+pub const TIME_SIGNATURE_WIDTH: f32 = SPACE * 1.7;
 //------------------------------------------------------------
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
@@ -96,7 +99,58 @@ pub type ClefSignature = Option<Clef>;
 pub enum Time {
     Common,
     Cut,
-    Standard(u8, u8),
+    Standard(TimeNominator, TimeDenominator),
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub enum TimeDenominator {
+    Wholes,
+    Halves,
+    Quarters,
+    Egigths,
+    Sixteenths,
+}
+
+impl TimeDenominator {
+    pub fn from_str(s: &str) -> TimeDenominator {
+        match s.to_lowercase().as_str() {
+            "1" => TimeDenominator::Wholes,
+            "2" => TimeDenominator::Halves,
+            "4" => TimeDenominator::Quarters,
+            "8" => TimeDenominator::Egigths,
+            "16" => TimeDenominator::Sixteenths,
+            _ => todo!(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub enum TimeNominator {
+    One,
+    Two,
+    Three,
+    Four,
+    Five(u8), // include pattern
+    Six,
+    Seven(u8), // include pattern
+    Eight(u8),
+    Nine,
+    Twelve,
+}
+
+impl TimeNominator {
+    pub fn from_str(s: &str) -> TimeNominator {
+        match s.to_lowercase().as_str() {
+            "1" => TimeNominator::One,
+            "2" => TimeNominator::Two,
+            "3" => TimeNominator::Three,
+            "4" => TimeNominator::Four,
+            "6" => TimeNominator::Six,
+            "9" => TimeNominator::Nine,
+            "12" => TimeNominator::Twelve,
+            _ => todo!(),
+        }
+    }
 }
 
 pub type TimeSignature = Option<Time>;
@@ -105,7 +159,8 @@ pub type TimeSignature = Option<Time>;
 pub enum Key {
     Sharps(u8),
     Flats(u8),
-    NoKeySignature,
+    Naturals(u8),
+    Open,
 }
 
 pub type KeySignature = Option<Key>;
@@ -515,6 +570,8 @@ pub enum NRectType {
     Dev(bool, String),
     Spacer(String),
     HelpLine,
+    KeySignature(Key, Option<Clef>),
+    TimeSignature(Time),
     // DevRectRed,
     // DevRectBlue,
 }

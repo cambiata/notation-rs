@@ -1007,7 +1007,7 @@ fn create_lyric_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: f32)
                         total_width += char_width;
                     }
 
-                    let mut char_x = -(total_width / 3.0) + SPACE_HALF;
+                    let mut char_x = -(total_width / LYRICS_OFF_AXIS);
 
                     // Extra space before syllable
                     let rect = NRect::new(char_x - SPACE_HALF, adjust_y + -(char_height / 2.0) - SPACE_HALF, SPACE_HALF, char_height + SPACE);

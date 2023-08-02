@@ -182,94 +182,20 @@ impl Bars {
                                         let mut x = 0.0;
                                         match key {
                                             Key::Sharps(ref n) => {
-                                                if n >= &1 {
-                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                        NRect::new(x, -SPACE * 3.5, ACCIDENTAL_WIDTH_SHARP, 3.0 * SPACE),
-                                                        NRectType::Accidental(Accidental::Sharp),
-                                                    ))));
-                                                    x += ACCIDENTAL_WIDTH_SHARP;
-                                                }
-                                                if n >= &2 {
-                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                        NRect::new(x, -SPACE * 2.0, ACCIDENTAL_WIDTH_SHARP, 3.0 * SPACE),
-                                                        NRectType::Accidental(Accidental::Sharp),
-                                                    ))));
-                                                    x += ACCIDENTAL_WIDTH_SHARP;
-                                                }
-                                                if n >= &3 {
-                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                        NRect::new(x, -SPACE * 4.0, ACCIDENTAL_WIDTH_SHARP, 3.0 * SPACE),
-                                                        NRectType::Accidental(Accidental::Sharp),
-                                                    ))));
-                                                    x += ACCIDENTAL_WIDTH_SHARP;
-                                                }
-                                                if n >= &4 {
-                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                        NRect::new(x, -SPACE * 2.5, ACCIDENTAL_WIDTH_SHARP, 3.0 * SPACE),
-                                                        NRectType::Accidental(Accidental::Sharp),
-                                                    ))));
-                                                    x += ACCIDENTAL_WIDTH_SHARP;
-                                                }
-                                                if n >= &5 {
-                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                        NRect::new(x, -SPACE * 5.0, ACCIDENTAL_WIDTH_SHARP, 3.0 * SPACE),
-                                                        NRectType::Accidental(Accidental::Sharp),
-                                                    ))));
-                                                    x += ACCIDENTAL_WIDTH_SHARP;
-                                                }
-                                                if n >= &6 {
-                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                        NRect::new(x, -SPACE * 3.0, ACCIDENTAL_WIDTH_SHARP, 3.0 * SPACE),
-                                                        NRectType::Accidental(Accidental::Sharp),
-                                                    ))));
-                                                    x += ACCIDENTAL_WIDTH_SHARP;
-                                                }
+                                                nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                    NRect::new(x, -SPACE * 3.5, *n as f32 * ACCIDENTAL_WIDTH_SHARP, 6.0 * SPACE),
+                                                    NRectType::KeySignature(key.clone(), None),
+                                                ))));
                                             }
+
                                             Key::Flats(n) => {
-                                                if n >= &1 {
-                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                        NRect::new(x, -SPACE * 2.0, ACCIDENTAL_WIDTH_FLAT, 3.0 * SPACE),
-                                                        NRectType::Accidental(Accidental::Flat),
-                                                    ))));
-                                                    x += ACCIDENTAL_WIDTH_FLAT;
-                                                }
-                                                if n >= &2 {
-                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                        NRect::new(x, -SPACE * 3.5, ACCIDENTAL_WIDTH_FLAT, 3.0 * SPACE),
-                                                        NRectType::Accidental(Accidental::Flat),
-                                                    ))));
-                                                    x += ACCIDENTAL_WIDTH_FLAT;
-                                                }
-                                                if n >= &3 {
-                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                        NRect::new(x, -SPACE * 1.5, ACCIDENTAL_WIDTH_FLAT, 3.0 * SPACE),
-                                                        NRectType::Accidental(Accidental::Flat),
-                                                    ))));
-                                                    x += ACCIDENTAL_WIDTH_FLAT;
-                                                }
-                                                if n >= &4 {
-                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                        NRect::new(x, -SPACE * 3.0, ACCIDENTAL_WIDTH_FLAT, 3.0 * SPACE),
-                                                        NRectType::Accidental(Accidental::Flat),
-                                                    ))));
-                                                    x += ACCIDENTAL_WIDTH_FLAT;
-                                                }
-                                                if n >= &5 {
-                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                        NRect::new(x, -SPACE * 1.0, ACCIDENTAL_WIDTH_FLAT, 3.0 * SPACE),
-                                                        NRectType::Accidental(Accidental::Flat),
-                                                    ))));
-                                                    x += ACCIDENTAL_WIDTH_FLAT;
-                                                }
-                                                if n >= &6 {
-                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                        NRect::new(x, -SPACE * 2.5, ACCIDENTAL_WIDTH_FLAT, 3.0 * SPACE),
-                                                        NRectType::Accidental(Accidental::Flat),
-                                                    ))));
-                                                    x += ACCIDENTAL_WIDTH_FLAT;
-                                                }
+                                                nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                    NRect::new(x, -SPACE * 3.5, *n as f32 * ACCIDENTAL_WIDTH_FLAT, 6.0 * SPACE),
+                                                    NRectType::KeySignature(key.clone(), None),
+                                                ))));
                                             }
-                                            Key::NoKeySignature => {}
+                                            Key::Open => {}
+                                            Key::Naturals(n) => todo!("Key::Naturals not defined yet!"),
                                         }
                                     }
                                     None => {
@@ -287,7 +213,35 @@ impl Bars {
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
 
-                    NonContentType::Times(keys) => todo!(),
+                    NonContentType::Times(items) => {
+                        let mut ritems = vec![];
+                        for (idx, sig) in items.iter().enumerate() {
+                            let mut item: Option<Rc<RefCell<RItem>>> = None;
+                            // let mut item_rects: Vec<NRect> = vec![];
+                            if let Some(sig) = sig {
+                                let mut nrects = Vec::new();
+                                match sig {
+                                    Some(time) => {
+                                        //
+                                        nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                            NRect::new(0.0, -SPACE * 3.0, TIME_SIGNATURE_WIDTH, 6.0 * SPACE),
+                                            NRectType::TimeSignature(time.clone()),
+                                        ))));
+                                    }
+                                    None => {
+                                        let nrect = Rc::new(RefCell::new(NRectExt::new(NRect::new(0., -5.0, 10., 10.), NRectType::WIP("no key".to_string()))));
+                                        nrects.push(nrect);
+                                    }
+                                }
+
+                                item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(nrects, 0))));
+                            } else {
+                            }
+                            ritems.push(item);
+                        }
+                        let rcol: RCol = RCol::new(ritems, None);
+                        matrix_cols.push(Rc::new(RefCell::new(rcol)));
+                    }
                 },
             }
         }

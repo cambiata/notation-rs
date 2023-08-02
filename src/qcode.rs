@@ -225,6 +225,36 @@ impl QCode {
             }
             let bar = Bar::from_clefs(clefs);
             return Ok((BarTemplate(parttemplates), bar));
+        } else if code.starts_with("tim") {
+            let code = code.split(' ').skip(1).collect::<Vec<_>>().join(" ");
+            let segments = code.split(' ').collect::<Vec<_>>();
+            let mut times = vec![];
+            let mut parttemplates = vec![];
+            for segment in segments {
+                match segment {
+                    n if n.contains(":") => {
+                        let nsegments = n.split(':').collect::<Vec<_>>();
+                        dbg!(&nsegments);
+                        let nominator = TimeNominator::from_str(nsegments[0]);
+                        let denominator = TimeDenominator::from_str(nsegments[1]);
+
+                        times.push(Some(Some(Time::Standard(nominator, denominator))));
+                    }
+                    "c" => times.push(Some(Some(Time::Cut))),
+                    "C" => times.push(Some(Some(Time::Common))),
+                    "-" => times.push(None),
+                    _ => todo!("other clefs {}", segment),
+                }
+                match segment.to_uppercase().as_str() {
+                    "-" => parttemplates.push(PartTemplate::Nonmusic),
+                    n if n.contains(":") => parttemplates.push(PartTemplate::Music),
+                    "c" => parttemplates.push(PartTemplate::Music),
+                    "C" => parttemplates.push(PartTemplate::Music),
+                    _ => todo!("other clefs {}", segment),
+                }
+            }
+            let bar = Bar::from_times(times);
+            return Ok((BarTemplate(parttemplates), bar));
         } else if code.starts_with("key") {
             let segments = code.split(' ').skip(1).collect::<Vec<_>>();
             let mut keys = vec![];
@@ -244,7 +274,7 @@ impl QCode {
                     "bbbb" => keys.push(Some(Some(Key::Flats(4)))),
                     "bbbbb" => keys.push(Some(Some(Key::Flats(5)))),
                     "bbbbbb" => keys.push(Some(Some(Key::Flats(6)))),
-                    "n" => keys.push(Some(Some(Key::NoKeySignature))),
+                    "n" => keys.push(Some(Some(Key::Open))),
                     "-" => keys.push(None),
                     _ => todo!("other keys {}", segment),
                 }
