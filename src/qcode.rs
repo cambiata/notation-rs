@@ -14,9 +14,12 @@ impl QCode {
                     let s = &segment[2..];
                     cur_val = duration_from_str(s).ok();
                 }
+                a if a.starts_with("$lyr:") => {
+                    todo!("Remove $ from lyrics!");
+                }
 
-                a if a.starts_with("$lyr:") || a.starts_with("lyr:") => {
-                    let mut s = &segment[5..];
+                a if a.starts_with("lyr:") => {
+                    let mut s = &segment[4..];
                     s = s.trim();
                     let syllable = Syllable::new(SyllableType::Text(s.to_string()));
                     let n = Note::new(NoteType::Lyric(syllable), cur_val.unwrap_or(NV4));

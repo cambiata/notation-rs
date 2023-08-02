@@ -29,7 +29,7 @@ fn main() {
     // let bar_data = QCode::bars("|clef G |  0 1 nv8 0 0 1 1 0 2 2 0 -2 0 0 -2 ").unwrap();
     // let bar_data = QCode::bars("|clef G - |  nv4 -1 nv16 3 2 1 0 nv4 -2 nv8 -3 2 % nv4 p nv2 5 nv4 3 /lyr $lyr:aaaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
     // let bar_data = QCode::bars("nv8 -5,-7 5,3 5,3 -5,-7 -4,-2 6,8 6,8 -4,-2").unwrap();
-    let bar_data = QCode::bars("|clef G - | nv8 0 1 /lyr nv8 $lyr:aa $lyr:bbb ").unwrap();
+    let bar_data = QCode::bars("|clef G - | nv8 0 1 /lyr nv8 lyr:aa lyr:bbb ").unwrap();
     // let bar_data = QCode::bars("|clef G | -3 nv8 0 1 nv4 1 % nv8 #-2 nv4 7,9 nv8 7 nv4 2").unwrap();
     // let bar_data = QCode::bars("|clef G | nv16 0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16").unwrap();
     // let bar_data = QCode::bars("|clef G - |  nv4 #3 nv16 3 b2 p 0 nv4 -2 nv8 -3 2 % nv4 p nv2dot 4 /lyr $lyr:aaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
@@ -57,7 +57,7 @@ fn main() {
     // let bar_data = QCode::bars("nv1 #7,n8 -7,-8").unwrap();
     // let bar_data = QCode::bars(" 0 0 /lyr $lyr:aaa  ").unwrap();
 
-    let bar_data = QCode::bars("|clef G - | nv8 6 5 4 3  nv4 2 2 /lyr nv8 $lyr:Hej  $lyr:sa $lyr:Pet $lyr:ro nv4 $lyr:nel $lyr:la").unwrap();
+    let bar_data = QCode::bars("|clef G - | nv8 6 5 4 3  nv4 2 2 /lyr nv8 lyr:Hej  lyr:sa lyr:Pet lyr:ro nv4 lyr:nel lyr:la").unwrap();
 
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
@@ -70,7 +70,7 @@ fn main() {
     matrix.calculate_row_spacing();
     matrix.calculate_col_row_item_measurements();
     matrix.calculate_matrix_size();
-    let svg = matrix_to_svg(&matrix, true);
+    let svg = matrix_to_svg(&matrix, false);
     std::fs::write("./examples/ex3A.svg", svg).unwrap();
 
     matrix.add_horizontal_space(100.0);

@@ -993,7 +993,7 @@ pub fn create_pause_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: 
 }
 
 fn create_lyric_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: f32) -> Result<Vec<NRectExt>> {
-    let mut char_height = crate::render::fonts::Merriweather_Regular_sizes::GLYPH_HEIGHT * FONT_SCALE_LYRICS;
+    let mut char_height = crate::render::fonts::Merriweather_Regular_sizes::GLYPH_HEIGHT * LYRICS_FONT_SCALE;
 
     match &note.ntype {
         NoteType::Lyric(syllable) => {
@@ -1004,7 +1004,7 @@ fn create_lyric_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: f32)
                     let mut char_widths = Vec::new();
 
                     for char in s.chars() {
-                        let char_width = crate::render::fonts::Merriweather_Regular_sizes::get_size(char).0 * FONT_SCALE_LYRICS * 1.1;
+                        let char_width = crate::render::fonts::Merriweather_Regular_sizes::get_size(char).0 * LYRICS_FONT_SCALE + LYRICS_FONT_EXTRA_CHAR_SPACE;
                         char_widths.push(char_width);
                         total_width += char_width;
                     }
