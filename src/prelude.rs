@@ -3,6 +3,8 @@ pub use crate::bar::bar::*;
 pub use crate::bar::bars;
 pub use crate::bar::bars::*;
 pub use crate::bar::*;
+pub use crate::beamgroup::beamgroup;
+pub use crate::beamgroup::beamgroup::*;
 pub use crate::beamgroup::*;
 pub use crate::calc::*;
 pub use crate::complex::*;
@@ -16,6 +18,7 @@ pub use crate::part::parts::*;
 pub use crate::part::*;
 pub use crate::part::*;
 pub use crate::qcode::*;
+pub use crate::render::items;
 pub use crate::render::{
     items::{rcol::*, ritem::*, rmatrix::*, rrow::*, rutils::*},
     *,
