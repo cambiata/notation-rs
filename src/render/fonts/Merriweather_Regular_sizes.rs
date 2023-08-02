@@ -1,5 +1,3 @@
-pub const GLYPH_HEIGHT: f32 = 705.0;
-
 pub fn get_size(c: char) -> &'static (f32, f32) {
     match c as u32 {
         0 => MERRIWEATHER_REGULAR_0_SIZE,

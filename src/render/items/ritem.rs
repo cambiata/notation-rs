@@ -1,5 +1,5 @@
 use crate::prelude::NRect;
-use crate::{prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT, types::some_cloneables::SomeCloneablePairs};
+use crate::{prelude::*, types::some_cloneables::SomeCloneablePairs};
 use std::cell::{Ref, RefMut};
 
 #[derive(Debug, PartialEq)]

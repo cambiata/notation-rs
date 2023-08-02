@@ -5,10 +5,7 @@ use std::{
 
 use itertools::Itertools;
 
-use crate::{
-    head,
-    prelude::{fonts::ebgaramond::GLYPH_HEIGHT, *},
-};
+use crate::{head, prelude::*};
 
 pub type Parts = Vec<Rc<RefCell<Part>>>;
 
@@ -802,11 +799,11 @@ fn create_accidentals_rectangles(mut rects: Vec<NRectExt>, mut levels_accidental
         let (level, accidental) = level_accidental;
 
         let width = match accidental {
-            Accidental::Sharp => SPACE * 1.2,
-            Accidental::Flat => SPACE * 1.1,
-            Accidental::Natural => SPACE * 1.0,
-            Accidental::DblSharp => SPACE * 1.5,
-            Accidental::DblFlat => SPACE * 1.5,
+            Accidental::Sharp => ACCIDENTAL_WIDTH_SHARP,
+            Accidental::Flat => ACCIDENTAL_WIDTH_FLAT,
+            Accidental::Natural => ACCIDENTAL_WIDTH_NATURAL,
+            Accidental::DblSharp => ACCIDENTAL_WIDTH_DBLSHARP,
+            Accidental::DblFlat => ACCIDENTAL_WIDTH_DBLFLAT,
         };
 
         let y = match accidental {
@@ -992,8 +989,9 @@ pub fn create_pause_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: 
     Ok(rects)
 }
 
+pub const GLYPH_HEIGHT: f32 = 705.0;
 fn create_lyric_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: f32) -> Result<Vec<NRectExt>> {
-    let mut char_height = crate::render::fonts::merriweather_regular_sizes::GLYPH_HEIGHT * LYRICS_FONT_SCALE;
+    let mut char_height = GLYPH_HEIGHT * LYRICS_FONT_SCALE;
 
     match &note.ntype {
         NoteType::Lyric(syllable) => {

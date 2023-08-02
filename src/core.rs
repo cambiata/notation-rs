@@ -40,6 +40,11 @@ pub const VERTICAL_SPACE_BELOW_NONMUSIC: f32 = SPACE * 0.5;
 
 pub const LEDGERLINE_OVERHANG: f32 = SPACE * 0.25;
 
+pub const ACCIDENTAL_WIDTH_SHARP: f32 = SPACE * 1.2;
+pub const ACCIDENTAL_WIDTH_FLAT: f32 = SPACE * 1.1;
+pub const ACCIDENTAL_WIDTH_NATURAL: f32 = SPACE * 1.0;
+pub const ACCIDENTAL_WIDTH_DBLSHARP: f32 = SPACE * 1.5;
+pub const ACCIDENTAL_WIDTH_DBLFLAT: f32 = SPACE * 1.5;
 //------------------------------------------------------------
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
@@ -87,7 +92,24 @@ pub enum Clef {
 
 pub type ClefSignature = Option<Clef>;
 
-// type ClefSignatures = Vec<ClefSignature>;
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub enum Time {
+    Common,
+    Cut,
+    Standard(u8, u8),
+}
+
+pub type TimeSignature = Option<Time>;
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub enum Key {
+    Sharps(u8),
+    Flats(u8),
+    NoKeySignature,
+}
+
+pub type KeySignature = Option<Key>;
+
 //============================================================
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]

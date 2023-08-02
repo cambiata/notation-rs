@@ -168,6 +168,126 @@ impl Bars {
                         let rcol: RCol = RCol::new(colitems, None);
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
+
+                    NonContentType::Keys(items) => {
+                        let mut ritems = vec![];
+                        for (idx, sig) in items.iter().enumerate() {
+                            let mut item: Option<Rc<RefCell<RItem>>> = None;
+                            // let mut item_rects: Vec<NRect> = vec![];
+                            if let Some(sig) = sig {
+                                let mut nrects = Vec::new();
+                                match sig {
+                                    Some(key) => {
+                                        //
+                                        let mut x = 0.0;
+                                        match key {
+                                            Key::Sharps(ref n) => {
+                                                if n >= &1 {
+                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                        NRect::new(x, -SPACE * 3.5, ACCIDENTAL_WIDTH_SHARP, 3.0 * SPACE),
+                                                        NRectType::Accidental(Accidental::Sharp),
+                                                    ))));
+                                                    x += ACCIDENTAL_WIDTH_SHARP;
+                                                }
+                                                if n >= &2 {
+                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                        NRect::new(x, -SPACE * 2.0, ACCIDENTAL_WIDTH_SHARP, 3.0 * SPACE),
+                                                        NRectType::Accidental(Accidental::Sharp),
+                                                    ))));
+                                                    x += ACCIDENTAL_WIDTH_SHARP;
+                                                }
+                                                if n >= &3 {
+                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                        NRect::new(x, -SPACE * 4.0, ACCIDENTAL_WIDTH_SHARP, 3.0 * SPACE),
+                                                        NRectType::Accidental(Accidental::Sharp),
+                                                    ))));
+                                                    x += ACCIDENTAL_WIDTH_SHARP;
+                                                }
+                                                if n >= &4 {
+                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                        NRect::new(x, -SPACE * 2.5, ACCIDENTAL_WIDTH_SHARP, 3.0 * SPACE),
+                                                        NRectType::Accidental(Accidental::Sharp),
+                                                    ))));
+                                                    x += ACCIDENTAL_WIDTH_SHARP;
+                                                }
+                                                if n >= &5 {
+                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                        NRect::new(x, -SPACE * 5.0, ACCIDENTAL_WIDTH_SHARP, 3.0 * SPACE),
+                                                        NRectType::Accidental(Accidental::Sharp),
+                                                    ))));
+                                                    x += ACCIDENTAL_WIDTH_SHARP;
+                                                }
+                                                if n >= &6 {
+                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                        NRect::new(x, -SPACE * 3.0, ACCIDENTAL_WIDTH_SHARP, 3.0 * SPACE),
+                                                        NRectType::Accidental(Accidental::Sharp),
+                                                    ))));
+                                                    x += ACCIDENTAL_WIDTH_SHARP;
+                                                }
+                                            }
+                                            Key::Flats(n) => {
+                                                if n >= &1 {
+                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                        NRect::new(x, -SPACE * 2.0, ACCIDENTAL_WIDTH_FLAT, 3.0 * SPACE),
+                                                        NRectType::Accidental(Accidental::Flat),
+                                                    ))));
+                                                    x += ACCIDENTAL_WIDTH_FLAT;
+                                                }
+                                                if n >= &2 {
+                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                        NRect::new(x, -SPACE * 3.5, ACCIDENTAL_WIDTH_FLAT, 3.0 * SPACE),
+                                                        NRectType::Accidental(Accidental::Flat),
+                                                    ))));
+                                                    x += ACCIDENTAL_WIDTH_FLAT;
+                                                }
+                                                if n >= &3 {
+                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                        NRect::new(x, -SPACE * 1.5, ACCIDENTAL_WIDTH_FLAT, 3.0 * SPACE),
+                                                        NRectType::Accidental(Accidental::Flat),
+                                                    ))));
+                                                    x += ACCIDENTAL_WIDTH_FLAT;
+                                                }
+                                                if n >= &4 {
+                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                        NRect::new(x, -SPACE * 3.0, ACCIDENTAL_WIDTH_FLAT, 3.0 * SPACE),
+                                                        NRectType::Accidental(Accidental::Flat),
+                                                    ))));
+                                                    x += ACCIDENTAL_WIDTH_FLAT;
+                                                }
+                                                if n >= &5 {
+                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                        NRect::new(x, -SPACE * 1.0, ACCIDENTAL_WIDTH_FLAT, 3.0 * SPACE),
+                                                        NRectType::Accidental(Accidental::Flat),
+                                                    ))));
+                                                    x += ACCIDENTAL_WIDTH_FLAT;
+                                                }
+                                                if n >= &6 {
+                                                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                                                        NRect::new(x, -SPACE * 2.5, ACCIDENTAL_WIDTH_FLAT, 3.0 * SPACE),
+                                                        NRectType::Accidental(Accidental::Flat),
+                                                    ))));
+                                                    x += ACCIDENTAL_WIDTH_FLAT;
+                                                }
+                                            }
+                                            Key::NoKeySignature => {}
+                                        }
+                                    }
+                                    None => {
+                                        let nrect = Rc::new(RefCell::new(NRectExt::new(NRect::new(0., -5.0, 10., 10.), NRectType::WIP("no key".to_string()))));
+                                        nrects.push(nrect);
+                                    }
+                                }
+
+                                item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(nrects, 0))));
+                            } else {
+                            }
+                            ritems.push(item);
+                        }
+                        let rcol: RCol = RCol::new(ritems, None);
+                        matrix_cols.push(Rc::new(RefCell::new(rcol)));
+                    }
+
+                    NonContentType::Times(keys) => todo!(),
                 },
             }
         }
@@ -833,6 +953,16 @@ impl Bar {
         Self { btype, rects: None }
     }
 
+    pub fn from_keys(keys: Vec<Option<KeySignature>>) -> Self {
+        let btype = BarType::NonContent(NonContentType::Keys(keys));
+        Self { btype, rects: None }
+    }
+
+    pub fn from_times(times: Vec<Option<TimeSignature>>) -> Self {
+        let btype = BarType::NonContent(NonContentType::Times(times));
+        Self { btype, rects: None }
+    }
+
     pub fn complex_count(&self) -> usize {
         match &self.btype {
             BarType::Standard(parts) => {
@@ -864,11 +994,13 @@ pub enum NonContentType {
     Barline,
     VerticalLine,
     Clefs(Vec<Option<ClefSignature>>),
+    Times(Vec<Option<TimeSignature>>),
+    Keys(Vec<Option<KeySignature>>),
 }
 
 #[cfg(test)]
 mod testsbars {
-    use crate::{prelude::*, render::fonts::ebgaramond::GLYPH_HEIGHT};
+    use crate::prelude::*;
     use graphics::{glyphs::ebgaramond::*, prelude::*};
     use render_notation::render::output::*;
 

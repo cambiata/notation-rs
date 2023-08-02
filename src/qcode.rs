@@ -202,7 +202,6 @@ impl QCode {
             let bar = Bar::new(BarType::NonContent(NonContentType::Barline));
             return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("mul") {
-            // todo!("multi rest");
             let bar = Bar::new(BarType::MultiRest(0));
             return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("cle") {
@@ -225,6 +224,40 @@ impl QCode {
                 }
             }
             let bar = Bar::from_clefs(clefs);
+            return Ok((BarTemplate(parttemplates), bar));
+        } else if code.starts_with("key") {
+            let segments = code.split(' ').skip(1).collect::<Vec<_>>();
+            let mut keys = vec![];
+            let mut parttemplates = vec![];
+            for segment in segments {
+                dbg!(&segment);
+                match segment.to_lowercase().as_str() {
+                    "#" => keys.push(Some(Some(Key::Sharps(1)))),
+                    "##" => keys.push(Some(Some(Key::Sharps(2)))),
+                    "###" => keys.push(Some(Some(Key::Sharps(3)))),
+                    "####" => keys.push(Some(Some(Key::Sharps(4)))),
+                    "#####" => keys.push(Some(Some(Key::Sharps(5)))),
+                    "######" => keys.push(Some(Some(Key::Sharps(6)))),
+                    "b" => keys.push(Some(Some(Key::Flats(1)))),
+                    "bb" => keys.push(Some(Some(Key::Flats(2)))),
+                    "bbb" => keys.push(Some(Some(Key::Flats(3)))),
+                    "bbbb" => keys.push(Some(Some(Key::Flats(4)))),
+                    "bbbbb" => keys.push(Some(Some(Key::Flats(5)))),
+                    "bbbbbb" => keys.push(Some(Some(Key::Flats(6)))),
+                    "n" => keys.push(Some(Some(Key::NoKeySignature))),
+                    "-" => keys.push(None),
+                    _ => todo!("other keys {}", segment),
+                }
+                match segment.to_lowercase().as_str() {
+                    "-" => parttemplates.push(PartTemplate::Nonmusic),
+                    a if a.starts_with("#") => parttemplates.push(PartTemplate::Music),
+                    a if a.starts_with("b") => parttemplates.push(PartTemplate::Music),
+                    a if a.starts_with("n") => parttemplates.push(PartTemplate::Music),
+                    _ => todo!("other keys {}", segment),
+                }
+            }
+            // let bar = Bar::new(BarType::NonContent(NonContentType::Barline));
+            let bar = Bar::from_keys(keys);
             return Ok((BarTemplate(parttemplates), bar));
         } else {
             let parts_data = QCode::parts(code)?;
