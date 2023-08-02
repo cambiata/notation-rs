@@ -1,3 +1,7 @@
+pub use crate::bar;
+pub use crate::bar::bar::*;
+pub use crate::bar::bars;
+pub use crate::bar::bars::*;
 pub use crate::bar::*;
 pub use crate::beamgroup::*;
 pub use crate::calc::*;

@@ -30,6 +30,10 @@ impl QCode {
                     let n = Note::new(NoteType::Pause, cur_val.unwrap_or(NV4)); // NoteAttributes { color: None });
                     notes.push(n);
                 }
+                "s" => {
+                    let n = Note::new(NoteType::Spacer(0), cur_val.unwrap_or(NV4));
+                    notes.push(n);
+                }
                 _ => {
                     let segments: Vec<&str> = segment.split(',').collect();
                     let mut heads: Vec<Head> = vec![];

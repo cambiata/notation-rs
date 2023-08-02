@@ -10,7 +10,7 @@ pub enum NoteType {
     Lyric(Syllable),
     // Dynamic(DynamicItem),
     // Chord(ChordItem),
-    // Spacer,
+    Spacer(i8),
 }
 
 #[derive(PartialEq)]

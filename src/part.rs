@@ -838,7 +838,17 @@ pub fn create_note_rectangles(mut rects: Vec<NRectExt>, note: &Note, placements:
         NoteType::Lyric(_) => {
             rects = create_lyric_rectangles(rects, note, pause_adjust_y)?;
         }
+        NoteType::Spacer(level) => {
+            rects = create_spacer_rectangles(rects, note, level)?;
+        }
     }
+    Ok(rects)
+}
+
+fn create_spacer_rectangles(mut rects: Vec<NRectExt>, note: &Note, level: i8) -> Result<Vec<NRectExt>> {
+    let level = level as f32 * SPACE_HALF;
+    let mut rect: NRect = NRect::new(0.0, level - SPACE_HALF, SPACE, SPACE);
+    rects.push(NRectExt(rect, NRectType::StrokeRect("Red".to_string())));
     Ok(rects)
 }
 
