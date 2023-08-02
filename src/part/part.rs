@@ -841,7 +841,18 @@ pub fn create_note_rectangles(mut rects: Vec<NRectExt>, note: &Note, placements:
         NoteType::Spacer(level) => {
             rects = create_spacer_rectangles(rects, note, level)?;
         }
+
+        NoteType::Tpl(char, octave, accidental, display_level) => {
+            rects = create_tpl_rectangles(rects, note, char, octave, accidental, display_level)?;
+        }
     }
+    Ok(rects)
+}
+
+fn create_tpl_rectangles(mut rects: Vec<NRectExt>, note: &Note, char: char, octave: TplOctave, accidental: TplAccidental, display_level: i8) -> Result<Vec<NRectExt>> {
+    let level = display_level as f32 * SPACE;
+    let rect: NRect = NRect::new(SPACE + -1.5 * SPACE, level - 1.5 * SPACE, 3.0 * SPACE, 3.0 * SPACE);
+    rects.push(NRectExt(rect, NRectType::TplSymbol(char, octave, accidental)));
     Ok(rects)
 }
 
@@ -999,7 +1010,6 @@ pub fn create_pause_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: 
     Ok(rects)
 }
 
-pub const GLYPH_HEIGHT: f32 = 705.0;
 fn create_lyric_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: f32) -> Result<Vec<NRectExt>> {
     let mut char_height = GLYPH_HEIGHT * LYRICS_FONT_SCALE;
 
@@ -1019,16 +1029,16 @@ fn create_lyric_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: f32)
 
                     let mut char_x = -(total_width / LYRICS_OFF_AXIS);
 
-                    // Extra space before syllable
-                    let rect = NRect::new(char_x - SPACE_HALF, adjust_y + -(char_height / 2.0) - SPACE_HALF, SPACE_HALF, char_height + SPACE);
-                    rects.push(NRectExt(rect, NRectType::Spacer("space before syllable".to_string())));
-
                     // Character rects
                     for (idx, char_width) in char_widths.iter().enumerate() {
                         let rect = NRect::new(char_x, adjust_y + -(char_height / 2.0) - SPACE_HALF, *char_width, char_height + SPACE);
                         rects.push(NRectExt(rect, NRectType::LyricChar(s.chars().nth(idx).unwrap())));
                         char_x += char_width;
                     }
+
+                    // Extra space after syllable
+                    let rect = NRect::new(char_x, adjust_y + -(char_height / 2.0) - SPACE_HALF, SPACE_HALF, char_height + SPACE);
+                    rects.push(NRectExt(rect, NRectType::Spacer("space after syllable".to_string())));
                 }
                 SyllableType::TextWithHyphen(_) => {
                     //

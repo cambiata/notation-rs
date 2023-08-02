@@ -11,6 +11,21 @@ pub enum NoteType {
     // Dynamic(DynamicItem),
     // Chord(ChordItem),
     Spacer(i8),
+    Tpl(char, TplOctave, TplAccidental, i8),
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+pub enum TplOctave {
+    Higher,
+    Mid,
+    Lower,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+pub enum TplAccidental {
+    Raised,
+    Neutral,
+    Lowered,
 }
 
 #[derive(PartialEq)]

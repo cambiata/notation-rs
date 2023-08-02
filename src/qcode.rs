@@ -26,6 +26,17 @@ impl QCode {
                     notes.push(n);
                 }
 
+                a if a.starts_with("tpl:") => {
+                    let s = segment.trim();
+                    let mut s = &segment[4..];
+                    dbg!(&s);
+
+                    let level: i8 = s.parse().unwrap();
+
+                    let n = Note::new(NoteType::Tpl('2', TplOctave::Mid, TplAccidental::Neutral, level), cur_val.unwrap_or(NV4));
+                    notes.push(n);
+                }
+
                 "p" => {
                     let n = Note::new(NoteType::Pause, cur_val.unwrap_or(NV4)); // NoteAttributes { color: None });
                     notes.push(n);

@@ -19,6 +19,8 @@ pub const BEAM_COVER_STEM: f32 = 1.0;
 pub const LYRICS_FONT_SCALE: f32 = 0.06;
 pub const LYRICS_FONT_EXTRA_CHAR_SPACE: f32 = SPACE * 0.1;
 pub const LYRICS_OFF_AXIS: f32 = 3.0;
+pub const GLYPH_HEIGHT: f32 = 650.0;
+
 pub const DEV_LINE_THICKNESS: f32 = 2.0;
 pub const FLAG_RECT_WIDTH: f32 = SPACE * 1.4;
 pub const FLAG_RECT_HEIGHT: f32 = SPACE * 3.0;
@@ -573,6 +575,7 @@ pub enum NRectType {
     HelpLine,
     KeySignature(Key, Option<Clef>),
     TimeSignature(Time),
+    TplSymbol(char, TplOctave, TplAccidental),
     // DevRectRed,
     // DevRectBlue,
 }
