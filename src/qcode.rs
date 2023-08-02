@@ -15,7 +15,7 @@ impl QCode {
                     cur_val = duration_from_str(s).ok();
                 }
 
-                a if a.starts_with("$lyr:") => {
+                a if a.starts_with("$lyr:") || a.starts_with("lyr:") => {
                     let mut s = &segment[5..];
                     s = s.trim();
                     let syllable = Syllable::new(SyllableType::Text(s.to_string()));

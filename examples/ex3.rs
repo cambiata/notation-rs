@@ -29,7 +29,7 @@ fn main() {
     // let bar_data = QCode::bars("|clef G |  0 1 nv8 0 0 1 1 0 2 2 0 -2 0 0 -2 ").unwrap();
     // let bar_data = QCode::bars("|clef G - |  nv4 -1 nv16 3 2 1 0 nv4 -2 nv8 -3 2 % nv4 p nv2 5 nv4 3 /lyr $lyr:aaaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
     // let bar_data = QCode::bars("nv8 -5,-7 5,3 5,3 -5,-7 -4,-2 6,8 6,8 -4,-2").unwrap();
-    // let bar_data = QCode::bars("|clef G - | nv8 0 1 /lyr $lyr:aa  ").unwrap();
+    let bar_data = QCode::bars("|clef G - | nv8 0 1 /lyr nv8 $lyr:aa $lyr:bbb ").unwrap();
     // let bar_data = QCode::bars("|clef G | -3 nv8 0 1 nv4 1 % nv8 #-2 nv4 7,9 nv8 7 nv4 2").unwrap();
     // let bar_data = QCode::bars("|clef G | nv16 0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16").unwrap();
     // let bar_data = QCode::bars("|clef G - |  nv4 #3 nv16 3 b2 p 0 nv4 -2 nv8 -3 2 % nv4 p nv2dot 4 /lyr $lyr:aaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
@@ -53,8 +53,11 @@ fn main() {
     // let bar_data = QCode::bars(" 0 3 % 1_ 1  | bp % 0 0 | 0 0 nv16 0_,2_ 0,2 ").unwrap();
     // let bar_data = QCode::bars("|clef G | nv4 2 0 % nv16 #3 n3 3_ 3 ").unwrap();
 
-    let bar_data = QCode::bars("2,4,6,7,9").unwrap();
-    let bar_data = QCode::bars("nv1 #7,n8 -7,-8").unwrap();
+    // let bar_data = QCode::bars("2,4,6,7,9").unwrap();
+    // let bar_data = QCode::bars("nv1 #7,n8 -7,-8").unwrap();
+    // let bar_data = QCode::bars(" 0 0 /lyr $lyr:aaa  ").unwrap();
+
+    let bar_data = QCode::bars("|clef G - | nv8 6 5 4 3  nv4 2 2 /lyr nv8 $lyr:Hej  $lyr:sa $lyr:Pet $lyr:ro nv4 $lyr:nel $lyr:la").unwrap();
 
     let (bartemplate, bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
@@ -67,7 +70,7 @@ fn main() {
     matrix.calculate_row_spacing();
     matrix.calculate_col_row_item_measurements();
     matrix.calculate_matrix_size();
-    let svg = matrix_to_svg(&matrix, false);
+    let svg = matrix_to_svg(&matrix, true);
     std::fs::write("./examples/ex3A.svg", svg).unwrap();
 
     matrix.add_horizontal_space(100.0);
@@ -76,4 +79,25 @@ fn main() {
     matrix.calculate_matrix_size();
     let svg = matrix_to_svg(&matrix, true);
     std::fs::write("./examples/ex3B.svg", svg).unwrap();
+}
+
+#[cfg(test)]
+mod tests2 {
+    use std::collections::BTreeMap;
+
+    const TEST_1: &[usize] = &[11, 22];
+    const TEST_2: &[usize] = &[333, 444, 555];
+
+    const A: &[&[usize]] = &[TEST_1, TEST_2];
+
+    // pub const MERRIWEATHER_REGULAR_CHAR_45: &'static [PathSegment] = &[M(410.5012, -225.93475), L(89.10103, -225.93475), L(89.10103, -284.00955), L(410.5012, -284.00955), L(410.5012, -225.93475), Z];
+    // pub const MERRIWEATHER_REGULAR_CHAR_45_SIZE: &'static (f32, f32) = &(321.40015, 58.0748);
+
+    #[test]
+    fn example() {
+        dbg!(A);
+
+        let s = BTreeMap::from([(1, 11), (3, 33)]);
+        println!("{:?}", s);
+    }
 }

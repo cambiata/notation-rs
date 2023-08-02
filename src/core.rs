@@ -32,8 +32,11 @@ pub const TIE_SEGMENTS: u8 = 15;
 pub const TIE_ADJUST_X: f32 = SPACE * 0.3;
 
 pub const NOTELINES_WIDTH: f32 = SPACE * 0.1;
-pub const VERTICAL_SPACE_ABOVE: f32 = SPACE * 1.0;
-pub const VERTICAL_SPACE_BELOW: f32 = SPACE * 1.0;
+pub const VERTICAL_SPACE_ABOVE_MUSIC: f32 = SPACE * 4.0;
+pub const VERTICAL_SPACE_BELOW_NOMUSIC: f32 = SPACE * 4.0;
+pub const VERTICAL_SPACE_ABOVE_NONMUSIC: f32 = SPACE * 0.5;
+pub const VERTICAL_SPACE_BELOW_NONMUSIC: f32 = SPACE * 0.5;
+
 pub const LEDGERLINE_OVERHANG: f32 = SPACE * 0.25;
 
 //------------------------------------------------------------

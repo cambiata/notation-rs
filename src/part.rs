@@ -993,7 +993,7 @@ pub fn create_pause_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: 
 }
 
 fn create_lyric_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: f32) -> Result<Vec<NRectExt>> {
-    let mut char_height = GLYPH_HEIGHT * FONT_SCALE_LYRICS;
+    let mut char_height = crate::render::fonts::Merriweather_Regular_sizes::GLYPH_HEIGHT * FONT_SCALE_LYRICS;
 
     match &note.ntype {
         NoteType::Lyric(syllable) => {
@@ -1004,19 +1004,23 @@ fn create_lyric_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: f32)
                     let mut char_widths = Vec::new();
 
                     for char in s.chars() {
-                        let char_width = crate::render::fonts::ebgaramond::glyph_widths(char) * FONT_SCALE_LYRICS; // use the width of the current character
+                        let char_width = crate::render::fonts::Merriweather_Regular_sizes::get_size(char).0 * FONT_SCALE_LYRICS * 1.1;
                         char_widths.push(char_width);
                         total_width += char_width;
                     }
 
                     let mut char_x = -(total_width / 3.0) + SPACE_HALF;
+
+                    // Extra space before syllable
+                    let rect = NRect::new(char_x - SPACE_HALF, adjust_y + -(char_height / 2.0) - SPACE_HALF, SPACE_HALF, char_height + SPACE);
+                    rects.push(NRectExt(rect, NRectType::Spacer("space before syllable".to_string())));
+
+                    // Character rects
                     for (idx, char_width) in char_widths.iter().enumerate() {
                         let rect = NRect::new(char_x, adjust_y + -(char_height / 2.0) - SPACE_HALF, *char_width, char_height + SPACE);
                         rects.push(NRectExt(rect, NRectType::LyricChar(s.chars().nth(idx).unwrap())));
                         char_x += char_width;
                     }
-
-                    // nrects.push(NRectExt(rect, NRectType::LyricChar(char.to_string())));
                 }
                 SyllableType::TextWithHyphen(_) => {
                     //

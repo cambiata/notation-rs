@@ -102,9 +102,14 @@ impl Bars {
                     NonContentType::VerticalLine => {
                         let mut colitems = vec![];
                         for parttemplate in bartemplate.0.iter() {
+                            let (space_above, space_below) = match parttemplate {
+                                PartTemplate::Music => (VERTICAL_SPACE_ABOVE_MUSIC, VERTICAL_SPACE_BELOW_NOMUSIC),
+                                PartTemplate::Nonmusic => (VERTICAL_SPACE_ABOVE_NONMUSIC, VERTICAL_SPACE_BELOW_NONMUSIC),
+                            };
+
                             let item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
                                 vec![Rc::new(RefCell::new(NRectExt::new(
-                                    NRect::new(0., -SPACE * 2.0 - VERTICAL_SPACE_ABOVE, 10., SPACE * 4.0 + VERTICAL_SPACE_ABOVE + VERTICAL_SPACE_BELOW),
+                                    NRect::new(0., -space_above, 10., space_above + space_below),
                                     NRectType::WIP("VerticalLine".to_string()),
                                 )))],
                                 0,
@@ -360,7 +365,12 @@ impl Bars {
                                 match &complex.ctype {
                                     ComplexType::Single(note, _) | ComplexType::Upper(note, _) | ComplexType::Lower(note, _) => {
                                         let note = note.borrow();
+                                        if !note.is_heads() {
+                                            continue;
+                                        };
+
                                         let note_direction = note.direction.unwrap();
+
                                         let (head_width, adjust_x) = note.adjust_x.unwrap();
 
                                         let ties_count = &note.ties.len();
@@ -441,6 +451,10 @@ impl Bars {
                                     ComplexType::Two(note, note2, adjust) => {
                                         // upper
                                         let note = note.borrow();
+                                        if !note.is_heads() {
+                                            continue;
+                                        };
+
                                         let note_direction = note.direction.unwrap();
                                         let (head_width, adjust_x) = note.adjust_x.unwrap();
 
@@ -471,6 +485,10 @@ impl Bars {
 
                                         // lower
                                         let note2 = note2.borrow();
+                                        if !note2.is_heads() {
+                                            continue;
+                                        };
+
                                         let note_direction = note2.direction.unwrap();
                                         let (head_width, adjust_x) = note2.adjust_x.unwrap();
 
