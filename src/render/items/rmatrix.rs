@@ -1,6 +1,7 @@
 use crate::prelude::NRect;
 use crate::{prelude::*, types::some_cloneables::SomeCloneablePairs};
 use std::cell::{Ref, RefMut};
+use std::collections::BTreeMap;
 
 #[derive(Debug, PartialEq)]
 pub struct RMatrix {
@@ -533,4 +534,69 @@ impl RMatrix {
             }
         }
     }
+
+    pub fn calculate_articulations(&self, item2note: BTreeMap<usize, Rc<RefCell<Note>>>) {
+        // for row in self.rows.iter() {
+        //     let row = row.borrow();
+        //     for item in row.items.iter() {
+        //         if item.is_none() {
+        //             continue;
+        //         }
+        //         let item = item.as_ref().unwrap().borrow();
+
+        //         match item.note_beam {
+        //             RItemBeam::Single(ref data) => {
+        //                 if let Some(nid) = item.note_id {
+        //                     deal_with_articulation(&nid, item, &item2note);
+        //                 }
+        //                 if let Some(nid) = item.note2_id {
+        //                     deal_with_articulation(&nid, item, &item2note);
+        //                 }
+        //             }
+        //             RItemBeam::Start(ref data) => {
+        //                 println!("Articulation Multi:Start");
+        //                 if let Some(nid) = item.note_id {
+        //                     deal_with_articulation(&nid, item, &item2note);
+        //                 }
+        //                 if let Some(nid) = item.note2_id {
+        //                     deal_with_articulation(&nid, item, &item2note);
+        //                 }
+        //             }
+        //             RItemBeam::Middle(ref data) => {
+        //                 println!("Articulation Multi:Middle");
+        //             }
+        //             RItemBeam::End(ref data) => {
+        //                 println!("Articulation Multi:End");
+        //                 if let Some(nid) = item.note_id {
+        //                     deal_with_articulation(&nid, item, &item2note);
+        //                 }
+        //                 if let Some(nid) = item.note2_id {
+        //                     deal_with_articulation(&nid, item, &item2note);
+        //                 }
+        //             }
+        //             RItemBeam::None => {}
+        //         }
+        //     }
+        // }
+    }
 }
+
+// fn deal_with_articulation(nid: &usize, item: Ref<RItem>, item2note: &BTreeMap<usize, Rc<RefCell<Note>>>) {
+//     let rect = item.note_beam_rect.expect("note_beam_rect should be calculated by now!");
+//     let note = item2note.get(nid).expect(format!("could not get note id {} from item2note", nid).as_str()).borrow();
+//     // let mut nrects = item.nrects.unwrap();
+
+//     if let Some(direction) = note.direction {
+//         match direction {
+//             DirUD::Up => {
+//                 println!("Articulation :Up");
+//                 let rect = NRect::new(-5.0 + rect.0 + (rect.2 / 2.0), rect.1 - SPACE_HALF, 10.0, 10.0);
+//                 let nrect = NRectExt::new(rect, NRectType::Dev(true, "Red".to_string()));
+//                 // nrects.push(nrect);
+//             }
+//             DirUD::Down => {
+//                 println!("Articulation :Down");
+//             }
+//         }
+//     }
+// }
