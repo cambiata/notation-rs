@@ -13,8 +13,8 @@ pub struct RItem {
 
     pub note_id: Option<usize>,
     pub note2_id: Option<usize>,
-    pub note_beam_rect: Option<(f32, f32, f32, f32)>,
-    pub note2_beam_rect: Option<(f32, f32, f32, f32)>,
+    pub note_beam_rect: Option<StemInfo>,
+    pub note2_beam_rect: Option<StemInfo>,
 
     pub note_beam: RItemBeam,
     pub note2_beam: RItemBeam,
@@ -92,6 +92,8 @@ impl RItem {
         }
     }
 }
+
+pub type StemInfo = (f32, f32, f32, f32); // stem x, stem y, head_width, stem h
 
 #[derive(Debug, PartialEq)]
 pub enum RItemBeam {

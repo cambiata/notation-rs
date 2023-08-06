@@ -473,7 +473,7 @@ impl RMatrix {
 
                         let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
                         // store stem coordinates for use in articulation etc
-                        item.note2_beam_rect = Some((note_x, y, STEM_WIDTH, h));
+                        item.note2_beam_rect = Some((note_x, y, data.head_width, h));
 
                         // spacer for stem
                         let nrect = NRectExt::new(rect, NRectType::Spacer("stem lower".to_string()));
@@ -544,43 +544,51 @@ impl RMatrix {
                 }
                 let mut item = item.as_ref().unwrap().borrow_mut();
 
-                let rect = NRect::new(0.0, 0.0, 10.0, 10.0);
-                let nrect = NRectExt::new(rect, NRectType::Dev(true, "Red".to_string()));
+                // let rect = NRect::new(0.0, 0.0, 10.0, 10.0);
+                // let nrect = NRectExt::new(rect, NRectType::Dev(true, "Red".to_string()));
                 // nrects.push(Rc::new(RefCell::new(nrect)));
                 // item.nrects.as_ref().unwrap().push(Rc::new(RefCell::new(nrect)));
                 // item.nrects.unwrap().push(Rc::new(RefCell::new(nrect)));
-                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(nrect)));
+                // item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(nrect)));
 
                 match item.note_beam {
                     RItemBeam::Single(ref data) => {
-                        if let Some(nid) = &item.note_id {
-                            // deal_with_articulation(&nid, item, &item2note);
-                            // deal_with_articulation3(&nid, item, &item2note);
-                            do_articulations(nid, &item, &item2note);
+                        if let Some(nid) = item.note_id {
+                            let rect = &item.note_beam_rect.unwrap();
+                            item.nrects.as_mut().unwrap().extend(do_articulations(&nid, &rect, &item2note));
+                        } else {
+                            println!("Hoho1");
                         }
-                        // if let Some(nid) = &item.note2_id {
-                        //     //deal_with_articulation(&nid, item, &item2note);
-                        // }
+
+                        if let Some(nid) = item.note2_id {
+                            let rect = &item.note2_beam_rect.unwrap();
+                            item.nrects.as_mut().unwrap().extend(do_articulations(&nid, &rect, &item2note));
+                        } else {
+                            println!("Hoho2");
+                        }
                     }
                     RItemBeam::Start(ref data) => {
                         println!("Articulation Multi:Start");
                         if let Some(nid) = item.note_id {
-                            //deal_with_articulation(&nid, item, &item2note);
+                            let rect = &item.note_beam_rect.unwrap();
+                            item.nrects.as_mut().unwrap().extend(do_articulations(&nid, &rect, &item2note));
                         }
                         if let Some(nid) = item.note2_id {
-                            //deal_with_articulation(&nid, item, &item2note);
+                            let rect = &item.note2_beam_rect.unwrap();
+                            item.nrects.as_mut().unwrap().extend(do_articulations(&nid, &rect, &item2note));
                         }
                     }
                     RItemBeam::Middle(ref data) => {
                         println!("Articulation Multi:Middle");
                     }
                     RItemBeam::End(ref data) => {
-                        println!("Articulation Multi:End");
                         if let Some(nid) = item.note_id {
-                            //deal_with_articulation(&nid, item, &item2note);
+                            let rect = &item.note_beam_rect.unwrap();
+                            item.nrects.as_mut().unwrap().extend(do_articulations(&nid, &rect, &item2note));
                         }
                         if let Some(nid) = item.note2_id {
-                            //deal_with_articulation(&nid, item, &item2note);
+                            let rect = &item.note2_beam_rect.unwrap();
+                            item.nrects.as_mut().unwrap().extend(do_articulations(&nid, &rect, &item2note));
                         }
                     }
                     RItemBeam::None => {}
@@ -590,12 +598,30 @@ impl RMatrix {
     }
 }
 
-fn do_articulations(nid: &usize, item: &RefMut<'_, RItem>, item2note: &BTreeMap<usize, Rc<RefCell<Note>>>) {
-    let rect = item.note_beam_rect.expect("note_beam_rect should be calculated by now!");
-    let note = item2note.get(nid).expect(format!("could not get note id {} from item2note", nid).as_str()).borrow();
-    //
-    ///create rects here...
+fn do_articulations(nid: &usize, stem_info: &StemInfo, item2note: &BTreeMap<usize, Rc<RefCell<Note>>>) -> Vec<Rc<RefCell<NRectExt>>> {
+    let mut nrects = Vec::new();
 
+    // let rect = item.note_beam_rect.expect("note_beam_rect should be calculated by now!");
+    let note = item2note.get(nid).expect(format!("could not get note id {} from item2note", nid).as_str()).borrow();
+
+    // create rects here...
+    if let Some(direction) = note.direction {
+        match direction {
+            DirUD::Up => {
+                let rect = NRect::new(stem_info.0 + (stem_info.2 / 2.0) - 5.0, stem_info.1 - 5.0 - SPACE_HALF, 10.0, 10.0);
+                let nrect = Rc::new(RefCell::new(NRectExt::new(rect, NRectType::Dev(true, "Red".to_string()))));
+                nrects.push(nrect);
+            }
+            DirUD::Down => {
+                println!("Articulation :Down");
+                dbg!(stem_info);
+                let rect = NRect::new(stem_info.0 + (stem_info.2 / 2.0) - 5.0, stem_info.1 + stem_info.3 - 5.0 + SPACE_HALF, 10.0, 10.0);
+                let nrect = Rc::new(RefCell::new(NRectExt::new(rect, NRectType::Dev(true, "Red".to_string()))));
+                nrects.push(nrect);
+            }
+        }
+    };
+    nrects
 }
 
 // fn deal_with_articulation3(nid: &usize, item: RefMut<'_, RItem>, item2note: &BTreeMap<usize, Rc<RefCell<Note>>>) {}
