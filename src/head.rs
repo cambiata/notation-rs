@@ -26,17 +26,6 @@ impl Default for HeadPlacement {
 pub type HeadsPlacement = Vec<(i8, HeadPlacement, Rc<RefCell<Head>>)>;
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub enum HeadArticulation {
-    None,
-    Staccato,
-    Tenuto,
-    TenutoStaccato,
-    Marcato,
-    MarcatoStaccato,
-    MoltoMarcato,
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Head {
     pub level: i8,
     pub accidental: Option<Accidental>,
@@ -44,7 +33,7 @@ pub struct Head {
     pub tie_to: Option<TieToType>,
     // calculated
     pub placement: HeadPlacement,
-    pub articulation: HeadArticulation,
+    // pub articulation: HeadArticulation,
 }
 
 impl Head {
@@ -55,7 +44,7 @@ impl Head {
             tie: None,
             tie_to: None,
             placement: HeadPlacement::Center,
-            articulation: HeadArticulation::None,
+            // articulation: HeadArticulation::None,
         }
     }
 
@@ -66,7 +55,6 @@ impl Head {
             tie,
             tie_to,
             placement: HeadPlacement::Center,
-            articulation: HeadArticulation::None,
         }
     }
 }
@@ -79,7 +67,7 @@ impl Default for Head {
             tie: None,
             tie_to: None,
             placement: HeadPlacement::Center,
-            articulation: HeadArticulation::None,
+            // articulation: HeadArticulation::None,
         }
     }
 }

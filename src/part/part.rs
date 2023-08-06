@@ -110,6 +110,13 @@ impl Part {
                             };
 
                             beamgroup.start_level = tilt as f32;
+
+                            // // Todo - tix stem length for single stems
+                            // beamgroup.end_level = match direction {
+                            //     DirUD::Up => tilt - STEM_LENGTH,
+                            //     DirUD::Down => tilt + STEM_LENGTH,
+                            // }
+                            //  tilt as f32;
                         }
                         _ => {
                             // println!("Two notes or more");
@@ -316,6 +323,7 @@ impl Part {
                         for note in notes.items.iter() {
                             let complex = Complex::new(ComplexType::Single(note.clone(), false), note.borrow().position);
                             complexes.push(complex);
+                            note.borrow_mut().complex_type = NoteComplexType::Single;
                         }
                     }
                     VoiceType::Barpause(_) => {
@@ -334,6 +342,7 @@ impl Part {
                             for note in notes.items.iter() {
                                 let complex = Complex::new(ComplexType::Lower(note.clone(), false), note.borrow().position);
                                 complexes.push(complex);
+                                note.borrow_mut().complex_type = NoteComplexType::Lower;
                             }
                             //
                         }
@@ -343,6 +352,7 @@ impl Part {
                             for note in notes.items.iter() {
                                 let complex = Complex::new(ComplexType::Upper(note.clone(), false), note.borrow().position);
                                 complexes.push(complex);
+                                note.borrow_mut().complex_type = NoteComplexType::Upper;
                             }
                             //
                         }
@@ -380,14 +390,18 @@ impl Part {
                                     [Some(note1), Some(note2)] => {
                                         let complex = Complex::new(ComplexType::Two(note1.clone(), note2.clone(), crate::calc::complex_calculate_x_adjustment(note1, note2)), *position);
                                         complexes.push(complex);
+                                        note1.borrow_mut().complex_type = NoteComplexType::Upper;
+                                        note2.borrow_mut().complex_type = NoteComplexType::Lower;
                                     }
                                     [Some(note), None] => {
                                         let complex = Complex::new(ComplexType::Upper(note.clone(), position >= &min_duration), note.borrow().position);
                                         complexes.push(complex);
+                                        note.borrow_mut().complex_type = NoteComplexType::Upper;
                                     }
                                     [None, Some(note)] => {
                                         let complex = Complex::new(ComplexType::Lower(note.clone(), position >= &min_duration), note.borrow().position);
                                         complexes.push(complex);
+                                        note.borrow_mut().complex_type = NoteComplexType::Lower;
                                     }
 
                                     [None, None] => {}
@@ -869,23 +883,23 @@ pub fn create_heads_and_dots_rectangles(mut rects: Vec<NRectExt>, note: &Note, p
     let duration = note.duration;
     let dots_nr: u8 = duration_get_dots(&duration);
     let dots_width = dots_nr as f32 * DOT_WIDTH;
-    let note_width: f32 = duration_get_headwidth(&note.duration);
+    let head_width: f32 = duration_get_headwidth(&note.duration);
 
     // Heads
 
     for placement in placements {
         let (level, place, head) = placement;
 
-        let mut current_x: f32 = (place.as_f32() * note_width) + adjust_right;
+        let mut current_x: f32 = (place.as_f32() * head_width) + adjust_right;
 
-        let rect: NRect = NRect::new(current_x, *level as f32 * SPACE_HALF - SPACE_HALF, note_width, SPACE);
+        let rect: NRect = NRect::new(current_x, *level as f32 * SPACE_HALF - SPACE_HALF, head_width, SPACE);
         rects.push(NRectExt(rect, NRectType::Head(*note_head_type, *note_shape)));
 
         // extra head spacer to the right of head
-        let rect: NRect = NRect::new(current_x + note_width, *level as f32 * SPACE_HALF - SPACE_HALF, HEAD_SPACER, SPACE);
+        let rect: NRect = NRect::new(current_x + head_width, *level as f32 * SPACE_HALF - SPACE_HALF, HEAD_SPACER, SPACE);
         rects.push(NRectExt(rect, NRectType::Spacer("head-extra-space".to_string())));
 
-        current_x += note_width;
+        current_x += head_width;
 
         // Dots
 
@@ -896,30 +910,39 @@ pub fn create_heads_and_dots_rectangles(mut rects: Vec<NRectExt>, note: &Note, p
         }
     }
 
+    // Ledger lines
     let under = placements.iter().filter(|f| f.0 >= 6).map(|f| (f.0, f.1)).collect::<Vec<_>>();
+    rects = create_ledger_lines_under(rects, &under, head_width);
+
+    let over = placements.iter().filter(|f| f.0 <= -6).map(|f| (f.0, f.1)).collect::<Vec<_>>();
+    rects = create_ledger_lines_over(rects, &over, head_width);
+
+    Ok(rects)
+}
+
+pub fn create_ledger_lines_under(mut rects: Vec<NRectExt>, under: &Vec<(i8, HeadPlacement)>, head_width: f32) -> Vec<NRectExt> {
     if under.len() > 0 {
         let max_level = under.iter().map(|f| f.0).max().unwrap() as usize;
         let mut a: Vec<Option<(i8, HeadPlacement)>> = vec![None; max_level as usize - 6 + 1];
-        for item in &under {
+        for item in under {
             a[item.0 as usize - 6] = Some(*item);
         }
         let mut x = -LEDGERLINE_OVERHANG;
-        let mut x2 = note_width + LEDGERLINE_OVERHANG;
-        let w = x2 - x;
+        let mut x2 = head_width + LEDGERLINE_OVERHANG;
+
         for (idx, item) in a.iter().rev().enumerate() {
             if let Some((level, place)) = a[idx] {
                 match place {
                     HeadPlacement::Left => {
-                        x -= note_width;
+                        x -= head_width;
                     }
                     HeadPlacement::Center => {}
                     HeadPlacement::Right => {
-                        x2 += note_width;
+                        x2 += head_width;
                     }
                 }
             }
             let w = x2 - x;
-
             let level = max_level - idx;
             if level % 2 == 0 {
                 let rect: NRect = NRect::new(x, level as f32 * SPACE_HALF - (NOTELINES_WIDTH / 2.0), w, NOTELINES_WIDTH);
@@ -927,29 +950,29 @@ pub fn create_heads_and_dots_rectangles(mut rects: Vec<NRectExt>, note: &Note, p
             }
         }
     }
+    rects
+}
 
-    let over = placements.iter().filter(|f| f.0 <= -6).map(|f| (f.0, f.1)).collect::<Vec<_>>();
+pub fn create_ledger_lines_over(mut rects: Vec<NRectExt>, over: &Vec<(i8, HeadPlacement)>, head_width: f32) -> Vec<NRectExt> {
+    //
     if over.len() > 0 {
         let min_level: i32 = over.iter().map(|f| f.0).min().unwrap() as i32;
         let lev = min_level.abs() as usize - 5;
         let mut a: Vec<Option<(i8, HeadPlacement)>> = vec![None; lev];
-        for item in &over {
+        for item in over {
             a[item.0.abs() as usize - 6] = Some(*item);
         }
         let mut x = -LEDGERLINE_OVERHANG;
-        let mut x2 = note_width + LEDGERLINE_OVERHANG;
-        let w = x2 - x;
+        let mut x2 = head_width + LEDGERLINE_OVERHANG;
         for (idx, item) in a.iter().rev().enumerate() {
             if let Some((level, place)) = a[idx] {
-                for (level, place) in item {
-                    match place {
-                        HeadPlacement::Left => {
-                            x -= note_width;
-                        }
-                        HeadPlacement::Center => {}
-                        HeadPlacement::Right => {
-                            x2 += note_width;
-                        }
+                match place {
+                    HeadPlacement::Left => {
+                        x -= head_width;
+                    }
+                    HeadPlacement::Center => {}
+                    HeadPlacement::Right => {
+                        x2 += head_width;
                     }
                 }
             }
@@ -961,20 +984,7 @@ pub fn create_heads_and_dots_rectangles(mut rects: Vec<NRectExt>, note: &Note, p
             }
         }
     }
-
-    // let max_level = placements.iter().map(|f| f.0).max().unwrap();
-    // if (max_level >= 6) {
-    //     for line_level in (6..=max_level).step_by(2) {
-    //         dbg!(&line_level);
-    //         // let rect: NRect = NRect::new(0.0, line_level as f32 * SPACE_HALF - SPACE_HALF, note_width, SPACE);
-    //         // rects.push(NRectExt(rect, NRectType::HelpLine));
-    //     }
-    // }
-
-    // let min_level = placements.iter().map(|f| f.0).min().unwrap();
-    // dbg! {max_level, min_level};
-
-    Ok(rects)
+    rects
 }
 
 pub fn create_pause_rectangles(mut rects: Vec<NRectExt>, note: &Note, adjust_y: f32) -> Result<Vec<NRectExt>> {

@@ -4,17 +4,22 @@ use std::cell::{Ref, RefMut};
 
 #[derive(Debug, PartialEq)]
 pub struct RItem {
-    // pub rects: Vec<NRect>,
+    pub id: usize,
     pub duration: Duration,
     pub col_idx: usize,
     pub row_idx: usize,
     pub coords: Option<NPoint>,
     pub nrects: Option<Vec<Rc<RefCell<NRectExt>>>>,
 
+    pub note_id: Option<usize>,
+    pub note2_id: Option<usize>,
+
     pub note_beam: RItemBeam,
     pub note2_beam: RItemBeam,
-    pub note_beam_xyy2: Option<(f32, f32, f32)>,
-    pub note2_beam_xyy2: Option<(f32, f32, f32)>,
+    pub note_beam_rect: Option<(f32, f32, f32, f32)>,
+    pub note2_beam_rect: Option<(f32, f32, f32, f32)>,
+    // pub note_beam_xyy2: Option<(f32, f32, f32)>,
+    // pub note2_beam_xyy2: Option<(f32, f32, f32)>,
 }
 
 impl RItem {
@@ -22,16 +27,22 @@ impl RItem {
         let nrects = rects.iter().map(|r| NRectExt::new(*r, NRectType::DUMMY)).collect::<Vec<_>>();
 
         Self {
-            // rects,
+            id: ID_COUNTER.fetch_add(1, Ordering::Relaxed),
             duration: dur,
             col_idx: 0,
             row_idx: 0,
             coords: None,
             nrects: None,
+
+            note_id: None,
+            note2_id: None,
+
             note_beam: RItemBeam::None,
             note2_beam: RItemBeam::None,
-            note_beam_xyy2: None,
-            note2_beam_xyy2: None,
+            note_beam_rect: None,
+            note2_beam_rect: None,
+            // note_beam_xyy2: None,
+            // note2_beam_xyy2: None,
         }
     }
 
@@ -39,16 +50,20 @@ impl RItem {
         let nrects: Vec<Rc<RefCell<NRectExt>>> = rects.iter().map(|r| Rc::new(RefCell::new(NRectExt::new(*r, NRectType::WIP("hoho".to_string()))))).collect::<Vec<_>>();
 
         Self {
-            // rects,
+            id: ID_COUNTER.fetch_add(1, Ordering::Relaxed),
             duration: dur,
             col_idx: 0,
             row_idx: 0,
             coords: None,
             nrects: Some(nrects),
+
+            note_id: None,
+            note2_id: None,
+
             note_beam: RItemBeam::None,
             note2_beam: RItemBeam::None,
-            note_beam_xyy2: None,
-            note2_beam_xyy2: None,
+            note_beam_rect: None,
+            note2_beam_rect: None,
         }
     }
 
@@ -63,16 +78,20 @@ impl RItem {
         let nrects_clones: Vec<Rc<RefCell<NRectExt>>> = nrects.iter().map(|nrect| nrect.clone()).collect::<Vec<_>>();
 
         Self {
-            // rects,
+            id: ID_COUNTER.fetch_add(1, Ordering::Relaxed),
             duration: dur,
             col_idx: 0,
             row_idx: 0,
             coords: None,
             nrects: Some(nrects_clones),
+
+            note_id: None,
+            note2_id: None,
+
             note_beam: RItemBeam::None,
             note2_beam: RItemBeam::None,
-            note_beam_xyy2: None,
-            note2_beam_xyy2: None,
+            note_beam_rect: None,
+            note2_beam_rect: None,
         }
     }
 }

@@ -12,14 +12,19 @@ use std::rc::Rc;
 pub struct Bars {
     pub items: Vec<Rc<RefCell<Bar>>>,
     pub matrix: Option<RMatrix>,
+    pub note_id_map: BTreeMap<usize, Rc<RefCell<Note>>>, // map note.id to Rc<RefCell<Note>>
 }
 
 impl Bars {
     pub fn new(items: Vec<Rc<RefCell<Bar>>>) -> Self {
-        Self { items, matrix: None }
+        Self {
+            items,
+            matrix: None,
+            note_id_map: BTreeMap::new(),
+        }
     }
 
-    pub fn create_matrix(&self, bartemplate: Option<BarTemplate>) -> Result<RMatrix> {
+    pub fn create_matrix(&mut self, bartemplate: Option<BarTemplate>) -> Result<RMatrix> {
         let bartemplate = match bartemplate {
             Some(bartemplate) => bartemplate,
             None => {
@@ -79,7 +84,6 @@ impl Bars {
                                 let ritem = Rc::new(RefCell::new(RItem::new_from_nrects(item_nrects, complex.duration)));
                                 complex.matrix_item = Some(ritem.clone());
                                 item = Some(ritem);
-
                                 colduration = Some(durations[posidx]);
                             }
 
@@ -240,14 +244,14 @@ impl Bars {
         }
 
         let matrix = RMatrix::new(matrix_cols, Some(bartemplate));
-
-        self.resolve_ties(); // WIP
+        self.map_notes_to_ritems();
+        self.resolve_ties();
 
         Ok(matrix)
         // Ok(())
     }
 
-    pub fn matrix_add_beamgroups(&self) {
+    pub fn matrix_add_beamgroup_data(&self) {
         for (baridx, bar) in self.items.iter().enumerate() {
             let bar = bar.borrow();
             match bar.btype {
@@ -876,5 +880,37 @@ impl Bars {
             result.push((partidx, voiceidx, value));
         }
         result
+    }
+
+    fn map_notes_to_ritems(&mut self) {
+        for (baridx, bar) in self.items.iter().enumerate() {
+            let bar = bar.borrow();
+            match bar.btype {
+                BarType::Standard(ref parts) => {
+                    for part in parts {
+                        // let part = part.borrow();
+                        let part = part.borrow();
+                        let complexes = part.complexes.as_ref().expect("Part should have complexes!");
+                        for complex in complexes {
+                            let complex = complex.borrow();
+                            let mut ritem = complex.matrix_item.as_ref().unwrap().borrow_mut();
+                            match complex.ctype {
+                                ComplexType::Single(ref note, _) | ComplexType::Upper(ref note, _) | ComplexType::Lower(ref note, _) => {
+                                    self.note_id_map.insert(note.borrow().id, note.clone());
+                                    ritem.note_id = Some(note.borrow().id);
+                                }
+                                ComplexType::Two(ref upper, ref lower, _) => {
+                                    self.note_id_map.insert(upper.borrow().id, upper.clone());
+                                    self.note_id_map.insert(lower.borrow().id, lower.clone());
+                                    ritem.note_id = Some(upper.borrow().id);
+                                    ritem.note2_id = Some(lower.borrow().id);
+                                }
+                            }
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
     }
 }

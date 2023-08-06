@@ -91,7 +91,7 @@ mod testsbars {
         // let bar_data = QCode::bars("|clef G F | 0 0 / 0 0 0 ").unwrap();
         let bar_data = QCode::bars(" 0 ").unwrap();
         // QCode::bars("|clefs G F - | 0 % 1 / 0 /lyr $lyr:aaa | 0 / 0 /lyr $lyr:bbb").unwrap();
-        let (bartemplate, bars) = bar_data;
+        let (bartemplate, mut bars) = bar_data;
         bars.create_matrix(Some(bartemplate)).unwrap();
     }
 

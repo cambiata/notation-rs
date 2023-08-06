@@ -14,6 +14,8 @@ impl QCode {
                     let s = &segment[2..];
                     cur_val = duration_from_str(s).ok();
                 }
+
+                //--------------------------------------------
                 a if a.starts_with("$lyr:") => {
                     todo!("Remove $ from lyrics!");
                 }
@@ -29,7 +31,6 @@ impl QCode {
                 a if a.starts_with("tpl:") => {
                     let s = segment.trim();
                     let mut s = &segment[4..];
-                    dbg!(&s);
 
                     let level: i8 = s.parse().unwrap();
 
@@ -37,6 +38,9 @@ impl QCode {
                     notes.push(n);
                 }
 
+                //--------------------------------------------
+
+                //--------------------------------------------
                 "p" => {
                     let n = Note::new(NoteType::Pause, cur_val.unwrap_or(NV4)); // NoteAttributes { color: None });
                     notes.push(n);
@@ -46,6 +50,8 @@ impl QCode {
                     notes.push(n);
                 }
                 _ => {
+                    let (segment, articulation) = crate::utils::parse_articulation(segment);
+                    //--------------------------------------------
                     let segments: Vec<&str> = segment.split(',').collect();
                     let mut heads: Vec<Head> = vec![];
                     for segment in &segments {
@@ -58,11 +64,9 @@ impl QCode {
                         // , HeadAttributes {}
                     }
 
-                    let n = Note::new(
-                        NoteType::Heads(Heads::new(heads)),
-                        cur_val.unwrap_or(NV4),
-                        // NoteAttributes { color: None },
-                    );
+                    let mut n = Note::new(NoteType::Heads(Heads::new(heads)), cur_val.unwrap_or(NV4));
+                    n.articulation = articulation;
+
                     // let n = Note::new(24, NoteType::Dummy, NoteAttributes { color: None });
                     notes.push(n);
                 }

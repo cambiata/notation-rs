@@ -1,6 +1,8 @@
 use crate::prelude::NRect;
 use crate::{prelude::*, types::some_cloneables::SomeCloneablePairs};
+use std::borrow::BorrowMut;
 use std::cell::{Ref, RefMut};
+use std::collections::BTreeMap;
 
 #[derive(Debug, PartialEq)]
 pub struct RMatrix {
@@ -88,6 +90,7 @@ impl RMatrix {
         // spacing based on duration
         for col in self.cols.iter() {
             let mut col = col.borrow_mut();
+
             let allotment_w = spacing_fn(&col.duration);
             col.distance_x = allotment_w;
             col.spacing_duration = col.distance_x;
@@ -344,18 +347,19 @@ impl RMatrix {
                 if item.is_none() {
                     continue;
                 }
-                let mut item: RefMut<RItem> = item.as_ref().unwrap().borrow_mut();
+
+                // let mut item: RefMut<RItem> = item.as_ref().unwrap().borrow_mut();
+                let mut item: Ref<RItem> = item.as_ref().unwrap().borrow();
                 // let coords = item.coords.expect("RItem coords should always be calculated!");
 
                 match item.note_beam {
-                    RItemBeam::None => {}
+                    RItemBeam::None => {
+                        // Not a note
+                    }
                     RItemBeam::Single(ref data) | RItemBeam::Start(ref data) | RItemBeam::End(ref data) => {
-                        // println!("SINGLE single upper");
-                        if !data.has_stem {
-                            continue;
-                        }
+                        println!("Single or Start or End");
 
-                        let mut adjust_x = if let Some(adjust_x) = data.adjustment_x {
+                        let note_x = if let Some(adjust_x) = data.adjustment_x {
                             match adjust_x {
                                 ComplexXAdjustment::UpperRight(x) => x,
                                 ComplexXAdjustment::LowerRight(_) => 0.0,
@@ -363,6 +367,19 @@ impl RMatrix {
                         } else {
                             0.0
                         };
+
+                        let mut adjust_x = note_x.clone();
+
+                        if !data.has_stem {
+                            // notes with no stem
+                            let y = data.top_level as f32 - SPACE_HALF;
+                            let y2 = data.bottom_level as f32 + SPACE_HALF;
+                            let h = y2 - y;
+                            item.note_beam_rect = Some((note_x, y, data.head_width, h));
+
+                            continue;
+                        }
+
                         match data.direction {
                             DirUD::Up => {
                                 adjust_x += data.head_width - STEM_WIDTH;
@@ -375,10 +392,12 @@ impl RMatrix {
                             DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
                         };
 
-                        item.note_beam_xyy2 = Some((adjust_x, y, y2));
+                        // item.note_beam_xyy2 = Some((adjust_x, y, y2));
                         let h = y2 - y;
 
                         let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
+                        // store stem coordinates for use in articulation etc
+                        item.note_beam_rect = Some((note_x, y, data.head_width, h));
 
                         // spacer for stem
                         let nrect = NRectExt::new(rect, NRectType::Spacer("stem upper".to_string()));
@@ -396,6 +415,7 @@ impl RMatrix {
                                 let mut nrects = item.nrects.as_mut().unwrap();
                                 nrects.push(Rc::new(RefCell::new(nrect)));
                             }
+
                             RItemBeam::End(ref data) => {
                                 let y = match data.direction {
                                     DirUD::Up => y,
@@ -410,7 +430,7 @@ impl RMatrix {
                         }
                     }
                     RItemBeam::Middle(ref data) => {
-                        // println!("MIDDLE  upper");
+                        println!("Middle");
                     } // RItemBeam::End(ref data) => {
                 }
 
@@ -418,11 +438,8 @@ impl RMatrix {
                     RItemBeam::None => {}
                     RItemBeam::Single(ref data) | RItemBeam::Start(ref data) | RItemBeam::End(ref data) => {
                         // println!("SINGLE single upper");
-                        if !data.has_stem {
-                            continue;
-                        }
 
-                        let mut adjust_x = if let Some(adjust_x) = data.adjustment_x {
+                        let note_x = if let Some(adjust_x) = data.adjustment_x {
                             match adjust_x {
                                 ComplexXAdjustment::UpperRight(_) => 0.0,
                                 ComplexXAdjustment::LowerRight(x) => x,
@@ -430,6 +447,17 @@ impl RMatrix {
                         } else {
                             0.0
                         };
+                        let mut adjust_x = note_x.clone();
+
+                        if !data.has_stem {
+                            // notes with no stem
+                            let y = data.top_level as f32 - SPACE_HALF;
+                            let y2 = data.bottom_level as f32 + SPACE_HALF;
+                            let h = y2 - y;
+                            item.note_beam_rect = Some((note_x, y, data.head_width, h));
+
+                            continue;
+                        }
 
                         match data.direction {
                             DirUD::Up => {
@@ -442,10 +470,13 @@ impl RMatrix {
                             DirUD::Up => ((data.tip_level - STEM_LENGTH) * SPACE_HALF, data.bottom_level as f32 * SPACE_HALF),
                             DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
                         };
-                        item.note2_beam_xyy2 = Some((adjust_x, y, y2));
+                        // item.note2_beam_xyy2 = Some((adjust_x, y, y2));
                         let h = y2 - y;
 
                         let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
+                        // store stem coordinates for use in articulation etc
+                        item.note2_beam_rect = Some((note_x, y, STEM_WIDTH, h));
+
                         // spacer for stem
                         let nrect = NRectExt::new(rect, NRectType::Spacer("stem lower".to_string()));
                         let mut nrects = item.nrects.as_mut().unwrap();
@@ -459,10 +490,12 @@ impl RMatrix {
                                     DirUD::Down => y2,
                                 };
                                 let rect = NRect::new(0.0, y - SPACE_HALF, SPACE * 2.0, SPACE);
+
                                 let nrect = NRectExt::new(rect, NRectType::Spacer("stem lower".to_string()));
                                 let mut nrects = item.nrects.as_mut().unwrap();
                                 nrects.push(Rc::new(RefCell::new(nrect)));
                             }
+
                             RItemBeam::End(ref data) => {
                                 let y = match data.direction {
                                     DirUD::Up => y,
@@ -476,6 +509,7 @@ impl RMatrix {
                             _ => {}
                         }
                     }
+
                     RItemBeam::Middle(ref data) => {
                         // println!("MIDDLE  upper");
                     } // RItemBeam::End(ref data) => {
@@ -502,4 +536,75 @@ impl RMatrix {
             }
         }
     }
+
+    // pub fn calculate_articulations(&self, item2note: BTreeMap<usize, Rc<RefCell<Note>>>) {
+    //     for row in self.rows.iter() {
+    //         let row = row.borrow();
+    //         for item in row.items.iter() {
+    //             if item.is_none() {
+    //                 continue;
+    //             }
+    //             let item = item.as_ref().unwrap().borrow();
+
+    //             match item.note_beam {
+    //                 RItemBeam::Single(ref data) => {
+    //                     if let Some(nid) = item.note_id {
+    //                         deal_with_articulation(&nid, item, &item2note);
+    //                     }
+    //                     if let Some(nid) = item.note2_id {
+    //                         deal_with_articulation(&nid, item, &item2note);
+    //                     }
+    //                 }
+    //                 RItemBeam::Start(ref data) => {
+    //                     println!("Articulation Multi:Start");
+    //                     if let Some(nid) = item.note_id {
+    //                         deal_with_articulation(&nid, item, &item2note);
+    //                     }
+    //                     if let Some(nid) = item.note2_id {
+    //                         deal_with_articulation(&nid, item, &item2note);
+    //                     }
+    //                 }
+    //                 RItemBeam::Middle(ref data) => {
+    //                     println!("Articulation Multi:Middle");
+    //                 }
+    //                 RItemBeam::End(ref data) => {
+    //                     println!("Articulation Multi:End");
+    //                     if let Some(nid) = item.note_id {
+    //                         deal_with_articulation(&nid, item, &item2note);
+    //                     }
+    //                     if let Some(nid) = item.note2_id {
+    //                         deal_with_articulation(&nid, item, &item2note);
+    //                     }
+    //                 }
+    //                 RItemBeam::None => {}
+    //             }
+    //         }
+    //     }
+    // }
 }
+
+// fn deal_with_articulation(nid: &usize, item: Ref<RItem>, item2note: &BTreeMap<usize, Rc<RefCell<Note>>>) {
+//     let rect = item.note_beam_rect.expect("note_beam_rect should be calculated by now!");
+//     let note = item2note.get(nid).expect(format!("could not get note id {} from item2note", nid).as_str()).borrow();
+//     // let mut nrects = item.nrects.unwrap();
+
+//     if let Some(direction) = note.direction {
+//         match direction {
+//             DirUD::Up => {
+//                 println!("Articulation :Up");
+//                 let rect = NRect::new(-5.0 + rect.0 + (rect.2 / 2.0), rect.1 - SPACE_HALF, 10.0, 10.0);
+//                 let nrect = NRectExt::new(rect, NRectType::Dev(true, "Red".to_string()));
+//                 // nrects.push(nrect);
+//             }
+//             DirUD::Down => {
+//                 println!("Articulation :Down");
+//             }
+//         }
+//     }
+// }
+
+// fn deal_with_articulation(note_id: usize, item: RefMut<'_, RItem>, item2note: &BTreeMap<usize, Rc<RefCell<Note>>>) {
+//     let rect = item.note_beam_rect.expect("note_beam_rect should be calculated by now!");
+//     let note = item2note.get(&note_id).unwrap().borrow();
+//     dbg!(rect);
+// }
