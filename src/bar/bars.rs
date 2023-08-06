@@ -12,13 +12,17 @@ use std::rc::Rc;
 pub struct Bars {
     pub items: Vec<Rc<RefCell<Bar>>>,
     pub matrix: Option<RMatrix>,
+    pub note_id_map: BTreeMap<usize, Rc<RefCell<Note>>>, // map note.id to Rc<RefCell<Note>>
 }
 
 impl Bars {
     pub fn new(items: Vec<Rc<RefCell<Bar>>>) -> Self {
-        Self { items, matrix: None }
+        Self {
+            items,
+            matrix: None,
+            note_id_map: BTreeMap::new(),
+        }
     }
-
     pub fn create_matrix(&self, bartemplate: Option<BarTemplate>) -> Result<RMatrix> {
         let bartemplate = match bartemplate {
             Some(bartemplate) => bartemplate,
