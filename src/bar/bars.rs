@@ -244,7 +244,7 @@ impl Bars {
         }
 
         let matrix = RMatrix::new(matrix_cols, Some(bartemplate));
-        self.map_notes_to_ritems();
+        self.map_note_id_to_note();
         self.resolve_ties(); // WIP
 
         Ok(matrix)
@@ -882,7 +882,7 @@ impl Bars {
         result
     }
 
-    fn map_notes_to_ritems(&mut self) {
+    fn map_note_id_to_note(&mut self) {
         for (baridx, bar) in self.items.iter().enumerate() {
             let bar = bar.borrow();
             match bar.btype {
