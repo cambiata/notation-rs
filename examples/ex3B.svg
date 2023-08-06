@@ -1,22 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 332.5 207.7857">
-    <line x1="1.25" y1="50.5" x2="331.25" y2="50.5" stroke="black" stroke-width="2.5"/>
-    <line x1="1.25" y1="75.5" x2="331.25" y2="75.5" stroke="black" stroke-width="2.5"/>
-    <line x1="1.25" y1="100.5" x2="331.25" y2="100.5" stroke="black" stroke-width="2.5"/>
-    <line x1="1.25" y1="125.5" x2="331.25" y2="125.5" stroke="black" stroke-width="2.5"/>
-    <line x1="1.25" y1="150.5" x2="331.25" y2="150.5" stroke="black" stroke-width="2.5"/>
-    <rect x="1.25" y="0.5" width="10" height="200" stroke="orange" stroke-width="1" fill="none"/>
-    <rect x="43.75" y="88" width="41.25" height="25" stroke="red" stroke-width="1" fill="none"/>
-    <path d="M 43.75 99 Q 43.75 94.6 48.55 90.7 Q 53.35 86.8 62.35 86.8 Q 68.45 86.8 73.45 88.25 Q 78.45 89.7 81.95 93.25 Q 85.45 96.8 85.45 102 Q 85.45 107.2 80.9 110.7 Q 76.350006 114.2 68.25 114.2 Q 63.45 114.2 59.45 113.5 Q 55.45 112.8 51.75 111.2 Q 48.05 109.6 45.9 106.5 Q 43.75 103.4 43.75 99 Z M 62.35 89.5 Q 53.55 89.5 53.55 92.6 Q 53.55 96.1 58.9 103.8 Q 64.25 111.5 67.85 111.5 Q 76.45 111.5 76.45 108.4 Q 76.45 104.6 70.9 97.05 Q 65.35 89.5 62.35 89.5 Z " fill="black"/>
-    <rect x="85" y="88" width="5" height="25" stroke="red" stroke-width="1" fill="none"/>
-    <rect x="11.25" y="88" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
-    <path d="M 11.25 103.9 Q 11.25 97.9 17.85 92.35 Q 24.45 86.8 31.35 86.8 Q 34.15 86.8 36.7 87.5 Q 39.25 88.2 41.550003 90.7 Q 43.850002 93.2 43.850002 97.1 Q 43.850002 102.6 37.15 108.4 Q 30.45 114.2 23.75 114.2 Q 20.95 114.2 18.4 113.5 Q 15.85 112.8 13.55 110.3 Q 11.25 107.8 11.25 103.9 Z " fill="black"/>
-    <rect x="43.75" y="88" width="5" height="25" stroke="red" stroke-width="1" fill="none"/>
-    <rect x="11.25" y="100.5" width="3" height="89.28571" stroke="red" stroke-width="1" fill="none"/>
-    <rect x="59.375" y="70.5" width="10" height="10" stroke="red" stroke-width="1" fill="none"/>
-    <ellipse cx="64.375" cy="75.5" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
-    <rect x="22.5" y="197.2857" width="10" height="10" stroke="red" stroke-width="1" fill="none"/>
-    <ellipse cx="27.5" cy="202.2857" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
-    <rect x="321.25" y="0.5" width="10" height="200" stroke="orange" stroke-width="1" fill="none"/>
-    <line x1="12.75" y1="104.5" x2="12.75" y2="189.7857" stroke="black" stroke-width="3"/>
-    <rect x="0" y="0" width="332.5" height="207.7857" stroke="black" stroke-width="1" fill="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 227.5 227.07141">
+    <line x1="1.25" y1="57.285713" x2="226.25" y2="57.285713" stroke="black" stroke-width="2.5"/>
+    <line x1="1.25" y1="82.28571" x2="226.25" y2="82.28571" stroke="black" stroke-width="2.5"/>
+    <line x1="1.25" y1="107.28571" x2="226.25" y2="107.28571" stroke="black" stroke-width="2.5"/>
+    <line x1="1.25" y1="132.2857" x2="226.25" y2="132.2857" stroke="black" stroke-width="2.5"/>
+    <line x1="1.25" y1="157.2857" x2="226.25" y2="157.2857" stroke="black" stroke-width="2.5"/>
+    <rect x="1.25" y="7.285713" width="10" height="200" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="11.25" y="94.78571" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 11.25 110.685715 Q 11.25 104.685715 17.85 99.13571 Q 24.45 93.58572 31.35 93.58572 Q 34.15 93.58572 36.7 94.28571 Q 39.25 94.98571 41.550003 97.48571 Q 43.850002 99.98571 43.850002 103.88571 Q 43.850002 109.38571 37.15 115.185715 Q 30.45 120.98571 23.75 120.98571 Q 20.95 120.98571 18.4 120.28571 Q 15.85 119.58572 13.55 117.08572 Q 11.25 114.58572 11.25 110.685715 Z " fill="black"/>
+    <rect x="43.75" y="94.78571" width="5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="36.25" y="107.28571" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <path d="M 36.25 123.185715 Q 36.25 117.185715 42.85 111.63571 Q 49.45 106.08572 56.35 106.08572 Q 59.15 106.08572 61.7 106.78571 Q 64.25 107.48571 66.55 109.98571 Q 68.850006 112.48571 68.850006 116.38571 Q 68.850006 121.88571 62.15 127.685715 Q 55.45 133.48572 48.75 133.48572 Q 45.95 133.48572 43.4 132.7857 Q 40.85 132.08571 38.55 129.58571 Q 36.25 127.08571 36.25 123.185715 Z " fill="black"/>
+    <rect x="68.75" y="107.28571" width="5" height="25" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="40.75" y="18" width="3" height="89.28571" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="36.25" y="119.78571" width="3" height="89.285706" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="22.5" y="0.5" width="10" height="10" stroke="red" stroke-width="1" fill="none"/>
+    <ellipse cx="27.5" cy="5.5" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="47.5" y="216.57141" width="10" height="10" stroke="red" stroke-width="1" fill="none"/>
+    <ellipse cx="52.5" cy="221.57141" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="216.25" y="7.285713" width="10" height="200" stroke="orange" stroke-width="1" fill="none"/>
+    <line x1="42.25" y1="18" x2="42.25" y2="103.28571" stroke="black" stroke-width="3"/>
+    <line x1="37.75" y1="123.78571" x2="37.75" y2="209.07143" stroke="black" stroke-width="3"/>
+    <rect x="0" y="0" width="227.5" height="227.07141" stroke="black" stroke-width="1" fill="none"/>
 </svg>

@@ -13,8 +13,8 @@ pub struct RItem {
 
     pub note_id: Option<usize>,
     pub note2_id: Option<usize>,
-    pub note_beam_rect: Option<StemInfo>,
-    pub note2_beam_rect: Option<StemInfo>,
+    pub note_beam_rect: StemInfo,
+    pub note2_beam_rect: StemInfo,
 
     pub note_beam: RItemBeam,
     pub note2_beam: RItemBeam,
@@ -37,8 +37,8 @@ impl RItem {
 
             note_beam: RItemBeam::None,
             note2_beam: RItemBeam::None,
-            note_beam_rect: None,
-            note2_beam_rect: None,
+            note_beam_rect: StemInfo::None,
+            note2_beam_rect: StemInfo::None,
         }
     }
 
@@ -58,8 +58,8 @@ impl RItem {
 
             note_beam: RItemBeam::None,
             note2_beam: RItemBeam::None,
-            note_beam_rect: None,
-            note2_beam_rect: None,
+            note_beam_rect: StemInfo::None,
+            note2_beam_rect: StemInfo::None,
         }
     }
 
@@ -87,13 +87,18 @@ impl RItem {
             // note2_beam_xyy2: None,
             note_id: None,
             note2_id: None,
-            note_beam_rect: None,
-            note2_beam_rect: None,
+            note_beam_rect: StemInfo::None,
+            note2_beam_rect: StemInfo::None,
         }
     }
 }
 
-pub type StemInfo = (f32, f32, f32, f32); // stem x, stem y, head_width, stem h
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum StemInfo {
+    FullInfo(f32, f32, f32, f32), // stem x, stem y, head_width, stem h
+    BeamMiddle(f32, f32, f32),
+    None,
+}
 
 #[derive(Debug, PartialEq)]
 pub enum RItemBeam {
