@@ -316,6 +316,7 @@ impl Part {
                         for note in notes.items.iter() {
                             let complex = Complex::new(ComplexType::Single(note.clone(), false), note.borrow().position);
                             complexes.push(complex);
+                            note.borrow_mut().complex_type = NoteComplexType::Single;
                         }
                     }
                     VoiceType::Barpause(_) => {
@@ -334,6 +335,7 @@ impl Part {
                             for note in notes.items.iter() {
                                 let complex = Complex::new(ComplexType::Lower(note.clone(), false), note.borrow().position);
                                 complexes.push(complex);
+                                note.borrow_mut().complex_type = NoteComplexType::Lower;
                             }
                             //
                         }
@@ -343,6 +345,7 @@ impl Part {
                             for note in notes.items.iter() {
                                 let complex = Complex::new(ComplexType::Upper(note.clone(), false), note.borrow().position);
                                 complexes.push(complex);
+                                note.borrow_mut().complex_type = NoteComplexType::Upper;
                             }
                             //
                         }
@@ -380,14 +383,18 @@ impl Part {
                                     [Some(note1), Some(note2)] => {
                                         let complex = Complex::new(ComplexType::Two(note1.clone(), note2.clone(), crate::calc::complex_calculate_x_adjustment(note1, note2)), *position);
                                         complexes.push(complex);
+                                        note1.borrow_mut().complex_type = NoteComplexType::Upper;
+                                        note2.borrow_mut().complex_type = NoteComplexType::Lower;
                                     }
                                     [Some(note), None] => {
                                         let complex = Complex::new(ComplexType::Upper(note.clone(), position >= &min_duration), note.borrow().position);
                                         complexes.push(complex);
+                                        note.borrow_mut().complex_type = NoteComplexType::Upper;
                                     }
                                     [None, Some(note)] => {
                                         let complex = Complex::new(ComplexType::Lower(note.clone(), position >= &min_duration), note.borrow().position);
                                         complexes.push(complex);
+                                        note.borrow_mut().complex_type = NoteComplexType::Lower;
                                     }
 
                                     [None, None] => {}
