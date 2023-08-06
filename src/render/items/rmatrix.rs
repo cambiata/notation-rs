@@ -368,63 +368,63 @@ impl RMatrix {
 
                         let mut adjust_x = note_x.clone();
 
-                        if !data.has_stem {
-                            // notes with no stem
-                            let y = data.top_level as f32 - SPACE_HALF;
-                            let y2 = data.bottom_level as f32 + SPACE_HALF;
-                            let h = y2 - y;
-                            item.note_beam_rect = Some((note_x, y, data.head_width, h));
+                        match data.has_stem {
+                            true => {
+                                match data.direction {
+                                    DirUD::Up => {
+                                        adjust_x += data.head_width - STEM_WIDTH;
+                                    }
+                                    _ => {}
+                                }
 
-                            continue;
-                        }
-
-                        match data.direction {
-                            DirUD::Up => {
-                                adjust_x += data.head_width - STEM_WIDTH;
-                            }
-                            _ => {}
-                        }
-
-                        let (y, y2) = match data.direction {
-                            DirUD::Up => ((data.tip_level - STEM_LENGTH) * SPACE_HALF, data.bottom_level as f32 * SPACE_HALF),
-                            DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
-                        };
-
-                        // item.note_beam_xyy2 = Some((adjust_x, y, y2));
-                        let h = y2 - y;
-
-                        let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
-                        // store stem coordinates for use in articulation etc
-                        item.note_beam_rect = Some((note_x, y, data.head_width, h));
-
-                        // spacer for stem
-                        let nrect = NRectExt::new(rect, NRectType::Spacer("stem upper".to_string()));
-                        let mut nrects = item.nrects.as_mut().unwrap();
-                        nrects.push(Rc::new(RefCell::new(nrect)));
-
-                        match item.note_beam {
-                            RItemBeam::Start(ref data) => {
-                                let y = match data.direction {
-                                    DirUD::Up => y,
-                                    DirUD::Down => y2,
+                                let (y, y2) = match data.direction {
+                                    DirUD::Up => ((data.tip_level - STEM_LENGTH) * SPACE_HALF, data.bottom_level as f32 * SPACE_HALF),
+                                    DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
                                 };
-                                let rect = NRect::new(0.0, y - SPACE_HALF, SPACE * 2.0, SPACE);
+
+                                // item.note_beam_xyy2 = Some((adjust_x, y, y2));
+                                let h = y2 - y;
+
+                                let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
+                                // store stem coordinates for use in articulation etc
+                                item.note_beam_rect = Some((note_x, y, data.head_width, h));
+
+                                // spacer for stem
                                 let nrect = NRectExt::new(rect, NRectType::Spacer("stem upper".to_string()));
                                 let mut nrects = item.nrects.as_mut().unwrap();
                                 nrects.push(Rc::new(RefCell::new(nrect)));
-                            }
 
-                            RItemBeam::End(ref data) => {
-                                let y = match data.direction {
-                                    DirUD::Up => y,
-                                    DirUD::Down => y2,
-                                };
-                                let rect = NRect::new(0.0, y - SPACE_HALF, data.head_width, SPACE);
-                                let nrect = NRectExt::new(rect, NRectType::Spacer("stem upper".to_string()));
-                                let mut nrects = item.nrects.as_mut().unwrap();
-                                nrects.push(Rc::new(RefCell::new(nrect)));
+                                match item.note_beam {
+                                    RItemBeam::Start(ref data) => {
+                                        let y = match data.direction {
+                                            DirUD::Up => y,
+                                            DirUD::Down => y2,
+                                        };
+                                        let rect = NRect::new(0.0, y - SPACE_HALF, SPACE * 2.0, SPACE);
+                                        let nrect = NRectExt::new(rect, NRectType::Spacer("stem upper".to_string()));
+                                        let mut nrects = item.nrects.as_mut().unwrap();
+                                        nrects.push(Rc::new(RefCell::new(nrect)));
+                                    }
+
+                                    RItemBeam::End(ref data) => {
+                                        let y = match data.direction {
+                                            DirUD::Up => y,
+                                            DirUD::Down => y2,
+                                        };
+                                        let rect = NRect::new(0.0, y - SPACE_HALF, data.head_width, SPACE);
+                                        let nrect = NRectExt::new(rect, NRectType::Spacer("stem upper".to_string()));
+                                        let mut nrects = item.nrects.as_mut().unwrap();
+                                        nrects.push(Rc::new(RefCell::new(nrect)));
+                                    }
+                                    _ => {}
+                                }
                             }
-                            _ => {}
+                            false => {
+                                let y = data.top_level as f32 - SPACE_HALF;
+                                let y2 = data.bottom_level as f32 + SPACE_HALF;
+                                let h = y2 - y;
+                                item.note_beam_rect = Some((note_x, y, data.head_width, h));
+                            }
                         }
                     }
                     RItemBeam::Middle(ref data) => {
@@ -447,64 +447,64 @@ impl RMatrix {
                         };
                         let mut adjust_x = note_x.clone();
 
-                        if !data.has_stem {
-                            // notes with no stem
-                            let y = data.top_level as f32 - SPACE_HALF;
-                            let y2 = data.bottom_level as f32 + SPACE_HALF;
-                            let h = y2 - y;
-                            item.note_beam_rect = Some((note_x, y, data.head_width, h));
+                        match data.has_stem {
+                            true => {
+                                match data.direction {
+                                    DirUD::Up => {
+                                        adjust_x += data.head_width - STEM_WIDTH;
+                                    }
+                                    _ => {}
+                                }
 
-                            continue;
-                        }
-
-                        match data.direction {
-                            DirUD::Up => {
-                                adjust_x += data.head_width - STEM_WIDTH;
-                            }
-                            _ => {}
-                        }
-
-                        let (y, y2) = match data.direction {
-                            DirUD::Up => ((data.tip_level - STEM_LENGTH) * SPACE_HALF, data.bottom_level as f32 * SPACE_HALF),
-                            DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
-                        };
-                        // item.note2_beam_xyy2 = Some((adjust_x, y, y2));
-                        let h = y2 - y;
-
-                        let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
-                        // store stem coordinates for use in articulation etc
-                        item.note2_beam_rect = Some((note_x, y, data.head_width, h));
-
-                        // spacer for stem
-                        let nrect = NRectExt::new(rect, NRectType::Spacer("stem lower".to_string()));
-                        let mut nrects = item.nrects.as_mut().unwrap();
-                        nrects.push(Rc::new(RefCell::new(nrect)));
-
-                        // spacer for stem tips
-                        match item.note2_beam {
-                            RItemBeam::Start(ref data) => {
-                                let y = match data.direction {
-                                    DirUD::Up => y,
-                                    DirUD::Down => y2,
+                                let (y, y2) = match data.direction {
+                                    DirUD::Up => ((data.tip_level - STEM_LENGTH) * SPACE_HALF, data.bottom_level as f32 * SPACE_HALF),
+                                    DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
                                 };
-                                let rect = NRect::new(0.0, y - SPACE_HALF, SPACE * 2.0, SPACE);
+                                // item.note2_beam_xyy2 = Some((adjust_x, y, y2));
+                                let h = y2 - y;
 
+                                let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
+                                // store stem coordinates for use in articulation etc
+                                item.note2_beam_rect = Some((note_x, y, data.head_width, h));
+
+                                // spacer for stem
                                 let nrect = NRectExt::new(rect, NRectType::Spacer("stem lower".to_string()));
                                 let mut nrects = item.nrects.as_mut().unwrap();
                                 nrects.push(Rc::new(RefCell::new(nrect)));
-                            }
 
-                            RItemBeam::End(ref data) => {
-                                let y = match data.direction {
-                                    DirUD::Up => y,
-                                    DirUD::Down => y2,
-                                };
-                                let rect = NRect::new(0.0, y - SPACE_HALF, data.head_width, SPACE);
-                                let nrect = NRectExt::new(rect, NRectType::Spacer("stem lower".to_string()));
-                                let mut nrects = item.nrects.as_mut().unwrap();
-                                nrects.push(Rc::new(RefCell::new(nrect)));
+                                // spacer for stem tips
+                                match item.note2_beam {
+                                    RItemBeam::Start(ref data) => {
+                                        let y = match data.direction {
+                                            DirUD::Up => y,
+                                            DirUD::Down => y2,
+                                        };
+                                        let rect = NRect::new(0.0, y - SPACE_HALF, SPACE * 2.0, SPACE);
+
+                                        let nrect = NRectExt::new(rect, NRectType::Spacer("stem lower".to_string()));
+                                        let mut nrects = item.nrects.as_mut().unwrap();
+                                        nrects.push(Rc::new(RefCell::new(nrect)));
+                                    }
+
+                                    RItemBeam::End(ref data) => {
+                                        let y = match data.direction {
+                                            DirUD::Up => y,
+                                            DirUD::Down => y2,
+                                        };
+                                        let rect = NRect::new(0.0, y - SPACE_HALF, data.head_width, SPACE);
+                                        let nrect = NRectExt::new(rect, NRectType::Spacer("stem lower".to_string()));
+                                        let mut nrects = item.nrects.as_mut().unwrap();
+                                        nrects.push(Rc::new(RefCell::new(nrect)));
+                                    }
+                                    _ => {}
+                                }
                             }
-                            _ => {}
+                            false => {
+                                let y = data.top_level as f32 - SPACE_HALF;
+                                let y2 = data.bottom_level as f32 + SPACE_HALF;
+                                let h = y2 - y;
+                                item.note2_beam_rect = Some((note_x, y, data.head_width, h));
+                            }
                         }
                     }
 
@@ -561,6 +561,7 @@ impl RMatrix {
                         }
 
                         if let Some(nid) = item.note2_id {
+                            dbg!(&item.note2_beam_rect);
                             let rect = &item.note2_beam_rect.unwrap();
                             item.nrects.as_mut().unwrap().extend(do_articulations(&nid, &rect, &item2note));
                         } else {

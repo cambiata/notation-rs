@@ -63,7 +63,7 @@ fn main() {
     // let bar_data = QCode::bars("|clef - G - |/lyr lyr:aa lyr:bb / 0  0 /lyr tpl:3 tpl:-2").unwrap();
     // let bar_data = QCode::bars("|clef G - - | 0 0 0 0 /lyr lyr:Hej lyr:och lyr:hopp /lyr lyr:Ky lyr:ri lyr:e").unwrap();
 
-    let bar_data = QCode::bars(" nv1 0 % nv2 1").unwrap();
+    let bar_data = QCode::bars(" nv1 0 % 0 ").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
