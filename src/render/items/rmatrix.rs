@@ -536,48 +536,48 @@ impl RMatrix {
     }
 
     pub fn calculate_articulations(&self, item2note: BTreeMap<usize, Rc<RefCell<Note>>>) {
-        // for row in self.rows.iter() {
-        //     let row = row.borrow();
-        //     for item in row.items.iter() {
-        //         if item.is_none() {
-        //             continue;
-        //         }
-        //         let item = item.as_ref().unwrap().borrow();
+        for row in self.rows.iter() {
+            let row = row.borrow();
+            for item in row.items.iter() {
+                if item.is_none() {
+                    continue;
+                }
+                let item = item.as_ref().unwrap().borrow();
 
-        //         match item.note_beam {
-        //             RItemBeam::Single(ref data) => {
-        //                 if let Some(nid) = item.note_id {
-        //                     deal_with_articulation(&nid, item, &item2note);
-        //                 }
-        //                 if let Some(nid) = item.note2_id {
-        //                     deal_with_articulation(&nid, item, &item2note);
-        //                 }
-        //             }
-        //             RItemBeam::Start(ref data) => {
-        //                 println!("Articulation Multi:Start");
-        //                 if let Some(nid) = item.note_id {
-        //                     deal_with_articulation(&nid, item, &item2note);
-        //                 }
-        //                 if let Some(nid) = item.note2_id {
-        //                     deal_with_articulation(&nid, item, &item2note);
-        //                 }
-        //             }
-        //             RItemBeam::Middle(ref data) => {
-        //                 println!("Articulation Multi:Middle");
-        //             }
-        //             RItemBeam::End(ref data) => {
-        //                 println!("Articulation Multi:End");
-        //                 if let Some(nid) = item.note_id {
-        //                     deal_with_articulation(&nid, item, &item2note);
-        //                 }
-        //                 if let Some(nid) = item.note2_id {
-        //                     deal_with_articulation(&nid, item, &item2note);
-        //                 }
-        //             }
-        //             RItemBeam::None => {}
-        //         }
-        //     }
-        // }
+                match item.note_beam {
+                    RItemBeam::Single(ref data) => {
+                        if let Some(nid) = item.note_id {
+                            //deal_with_articulation(&nid, item, &item2note);
+                        }
+                        if let Some(nid) = item.note2_id {
+                            //deal_with_articulation(&nid, item, &item2note);
+                        }
+                    }
+                    RItemBeam::Start(ref data) => {
+                        println!("Articulation Multi:Start");
+                        if let Some(nid) = item.note_id {
+                            //deal_with_articulation(&nid, item, &item2note);
+                        }
+                        if let Some(nid) = item.note2_id {
+                            //deal_with_articulation(&nid, item, &item2note);
+                        }
+                    }
+                    RItemBeam::Middle(ref data) => {
+                        println!("Articulation Multi:Middle");
+                    }
+                    RItemBeam::End(ref data) => {
+                        println!("Articulation Multi:End");
+                        if let Some(nid) = item.note_id {
+                            //deal_with_articulation(&nid, item, &item2note);
+                        }
+                        if let Some(nid) = item.note2_id {
+                            //deal_with_articulation(&nid, item, &item2note);
+                        }
+                    }
+                    RItemBeam::None => {}
+                }
+            }
+        }
     }
 }
 

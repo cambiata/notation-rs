@@ -72,6 +72,7 @@ fn main() {
 
     matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);
     matrix.calculate_beamgroups();
+    matrix.calculate_articulations(bars.note_id_map);
 
     matrix.calculate_row_spacing();
     matrix.calculate_col_row_item_measurements();
