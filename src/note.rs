@@ -14,6 +14,14 @@ pub enum NoteType {
     Tpl(char, TplOctave, TplAccidental, i8),
 }
 
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum NoteComplexType {
+    Unset,
+    Single,
+    Upper,
+    Lower,
+}
+
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum TplOctave {
     Higher,
@@ -26,6 +34,17 @@ pub enum TplAccidental {
     Raised,
     Neutral,
     Lowered,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash)]
+pub enum NoteArticulation {
+    None,
+    Staccato,
+    Tenuto,
+    TenutoStaccato,
+    Marcato,
+    MarcatoStaccato,
+    MoltoMarcato,
 }
 
 #[derive(PartialEq)]
@@ -46,8 +65,10 @@ pub struct Note {
     pub direction: Option<DirUD>,
     pub ties: Vec<TieData>,
     pub ties_to: Vec<TieToData>,
+    pub articulation: NoteArticulation,
 
     pub adjust_x: Option<(f32, f32)>,
+    pub complex_type: NoteComplexType,
 }
 
 impl Note {
@@ -92,6 +113,8 @@ impl Note {
             ties,
             ties_to,
             adjust_x: None,
+            articulation: NoteArticulation::None,
+            complex_type: NoteComplexType::Unset,
         }
     }
 

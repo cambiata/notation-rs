@@ -59,6 +59,26 @@ pub(crate) fn parse_tie_to(s: &str) -> Option<TieToType> {
     None
 }
 
+pub(crate) fn parse_articulation(s: &str) -> (String, NoteArticulation) {
+    if s.contains("-.") {
+        return (s.replace("=.", ""), NoteArticulation::TenutoStaccato);
+    }
+    if s.contains(">>") {
+        return (s.replace(">>", ""), NoteArticulation::MarcatoStaccato);
+    }
+    //------------------------------
+    if s.contains(".") {
+        return (s.replace(".", ""), NoteArticulation::Staccato);
+    }
+    if s.contains("-") {
+        return (s.replace("=", ""), NoteArticulation::Tenuto);
+    }
+    if s.contains(">") {
+        return (s.replace(">", ""), NoteArticulation::Marcato);
+    }
+    (s.to_string(), NoteArticulation::None)
+}
+
 pub fn rect_x(rect: &NRect, nrects: Vec<NRectExt>) -> f32 {
     for nrect in &nrects {
         let cmp: NRect = nrect.0;

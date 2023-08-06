@@ -46,6 +46,8 @@ impl QCode {
                     notes.push(n);
                 }
                 _ => {
+                    let (segment, articulation) = crate::utils::parse_articulation(segment);
+                    //
                     let segments: Vec<&str> = segment.split(',').collect();
                     let mut heads: Vec<Head> = vec![];
                     for segment in &segments {
@@ -58,11 +60,9 @@ impl QCode {
                         // , HeadAttributes {}
                     }
 
-                    let n = Note::new(
-                        NoteType::Heads(Heads::new(heads)),
-                        cur_val.unwrap_or(NV4),
-                        // NoteAttributes { color: None },
-                    );
+                    let mut n = Note::new(NoteType::Heads(Heads::new(heads)), cur_val.unwrap_or(NV4));
+                    n.articulation = articulation;
+                    
                     // let n = Note::new(24, NoteType::Dummy, NoteAttributes { color: None });
                     notes.push(n);
                 }
