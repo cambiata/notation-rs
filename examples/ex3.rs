@@ -65,7 +65,7 @@ fn main() {
 
     let bar_data = QCode::bars(" 0 % 1").unwrap();
 
-    let (bartemplate, bars) = bar_data;
+    let (bartemplate, mut bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
     bars.matrix_add_beamgroups();
     bars.matrix_add_ties();

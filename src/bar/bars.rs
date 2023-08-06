@@ -23,7 +23,7 @@ impl Bars {
             note_id_map: BTreeMap::new(),
         }
     }
-    pub fn create_matrix(&self, bartemplate: Option<BarTemplate>) -> Result<RMatrix> {
+    pub fn create_matrix(&mut self, bartemplate: Option<BarTemplate>) -> Result<RMatrix> {
         let bartemplate = match bartemplate {
             Some(bartemplate) => bartemplate,
             None => {
@@ -244,7 +244,7 @@ impl Bars {
         }
 
         let matrix = RMatrix::new(matrix_cols, Some(bartemplate));
-
+        self.map_notes_to_ritems();
         self.resolve_ties(); // WIP
 
         Ok(matrix)
@@ -880,5 +880,37 @@ impl Bars {
             result.push((partidx, voiceidx, value));
         }
         result
+    }
+
+    fn map_notes_to_ritems(&mut self) {
+        for (baridx, bar) in self.items.iter().enumerate() {
+            let bar = bar.borrow();
+            match bar.btype {
+                BarType::Standard(ref parts) => {
+                    for part in parts {
+                        // let part = part.borrow();
+                        let part = part.borrow();
+                        let complexes = part.complexes.as_ref().expect("Part should have complexes!");
+                        for complex in complexes {
+                            let complex = complex.borrow();
+                            let mut ritem = complex.matrix_item.as_ref().unwrap().borrow_mut();
+                            match complex.ctype {
+                                ComplexType::Single(ref note, _) | ComplexType::Upper(ref note, _) | ComplexType::Lower(ref note, _) => {
+                                    self.note_id_map.insert(note.borrow().id, note.clone());
+                                    ritem.note_id = Some(note.borrow().id);
+                                }
+                                ComplexType::Two(ref upper, ref lower, _) => {
+                                    self.note_id_map.insert(upper.borrow().id, upper.clone());
+                                    self.note_id_map.insert(lower.borrow().id, lower.clone());
+                                    ritem.note_id = Some(upper.borrow().id);
+                                    ritem.note2_id = Some(lower.borrow().id);
+                                }
+                            }
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
     }
 }
