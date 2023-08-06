@@ -375,7 +375,7 @@ impl RMatrix {
                             DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
                         };
 
-                        item.note_beam_xyy2 = Some((adjust_x, y, y2));
+                        // item.note_beam_xyy2 = Some((adjust_x, y, y2));
                         let h = y2 - y;
 
                         let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
@@ -442,7 +442,7 @@ impl RMatrix {
                             DirUD::Up => ((data.tip_level - STEM_LENGTH) * SPACE_HALF, data.bottom_level as f32 * SPACE_HALF),
                             DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
                         };
-                        item.note2_beam_xyy2 = Some((adjust_x, y, y2));
+                        // item.note2_beam_xyy2 = Some((adjust_x, y, y2));
                         let h = y2 - y;
 
                         let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
