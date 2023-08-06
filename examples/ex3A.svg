@@ -5,6 +5,8 @@
     <line x1="1.25" y1="125.5" x2="126.25" y2="125.5" stroke="black" stroke-width="2.5"/>
     <line x1="1.25" y1="150.5" x2="126.25" y2="150.5" stroke="black" stroke-width="2.5"/>
     <rect x="1.25" y="0.5" width="10" height="200" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="1.25" y="100.5" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
+    <ellipse cx="6.25" cy="105.5" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
     <rect x="11.25" y="88" width="32.5" height="25" stroke="red" stroke-width="1" fill="none"/>
     <path d="M 11.25 103.9 Q 11.25 97.9 17.85 92.35 Q 24.45 86.8 31.35 86.8 Q 34.15 86.8 36.7 87.5 Q 39.25 88.2 41.550003 90.7 Q 43.850002 93.2 43.850002 97.1 Q 43.850002 102.6 37.15 108.4 Q 30.45 114.2 23.75 114.2 Q 20.95 114.2 18.4 113.5 Q 15.85 112.8 13.55 110.3 Q 11.25 107.8 11.25 103.9 Z " fill="black"/>
     <rect x="43.75" y="88" width="5" height="25" stroke="red" stroke-width="1" fill="none"/>
@@ -13,7 +15,11 @@
     <rect x="68.75" y="100.5" width="5" height="25" stroke="red" stroke-width="1" fill="none"/>
     <rect x="40.75" y="11.214287" width="3" height="89.28571" stroke="red" stroke-width="1" fill="none"/>
     <rect x="36.25" y="113" width="3" height="89.285706" stroke="red" stroke-width="1" fill="none"/>
+    <rect x="11.25" y="100.5" width="10" height="10" stroke="red" stroke-width="1" fill="none"/>
+    <ellipse cx="16.25" cy="105.5" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
     <rect x="116.25" y="0.5" width="10" height="200" stroke="orange" stroke-width="1" fill="none"/>
+    <rect x="116.25" y="100.5" width="10" height="10" stroke="orange" stroke-width="1" fill="none"/>
+    <ellipse cx="121.25" cy="105.5" rx="5" ry="5" stroke="red" stroke-width="1" fill="none"/>
     <line x1="42.25" y1="11.214287" x2="42.25" y2="96.5" stroke="black" stroke-width="3"/>
     <line x1="37.75" y1="117" x2="37.75" y2="202.2857" stroke="black" stroke-width="3"/>
     <rect x="0" y="0" width="127.5" height="203.7857" stroke="black" stroke-width="1" fill="none"/>

@@ -542,16 +542,25 @@ impl RMatrix {
                 if item.is_none() {
                     continue;
                 }
-                let item = item.as_ref().unwrap().borrow();
+                let mut item = item.as_ref().unwrap().borrow_mut();
+
+                let rect = NRect::new(0.0, 0.0, 10.0, 10.0);
+                let nrect = NRectExt::new(rect, NRectType::Dev(true, "Red".to_string()));
+                // nrects.push(Rc::new(RefCell::new(nrect)));
+                // item.nrects.as_ref().unwrap().push(Rc::new(RefCell::new(nrect)));
+                // item.nrects.unwrap().push(Rc::new(RefCell::new(nrect)));
+                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(nrect)));
 
                 match item.note_beam {
                     RItemBeam::Single(ref data) => {
-                        if let Some(nid) = item.note_id {
-                            //deal_with_articulation(&nid, item, &item2note);
+                        if let Some(nid) = &item.note_id {
+                            // deal_with_articulation(&nid, item, &item2note);
+                            // deal_with_articulation3(&nid, item, &item2note);
+                            do_articulations(nid, &item, &item2note);
                         }
-                        if let Some(nid) = item.note2_id {
-                            //deal_with_articulation(&nid, item, &item2note);
-                        }
+                        // if let Some(nid) = &item.note2_id {
+                        //     //deal_with_articulation(&nid, item, &item2note);
+                        // }
                     }
                     RItemBeam::Start(ref data) => {
                         println!("Articulation Multi:Start");
@@ -580,6 +589,18 @@ impl RMatrix {
         }
     }
 }
+
+fn do_articulations(nid: &usize, item: &RefMut<'_, RItem>, item2note: &BTreeMap<usize, Rc<RefCell<Note>>>) {
+    let rect = item.note_beam_rect.expect("note_beam_rect should be calculated by now!");
+    let note = item2note.get(nid).expect(format!("could not get note id {} from item2note", nid).as_str()).borrow();
+    //
+    ///create rects here...
+
+}
+
+// fn deal_with_articulation3(nid: &usize, item: RefMut<'_, RItem>, item2note: &BTreeMap<usize, Rc<RefCell<Note>>>) {}
+
+// fn deal_with_articulation2(nid: &usize, item: &RefMut<'_, RItem>, nrects: &[Rc<RefCell<NRectExt>>], item2note: &BTreeMap<usize, Rc<RefCell<Note>>>) {}
 
 // fn deal_with_articulation(nid: &usize, item: Ref<RItem>, item2note: &BTreeMap<usize, Rc<RefCell<Note>>>) {
 //     let rect = item.note_beam_rect.expect("note_beam_rect should be calculated by now!");
