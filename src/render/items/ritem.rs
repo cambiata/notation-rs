@@ -13,11 +13,11 @@ pub struct RItem {
 
     pub note_id: Option<usize>,
     pub note2_id: Option<usize>,
-    pub note_beam_rect: StemInfo,
-    pub note2_beam_rect: StemInfo,
+    pub note_steminfo: StemInfo,
+    pub note2_steminfo: StemInfo,
 
-    pub note_beam: RItemBeam,
-    pub note2_beam: RItemBeam,
+    pub note_beamdata: RItemBeam,
+    pub note2_beamdata: RItemBeam,
 }
 
 impl RItem {
@@ -35,10 +35,10 @@ impl RItem {
             note_id: None,
             note2_id: None,
 
-            note_beam: RItemBeam::None,
-            note2_beam: RItemBeam::None,
-            note_beam_rect: StemInfo::None,
-            note2_beam_rect: StemInfo::None,
+            note_beamdata: RItemBeam::None,
+            note2_beamdata: RItemBeam::None,
+            note_steminfo: StemInfo::None,
+            note2_steminfo: StemInfo::None,
         }
     }
 
@@ -56,10 +56,10 @@ impl RItem {
             note_id: None,
             note2_id: None,
 
-            note_beam: RItemBeam::None,
-            note2_beam: RItemBeam::None,
-            note_beam_rect: StemInfo::None,
-            note2_beam_rect: StemInfo::None,
+            note_beamdata: RItemBeam::None,
+            note2_beamdata: RItemBeam::None,
+            note_steminfo: StemInfo::None,
+            note2_steminfo: StemInfo::None,
         }
     }
 
@@ -81,14 +81,14 @@ impl RItem {
             row_idx: 0,
             coords: None,
             nrects: Some(nrects_clones),
-            note_beam: RItemBeam::None,
-            note2_beam: RItemBeam::None,
+            note_beamdata: RItemBeam::None,
+            note2_beamdata: RItemBeam::None,
             // note_beam_xyy2: None,
             // note2_beam_xyy2: None,
             note_id: None,
             note2_id: None,
-            note_beam_rect: StemInfo::None,
-            note2_beam_rect: StemInfo::None,
+            note_steminfo: StemInfo::None,
+            note2_steminfo: StemInfo::None,
         }
     }
 }
@@ -96,7 +96,7 @@ impl RItem {
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum StemInfo {
     FullInfo(f32, f32, f32, f32), // stem x, stem y, head_width, stem h
-    BeamMiddle(f32, f32, f32),
+    BeamMiddle(usize, f32, f32, f32),
     None,
 }
 
@@ -125,6 +125,5 @@ pub struct RItemBeamData {
     pub adjustment_x: Option<ComplexXAdjustment>,
     pub head_width: f32,
     pub note_durations: Option<Vec<Duration>>,
-
     pub lower_voice: bool,
 }

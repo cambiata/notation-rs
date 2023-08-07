@@ -341,7 +341,14 @@ impl RMatrix {
     pub fn calculate_beamgroups(&self) {
         for row in self.rows.iter() {
             let row = row.borrow();
-            for item in row.items.iter() {
+
+            let mut note_idx_in_beamgroup = 0;
+            // let mut note_steminfos = vec![];
+
+            let mut note2_idx_in_beamgroup = 0;
+            // let mut note2_steminfos = vec![];
+
+            for (itemidx, item) in row.items.iter().enumerate() {
                 if item.is_none() {
                     continue;
                 }
@@ -350,13 +357,11 @@ impl RMatrix {
                 // let mut item: Ref<RItem> = item.as_ref().unwrap().borrow();
                 // let coords = item.coords.expect("RItem coords should always be calculated!");
 
-                match item.note_beam {
+                match item.note_beamdata {
                     RItemBeam::None => {
                         // Not a note
                     }
                     RItemBeam::Single(ref data) | RItemBeam::Start(ref data) | RItemBeam::End(ref data) => {
-                        println!("Single or Start or End");
-
                         let note_x = if let Some(adjust_x) = data.adjustment_x {
                             match adjust_x {
                                 ComplexXAdjustment::UpperRight(x) => x,
@@ -370,6 +375,11 @@ impl RMatrix {
 
                         match data.has_stem {
                             true => {
+                                match item.note_beamdata {
+                                    RItemBeam::Start(_) => note_idx_in_beamgroup = 0,
+                                    _ => {}
+                                };
+
                                 match data.direction {
                                     DirUD::Up => {
                                         adjust_x += data.head_width - STEM_WIDTH;
@@ -387,14 +397,16 @@ impl RMatrix {
 
                                 let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
                                 // store stem coordinates for use in articulation etc
-                                item.note_beam_rect = StemInfo::FullInfo(note_x, y, data.head_width, h);
+                                item.note_steminfo = StemInfo::FullInfo(note_x, y, data.head_width, h);
+                                // note_steminfos.clear();
+                                // note_steminfos.push(item.note_steminfo.clone());
 
                                 // spacer for stem
                                 let nrect = NRectExt::new(rect, NRectType::Spacer("stem upper".to_string()));
                                 let mut nrects = item.nrects.as_mut().unwrap();
                                 nrects.push(Rc::new(RefCell::new(nrect)));
 
-                                match item.note_beam {
+                                match item.note_beamdata {
                                     RItemBeam::Start(ref data) => {
                                         let y = match data.direction {
                                             DirUD::Up => y,
@@ -423,16 +435,27 @@ impl RMatrix {
                                 let y = data.top_level as f32 - SPACE_HALF;
                                 let y2 = data.bottom_level as f32 + SPACE_HALF;
                                 let h = y2 - y;
-                                item.note_beam_rect = StemInfo::FullInfo(note_x, y, data.head_width, h);
+                                item.note_steminfo = StemInfo::FullInfo(note_x, y, data.head_width, h);
                             }
                         }
                     }
                     RItemBeam::Middle(ref data) => {
-                        println!("Middle");
+                        note_idx_in_beamgroup += 1;
+                        println!("Middle note ");
+                        let note_x = if let Some(adjust_x) = data.adjustment_x {
+                            match adjust_x {
+                                ComplexXAdjustment::UpperRight(x) => x,
+                                ComplexXAdjustment::LowerRight(_) => 0.0,
+                            }
+                        } else {
+                            0.0
+                        };
+                        let mut adjust_x = note_x.clone();
+                        item.note_steminfo = StemInfo::BeamMiddle(note_idx_in_beamgroup, note_x, 0.0, data.head_width);
                     } // RItemBeam::End(ref data) => {
                 }
 
-                match item.note2_beam {
+                match item.note2_beamdata {
                     RItemBeam::None => {}
                     RItemBeam::Single(ref data) | RItemBeam::Start(ref data) | RItemBeam::End(ref data) => {
                         // println!("SINGLE single upper");
@@ -449,6 +472,11 @@ impl RMatrix {
 
                         match data.has_stem {
                             true => {
+                                match item.note2_beamdata {
+                                    RItemBeam::Start(_) => note2_idx_in_beamgroup = 0,
+                                    _ => {}
+                                };
+
                                 match data.direction {
                                     DirUD::Up => {
                                         adjust_x += data.head_width - STEM_WIDTH;
@@ -465,7 +493,7 @@ impl RMatrix {
 
                                 let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
                                 // store stem coordinates for use in articulation etc
-                                item.note2_beam_rect = StemInfo::FullInfo(note_x, y, data.head_width, h);
+                                item.note2_steminfo = StemInfo::FullInfo(note_x, y, data.head_width, h);
 
                                 // spacer for stem
                                 let nrect = NRectExt::new(rect, NRectType::Spacer("stem lower".to_string()));
@@ -473,7 +501,7 @@ impl RMatrix {
                                 nrects.push(Rc::new(RefCell::new(nrect)));
 
                                 // spacer for stem tips
-                                match item.note2_beam {
+                                match item.note2_beamdata {
                                     RItemBeam::Start(ref data) => {
                                         let y = match data.direction {
                                             DirUD::Up => y,
@@ -503,17 +531,28 @@ impl RMatrix {
                                 let y = data.top_level as f32 - SPACE_HALF;
                                 let y2 = data.bottom_level as f32 + SPACE_HALF;
                                 let h = y2 - y;
-                                item.note2_beam_rect = StemInfo::FullInfo(note_x, y, data.head_width, h);
+                                item.note2_steminfo = StemInfo::FullInfo(note_x, y, data.head_width, h);
                             }
                         }
                     }
 
                     RItemBeam::Middle(ref data) => {
-                        // println!("MIDDLE  upper");
+                        note2_idx_in_beamgroup += 1;
+                        println!("Middle note2");
+                        let note_x = if let Some(adjust_x) = data.adjustment_x {
+                            match adjust_x {
+                                ComplexXAdjustment::UpperRight(x) => x,
+                                ComplexXAdjustment::LowerRight(_) => 0.0,
+                            }
+                        } else {
+                            0.0
+                        };
+                        let mut adjust_x = note_x.clone();
+                        item.note2_steminfo = StemInfo::BeamMiddle(note2_idx_in_beamgroup, note_x, 0.0, data.head_width);
                     } // RItemBeam::End(ref data) => {
                 }
 
-                match item.note_beam {
+                match item.note_beamdata {
                     RItemBeam::Single(ref data) => {
                         if let Some(nrect) = add_flag(data) {
                             let mut nrects = item.nrects.as_mut().unwrap();
@@ -522,7 +561,7 @@ impl RMatrix {
                     }
                     _ => {}
                 }
-                match item.note2_beam {
+                match item.note2_beamdata {
                     RItemBeam::Single(ref data) => {
                         if let Some(nrect) = add_flag(data) {
                             let mut nrects = item.nrects.as_mut().unwrap();
@@ -538,84 +577,218 @@ impl RMatrix {
     pub fn calculate_articulations(&self, item2note: BTreeMap<usize, Rc<RefCell<Note>>>) {
         for row in self.rows.iter() {
             let row = row.borrow();
-            for item in row.items.iter() {
+
+            let mut current_attachement = ArticulationAttachment::None;
+
+            let mut note_steminfos = vec![];
+            let mut note2_steminfos = vec![];
+
+            for (itemidx, item) in row.items.iter().enumerate() {
                 if item.is_none() {
                     continue;
                 }
                 let mut item = item.as_ref().unwrap().borrow_mut();
 
-                let attachement = match [item.note_id.is_some(), item.note2_id.is_some()] {
-                    [true, false] => {
-                        println!("Articulation Single:none - Articulation INNER");
-                        ArticulationAttachment::Inner
-                    }
-                    [true, true] => {
-                        println!("Articulation Single:Single - Articulation OUTER");
-                        ArticulationAttachment::Outer
-                    }
-                    _ => ArticulationAttachment::None,
-                };
-
-                match item.note_beam {
+                match item.note_beamdata {
                     RItemBeam::Single(ref data) => {
+                        // attachment for single
+                        let attachement = match [item.note_id.is_some(), item.note2_id.is_some()] {
+                            [true, false] => ArticulationAttachment::Inner,
+                            [true, true] => ArticulationAttachment::Outer,
+                            _ => ArticulationAttachment::None,
+                        };
+
                         if let Some(nid) = item.note_id {
-                            let stem_info = &item.note_beam_rect.clone();
-                            match &attachement {
-                                ArticulationAttachment::Outer => item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note)),
-                                ArticulationAttachment::Inner => item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note)),
-                                ArticulationAttachment::None => {}
-                            };
+                            let stem_info = &item.note_steminfo.clone();
+                            // match &attachement {
+                            //     ArticulationAttachment::Outer => item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note)),
+                            //     ArticulationAttachment::Inner => item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note)),
+                            //     ArticulationAttachment::None => {}
+                            // };
+                            item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note));
+                            item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note));
                         }
 
                         if let Some(nid) = item.note2_id {
-                            let stem_info = &item.note2_beam_rect.clone();
-                            match &attachement {
-                                ArticulationAttachment::Outer => item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note)),
-                                ArticulationAttachment::Inner => item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note)),
-                                ArticulationAttachment::None => {}
-                            };
+                            let stem_info = &item.note2_steminfo.clone();
+                            // match &attachement {
+                            //     ArticulationAttachment::Outer => item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note)),
+                            //     ArticulationAttachment::Inner => item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note)),
+                            //     ArticulationAttachment::None => {}
+                            // };
+                            item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note));
+                            item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note));
                         }
                     }
                     RItemBeam::Start(ref data) => {
+                        current_attachement = match [item.note_id.is_some(), item.note2_id.is_some()] {
+                            [true, false] => ArticulationAttachment::Inner,
+                            [true, true] => ArticulationAttachment::Outer,
+                            _ => ArticulationAttachment::None,
+                        };
+
                         println!("Articulation Multi:Start");
                         if let Some(nid) = item.note_id {
-                            let stem_info = &item.note_beam_rect.clone();
-                            match &attachement {
-                                ArticulationAttachment::Outer => item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note)),
-                                ArticulationAttachment::Inner => item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note)),
-                                ArticulationAttachment::None => {}
-                            };
+                            let stem_info = &item.note_steminfo.clone();
+                            note_steminfos = vec![];
+                            note_steminfos.push(stem_info.clone());
+                            // match &current_attachement {
+                            //     ArticulationAttachment::Outer => item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note)),
+                            //     ArticulationAttachment::Inner => item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note)),
+                            //     ArticulationAttachment::None => {}
+                            // };
+                            item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note));
+                            item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note));
                         }
                         if let Some(nid) = item.note2_id {
-                            let stem_info = &item.note2_beam_rect.clone();
-                            match &attachement {
-                                ArticulationAttachment::Outer => item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note)),
-                                ArticulationAttachment::Inner => item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note)),
-                                ArticulationAttachment::None => {}
-                            };
+                            let stem_info = &item.note2_steminfo.clone();
+                            note2_steminfos = vec![];
+                            note2_steminfos.push(stem_info.clone());
+
+                            // match &current_attachement {
+                            //     ArticulationAttachment::Outer => item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note)),
+                            //     ArticulationAttachment::Inner => item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note)),
+                            //     ArticulationAttachment::None => {}
+                            // };
+                            item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note));
+                            item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note));
                         }
                     }
 
                     RItemBeam::Middle(ref data) => {
                         println!("Articulation Multi:Middle");
+                        if let Some(nid) = item.note_id {
+                            let stem_info = &item.note_steminfo.clone();
+                            dbg!(&stem_info);
+                            note_steminfos.push(stem_info.clone());
+                        }
+                        if let Some(nid) = item.note2_id {
+                            let stem_info = &item.note2_steminfo.clone();
+                            dbg!(&stem_info);
+                            note2_steminfos.push(stem_info.clone());
+                        }
                     }
 
                     RItemBeam::End(ref data) => {
+                        println!("Articulation Multi:End");
                         if let Some(nid) = item.note_id {
-                            let stem_info = &item.note_beam_rect.clone();
-                            match &attachement {
-                                ArticulationAttachment::Outer => item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note)),
-                                ArticulationAttachment::Inner => item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note)),
-                                ArticulationAttachment::None => {}
+                            //-------------------------------------------------------------------------------
+                            // calculate for middle items
+                            let note = item2note.get(&nid).expect(format!("could not get note id {} from item2note", nid).as_str()).borrow();
+                            let beamgroup = note.beamgroup.as_ref().unwrap().borrow();
+                            let stem_info = &item.note_steminfo.clone();
+                            note_steminfos.push(stem_info.clone());
+
+                            let (first_x, first_y, first_headw, first_h) = match note_steminfos[0] {
+                                StemInfo::FullInfo(x, y, hw, h) => (x, y, hw, h),
+                                StemInfo::BeamMiddle(_, _, _, _) => todo!(),
+                                StemInfo::None => todo!(),
                             };
+                            let (last_x, last_y, last_headw, last_h) = match stem_info {
+                                StemInfo::FullInfo(x, y, hw, h) => (x, y, hw, h),
+                                StemInfo::BeamMiddle(_, _, _, _) => todo!(),
+                                StemInfo::None => todo!(),
+                            };
+
+                            // dbg!(first_y, last_y);
+
+                            for beaminfo in &note_steminfos {
+                                match beaminfo {
+                                    StemInfo::BeamMiddle(idx, stem_x, stem_y, head_width) => {
+                                        let current = beamgroup.note_durations.iter().take(*idx).sum::<usize>();
+                                        let sum = beamgroup.note_durations.iter().take(beamgroup.note_durations.len() - 1).sum::<usize>();
+                                        let fraction = current as f32 / sum as f32;
+                                        let middle_nid = beamgroup.notes[*idx].borrow().id;
+                                        let middle_itemidx = itemidx - beamgroup.notes.len() + *idx + 1;
+                                        let mut middle_item = row.items[middle_itemidx].as_ref().unwrap().borrow_mut();
+                                        //
+                                        let middle_y = (last_y - first_y) * fraction;
+                                        middle_item
+                                            .nrects
+                                            .as_mut()
+                                            .unwrap()
+                                            .extend(do_articulations_inner(&middle_nid, &StemInfo::FullInfo(*stem_x, middle_y, *head_width, SPACE), &item2note));
+
+                                        dbg!(first_h, last_h);
+                                        let middle_h = first_h + (last_h - first_h) * fraction;
+                                        middle_item
+                                            .nrects
+                                            .as_mut()
+                                            .unwrap()
+                                            .extend(do_articulations_outer(&middle_nid, &StemInfo::FullInfo(*stem_x, middle_y, *head_width, middle_h), &item2note));
+                                    }
+                                    _ => {}
+                                }
+                            }
+                            //-------------------------------------------------------------------------------
+
+                            // match &current_attachement {
+                            //     ArticulationAttachment::Outer => item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note)),
+                            //     ArticulationAttachment::Inner => item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note)),
+                            //     ArticulationAttachment::None => {}
+                            // };
+                            item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note));
+                            item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note));
                         }
                         if let Some(nid) = item.note2_id {
-                            let stem_info = &item.note2_beam_rect.clone();
-                            match &attachement {
-                                ArticulationAttachment::Outer => item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note)),
-                                ArticulationAttachment::Inner => item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note)),
-                                ArticulationAttachment::None => {}
+                            //-------------------------------------------------------------------------------
+                            // calculate for middle items
+                            let note = item2note.get(&nid).expect(format!("could not get note id {} from item2note", nid).as_str()).borrow();
+                            let beamgroup = note.beamgroup.as_ref().unwrap().borrow();
+                            let stem_info = &item.note2_steminfo.clone();
+                            note2_steminfos.push(stem_info.clone());
+
+                            let (first_x, first_y, first_headw, first_h) = match note2_steminfos[0] {
+                                StemInfo::FullInfo(x, y, hw, h) => (x, y, hw, h),
+                                StemInfo::BeamMiddle(_, _, _, _) => todo!(),
+                                StemInfo::None => todo!(),
                             };
+                            let (last_x, last_y, last_headw, last_h) = match stem_info {
+                                StemInfo::FullInfo(x, y, hw, h) => (x, y, hw, h),
+                                StemInfo::BeamMiddle(_, _, _, _) => todo!(),
+                                StemInfo::None => todo!(),
+                            };
+
+                            // dbg!(first_y, last_y);
+
+                            for beaminfo in &note2_steminfos {
+                                match beaminfo {
+                                    StemInfo::BeamMiddle(idx, stem_x, stem_y, head_width) => {
+                                        let current = beamgroup.note_durations.iter().take(*idx).sum::<usize>();
+                                        let sum = beamgroup.note_durations.iter().take(beamgroup.note_durations.len() - 1).sum::<usize>();
+                                        let fraction = current as f32 / sum as f32;
+                                        let middle_nid = beamgroup.notes[*idx].borrow().id;
+                                        let middle_itemidx = itemidx - beamgroup.notes.len() + *idx + 1;
+                                        let mut middle_item = row.items[middle_itemidx].as_ref().unwrap().borrow_mut();
+                                        //
+                                        let middle_y = (last_y - first_y) * fraction;
+                                        middle_item
+                                            .nrects
+                                            .as_mut()
+                                            .unwrap()
+                                            .extend(do_articulations_inner(&middle_nid, &StemInfo::FullInfo(*stem_x, middle_y, *head_width, SPACE), &item2note));
+
+                                        dbg!(first_h, last_h);
+                                        let middle_h = first_h + (last_h - first_h) * fraction;
+                                        middle_item
+                                            .nrects
+                                            .as_mut()
+                                            .unwrap()
+                                            .extend(do_articulations_outer(&middle_nid, &StemInfo::FullInfo(*stem_x, middle_y, *head_width, middle_h), &item2note));
+                                    }
+                                    _ => {}
+                                }
+                            }
+                            //-------------------------------------------------------------------------------
+
+                            let stem_info = &item.note2_steminfo.clone();
+                            // match &current_attachement {
+                            //     ArticulationAttachment::Outer => item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note)),
+                            //     ArticulationAttachment::Inner => item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note)),
+                            //     ArticulationAttachment::None => {}
+                            // };
+                            item.nrects.as_mut().unwrap().extend(do_articulations_outer(&nid, &stem_info, &item2note));
+                            item.nrects.as_mut().unwrap().extend(do_articulations_inner(&nid, &stem_info, &item2note));
                         }
                     }
                     RItemBeam::None => {}
@@ -630,7 +803,9 @@ fn do_articulations_inner(nid: &usize, stem_info: &StemInfo, item2note: &BTreeMa
     let note = item2note.get(nid).expect(format!("could not get note id {} from item2note", nid).as_str()).borrow();
     match stem_info {
         StemInfo::FullInfo(stem_x, stem_y, stem_w, stem_h) => {
-            if let Some(direction) = note.direction {
+            // dbg!(note.beamgroup.as_ref().unwrap());
+
+            if let Some(direction) = note.beamgroup.as_ref().unwrap().borrow().direction {
                 match direction {
                     DirUD::Down => {
                         let rect = NRect::new(stem_x + (stem_w / 2.0) - 5.0, stem_y - 5.0 - SPACE, 10.0, 10.0);
@@ -638,7 +813,6 @@ fn do_articulations_inner(nid: &usize, stem_info: &StemInfo, item2note: &BTreeMa
                         nrects.push(nrect);
                     }
                     DirUD::Up => {
-                        println!("Articulation :Down");
                         dbg!(stem_info);
                         let rect = NRect::new(stem_x + (stem_w / 2.0) - 5.0, stem_y + stem_h - 5.0 + SPACE, 10.0, 10.0);
                         let nrect = Rc::new(RefCell::new(NRectExt::new(rect, NRectType::Dev(true, "Purple".to_string()))));
@@ -647,7 +821,7 @@ fn do_articulations_inner(nid: &usize, stem_info: &StemInfo, item2note: &BTreeMa
                 }
             };
         }
-        StemInfo::BeamMiddle(_, _, _) => todo!(),
+        StemInfo::BeamMiddle(idx, _, _, _) => todo!(),
         StemInfo::None => todo!(),
     }
     nrects
@@ -658,7 +832,7 @@ fn do_articulations_outer(nid: &usize, stem_info: &StemInfo, item2note: &BTreeMa
     let note = item2note.get(nid).expect(format!("could not get note id {} from item2note", nid).as_str()).borrow();
     match stem_info {
         StemInfo::FullInfo(stem_x, stem_y, stem_w, stem_h) => {
-            if let Some(direction) = note.direction {
+            if let Some(direction) = note.beamgroup.as_ref().unwrap().borrow().direction {
                 match direction {
                     DirUD::Up => {
                         let rect = NRect::new(stem_x + (stem_w / 2.0) - 5.0, stem_y - 5.0 - SPACE_HALF, 10.0, 10.0);
@@ -666,7 +840,6 @@ fn do_articulations_outer(nid: &usize, stem_info: &StemInfo, item2note: &BTreeMa
                         nrects.push(nrect);
                     }
                     DirUD::Down => {
-                        println!("Articulation :Down");
                         dbg!(stem_info);
                         let rect = NRect::new(stem_x + (stem_w / 2.0) - 5.0, stem_y + stem_h - 5.0 + SPACE_HALF, 10.0, 10.0);
                         let nrect = Rc::new(RefCell::new(NRectExt::new(rect, NRectType::Dev(true, "Red".to_string()))));
@@ -675,7 +848,7 @@ fn do_articulations_outer(nid: &usize, stem_info: &StemInfo, item2note: &BTreeMa
                 }
             };
         }
-        StemInfo::BeamMiddle(_, _, _) => todo!(),
+        StemInfo::BeamMiddle(idx, _, _, _) => todo!(),
         StemInfo::None => todo!(),
     }
     nrects

@@ -317,9 +317,9 @@ impl Bars {
                                         };
 
                                         if beamgroup.notes.len() == 1 {
-                                            item.note_beam = RItemBeam::Single(data);
+                                            item.note_beamdata = RItemBeam::Single(data);
                                         } else {
-                                            item.note_beam = RItemBeam::Start(data);
+                                            item.note_beamdata = RItemBeam::Start(data);
                                         }
                                     } else {
                                         note_current_beamgroup_note_idx += 1;
@@ -341,10 +341,10 @@ impl Bars {
                                         };
 
                                         if note_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
-                                            item.note_beam = RItemBeam::Middle(data);
+                                            item.note_beamdata = RItemBeam::Middle(data);
                                         } else {
                                             data.note_durations = Some(beamgroup.note_durations.clone());
-                                            item.note_beam = RItemBeam::End(data);
+                                            item.note_beamdata = RItemBeam::End(data);
                                         }
                                     }
                                 }
@@ -378,9 +378,9 @@ impl Bars {
                                         };
 
                                         if beamgroup.notes.len() == 1 {
-                                            item.note2_beam = RItemBeam::Single(data);
+                                            item.note2_beamdata = RItemBeam::Single(data);
                                         } else {
-                                            item.note2_beam = RItemBeam::Start(data);
+                                            item.note2_beamdata = RItemBeam::Start(data);
                                         }
                                     } else {
                                         let mut data = RItemBeamData {
@@ -401,10 +401,10 @@ impl Bars {
 
                                         note2_current_beamgroup_note_idx += 1;
                                         if note2_current_beamgroup_note_idx < beamgroup.notes.len() - 1 {
-                                            item.note2_beam = RItemBeam::Middle(data);
+                                            item.note2_beamdata = RItemBeam::Middle(data);
                                         } else {
                                             data.note_durations = Some(beamgroup.note_durations.clone());
-                                            item.note2_beam = RItemBeam::End(data);
+                                            item.note2_beamdata = RItemBeam::End(data);
                                         }
                                     }
                                 }

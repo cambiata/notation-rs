@@ -447,6 +447,7 @@ impl Part {
                         };
                         // println!("{idx}- Single: Set beamgroup direction to {dir:?}");
                         beamgroup.direction = Some(dir);
+                        
                     } else {
                         println!("{idx}- Two upper: Beamgroup direction is already set");
                     }
