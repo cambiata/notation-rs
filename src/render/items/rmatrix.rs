@@ -341,10 +341,10 @@ impl RMatrix {
 
                 let mut item: RefMut<RItem> = item.as_ref().unwrap().borrow_mut();
 
+                // NOTE 1 ==================================================================================
+
                 match item.note_beamdata {
-                    RItemBeam::None => {
-                        // Not a note
-                    }
+                    RItemBeam::None => {}
                     RItemBeam::Single(ref data) | RItemBeam::Start(ref data) | RItemBeam::End(ref data) => {
                         let note_x = if let Some(adjust_x) = data.adjustment_x {
                             match adjust_x {
@@ -375,8 +375,6 @@ impl RMatrix {
                                     DirUD::Up => ((data.tip_level - STEM_LENGTH) * SPACE_HALF, data.bottom_level as f32 * SPACE_HALF),
                                     DirUD::Down => (data.top_level as f32 * SPACE_HALF, (data.tip_level + STEM_LENGTH) as f32 * SPACE_HALF),
                                 };
-
-                                // item.note_beam_xyy2 = Some((adjust_x, y, y2));
                                 let h = y2 - y;
 
                                 let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
@@ -438,11 +436,11 @@ impl RMatrix {
                     } // RItemBeam::End(ref data) => {
                 }
 
+                // NOTE 2 ==================================================================================
+
                 match item.note2_beamdata {
                     RItemBeam::None => {}
                     RItemBeam::Single(ref data) | RItemBeam::Start(ref data) | RItemBeam::End(ref data) => {
-                        // println!("SINGLE single upper");
-
                         let note_x = if let Some(adjust_x) = data.adjustment_x {
                             match adjust_x {
                                 ComplexXAdjustment::UpperRight(_) => 0.0,
@@ -557,6 +555,7 @@ impl RMatrix {
     }
 
     pub fn calculate_attachment_points(&self, item2note: BTreeMap<usize, Rc<RefCell<Note>>>) {
+        const DRAW_POINTS: bool = false;
         for row in self.rows.iter() {
             let row = row.borrow();
 
@@ -581,11 +580,13 @@ impl RMatrix {
                             let tpoint_outer = do_attachmentpoint_slurto_outer(&nid, stem_info, &item2note, false);
                             let tpoint_inner = do_attachmentpoint_slurto_inner(&nid, stem_info, &item2note, false);
 
-                            for point in [apoint_outer, apoint_inner, fpoint_outer, fpoint_inner, tpoint_outer, tpoint_inner] {
-                                item.nrects
-                                    .as_mut()
-                                    .unwrap()
-                                    .push(Rc::new(RefCell::new(NRectExt::new(point.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                            if DRAW_POINTS {
+                                for point in [apoint_outer, apoint_inner, fpoint_outer, fpoint_inner, tpoint_outer, tpoint_inner] {
+                                    item.nrects
+                                        .as_mut()
+                                        .unwrap()
+                                        .push(Rc::new(RefCell::new(NRectExt::new(point.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                                }
                             }
                         }
                     }
@@ -595,47 +596,21 @@ impl RMatrix {
                             let stem_info = &item.note_steminfo.clone();
                             note_steminfos = vec![];
                             note_steminfos.push(stem_info.clone());
-                            let point_outer = do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
-                            let point_inner = do_attachmentpoint_articulation_inner(&nid, stem_info, &item2note);
+                            let apoint_outer = do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
+                            let apoint_inner = do_attachmentpoint_articulation_inner(&nid, stem_info, &item2note);
+                            let fpoint_outer = do_attachmentpoint_slurfrom_outer(&nid, stem_info, &item2note, true);
+                            let fpoint_inner = do_attachmentpoint_slurfrom_inner(&nid, stem_info, &item2note, true);
+                            let tpoint_outer = do_attachmentpoint_slurto_outer(&nid, stem_info, &item2note, false);
+                            let tpoint_inner = do_attachmentpoint_slurto_inner(&nid, stem_info, &item2note, false);
 
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(point_outer.to_rect(3.0), NRectType::Dev(true, "Red".to_string())))));
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(point_inner.to_rect(3.0), NRectType::Dev(true, "Purple".to_string())))));
-
-                            // slurs from
-                            let spoint_outer = do_attachmentpoint_slurfrom_outer(&nid, stem_info, &item2note, true);
-                            let spoint_inner = do_attachmentpoint_slurfrom_inner(&nid, stem_info, &item2note, true);
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_outer.to_rect(3.0), NRectType::Dev(true, "Lime".to_string())))));
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_inner.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
-
-                            // slurs to
-
-                            let spoint_outer = do_attachmentpoint_slurto_outer(&nid, stem_info, &item2note, false);
-                            let spoint_inner = do_attachmentpoint_slurto_inner(&nid, stem_info, &item2note, false);
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_outer.to_rect(3.0), NRectType::Dev(true, "Lime".to_string())))));
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_inner.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                            if DRAW_POINTS {
+                                for point in [apoint_outer, apoint_inner, fpoint_outer, fpoint_inner, tpoint_outer, tpoint_inner] {
+                                    item.nrects
+                                        .as_mut()
+                                        .unwrap()
+                                        .push(Rc::new(RefCell::new(NRectExt::new(point.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                                }
+                            }
                         }
                     }
 
@@ -689,98 +664,40 @@ impl RMatrix {
 
                                         let apoint_outer = do_attachmentpoint_articulation_outer(&middle_nid, &middle_stem_info_outer, &item2note);
                                         let apoint_inner = do_attachmentpoint_articulation_inner(&middle_nid, &middle_stem_info_inner, &item2note);
+                                        let fpoint_outer = do_attachmentpoint_slurfrom_outer(&middle_nid, &middle_stem_info_outer, &item2note, true);
+                                        let fpoint_inner = do_attachmentpoint_slurfrom_inner(&middle_nid, &middle_stem_info_inner, &item2note, true);
+                                        let tpoint_outer = do_attachmentpoint_slurto_outer(&middle_nid, &middle_stem_info_outer, &item2note, true);
+                                        let tpoint_inner = do_attachmentpoint_slurto_inner(&middle_nid, &middle_stem_info_inner, &item2note, true);
 
-                                        middle_item
-                                            .nrects
-                                            .as_mut()
-                                            .unwrap()
-                                            .push(Rc::new(RefCell::new(NRectExt::new(apoint_outer.to_rect(3.0), NRectType::Dev(true, "Red".to_string())))));
-
-                                        middle_item
-                                            .nrects
-                                            .as_mut()
-                                            .unwrap()
-                                            .push(Rc::new(RefCell::new(NRectExt::new(apoint_inner.to_rect(3.0), NRectType::Dev(true, "Purple".to_string())))));
-
-                                        // slurs from
-
-                                        let spoint_outer = do_attachmentpoint_slurfrom_outer(&middle_nid, &middle_stem_info_outer, &item2note, true);
-                                        let spoint_inner = do_attachmentpoint_slurfrom_inner(&middle_nid, &middle_stem_info_inner, &item2note, true);
-
-                                        middle_item
-                                            .nrects
-                                            .as_mut()
-                                            .unwrap()
-                                            .push(Rc::new(RefCell::new(NRectExt::new(spoint_outer.to_rect(3.0), NRectType::Dev(true, "Lime".to_string())))));
-
-                                        middle_item
-                                            .nrects
-                                            .as_mut()
-                                            .unwrap()
-                                            .push(Rc::new(RefCell::new(NRectExt::new(spoint_inner.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
-
-                                        // // slurs to
-
-                                        let spoint_outer = do_attachmentpoint_slurto_outer(&middle_nid, &middle_stem_info_outer, &item2note, true);
-                                        let spoint_inner = do_attachmentpoint_slurto_inner(&middle_nid, &middle_stem_info_inner, &item2note, true);
-
-                                        middle_item
-                                            .nrects
-                                            .as_mut()
-                                            .unwrap()
-                                            .push(Rc::new(RefCell::new(NRectExt::new(spoint_outer.to_rect(3.0), NRectType::Dev(true, "Lime".to_string())))));
-
-                                        middle_item
-                                            .nrects
-                                            .as_mut()
-                                            .unwrap()
-                                            .push(Rc::new(RefCell::new(NRectExt::new(spoint_inner.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                                        if DRAW_POINTS {
+                                            for point in [apoint_outer, apoint_inner, fpoint_outer, fpoint_inner, tpoint_outer, tpoint_inner] {
+                                                middle_item
+                                                    .nrects
+                                                    .as_mut()
+                                                    .unwrap()
+                                                    .push(Rc::new(RefCell::new(NRectExt::new(point.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                                            }
+                                        }
                                     }
                                     _ => {}
                                 }
                             }
                             //-------------------------------------------------------------------------------
-                            let point_outer = do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
-                            let point_inner = do_attachmentpoint_articulation_inner(&nid, stem_info, &item2note);
+                            let apoint_outer = do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
+                            let apoint_inner = do_attachmentpoint_articulation_inner(&nid, stem_info, &item2note);
+                            let fpoint_outer = do_attachmentpoint_slurfrom_outer(&nid, stem_info, &item2note, false);
+                            let fpoint_inner = do_attachmentpoint_slurfrom_inner(&nid, stem_info, &item2note, false);
+                            let tpoint_outer = do_attachmentpoint_slurto_outer(&nid, stem_info, &item2note, true);
+                            let tpoint_inner = do_attachmentpoint_slurto_inner(&nid, stem_info, &item2note, true);
 
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(point_outer.to_rect(3.0), NRectType::Dev(true, "Red".to_string())))));
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(point_inner.to_rect(3.0), NRectType::Dev(true, "Purple".to_string())))));
-
-                            // slurs from
-                            let spoint_outer = do_attachmentpoint_slurfrom_outer(&nid, stem_info, &item2note, false);
-                            let spoint_inner = do_attachmentpoint_slurfrom_inner(&nid, stem_info, &item2note, false);
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_outer.to_rect(3.0), NRectType::Dev(true, "Lime".to_string())))));
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_inner.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
-
-                            // slurs to
-
-                            let spoint_outer = do_attachmentpoint_slurto_outer(&nid, stem_info, &item2note, true);
-                            let spoint_inner = do_attachmentpoint_slurto_inner(&nid, stem_info, &item2note, true);
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_outer.to_rect(3.0), NRectType::Dev(true, "Lime".to_string())))));
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_inner.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                            if DRAW_POINTS {
+                                for point in [apoint_outer, apoint_inner, fpoint_outer, fpoint_inner, tpoint_outer, tpoint_inner] {
+                                    item.nrects
+                                        .as_mut()
+                                        .unwrap()
+                                        .push(Rc::new(RefCell::new(NRectExt::new(point.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                                }
+                            }
                         }
                     }
                     RItemBeam::None => {}
@@ -798,12 +715,13 @@ impl RMatrix {
                             let fpoint_inner = do_attachmentpoint_slurfrom_inner(&nid, stem_info, &item2note, false);
                             let tpoint_outer = do_attachmentpoint_slurto_outer(&nid, stem_info, &item2note, false);
                             let tpoint_inner = do_attachmentpoint_slurto_inner(&nid, stem_info, &item2note, false);
-
-                            for point in [apoint_outer, apoint_inner, fpoint_outer, fpoint_inner, tpoint_outer, tpoint_inner] {
-                                item.nrects
-                                    .as_mut()
-                                    .unwrap()
-                                    .push(Rc::new(RefCell::new(NRectExt::new(point.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                            if DRAW_POINTS {
+                                for point in [apoint_outer, apoint_inner, fpoint_outer, fpoint_inner, tpoint_outer, tpoint_inner] {
+                                    item.nrects
+                                        .as_mut()
+                                        .unwrap()
+                                        .push(Rc::new(RefCell::new(NRectExt::new(point.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                                }
                             }
                         }
                     }
@@ -813,46 +731,20 @@ impl RMatrix {
                             let stem_info = &item.note2_steminfo.clone();
                             note2_steminfos = vec![];
                             note2_steminfos.push(stem_info.clone());
-                            let point_outer = do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
-                            let point_inner = do_attachmentpoint_articulation_inner(&nid, stem_info, &item2note);
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(point_outer.to_rect(3.0), NRectType::Dev(true, "Red".to_string())))));
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(point_inner.to_rect(3.0), NRectType::Dev(true, "Purple".to_string())))));
-
-                            // slurs from
-                            let spoint_outer = do_attachmentpoint_slurfrom_outer(&nid, stem_info, &item2note, true);
-                            let spoint_inner = do_attachmentpoint_slurfrom_inner(&nid, stem_info, &item2note, true);
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_outer.to_rect(3.0), NRectType::Dev(true, "Lime".to_string())))));
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_inner.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
-
-                            // slurs to
-
-                            let spoint_outer = do_attachmentpoint_slurto_outer(&nid, stem_info, &item2note, false);
-                            let spoint_inner = do_attachmentpoint_slurto_inner(&nid, stem_info, &item2note, false);
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_outer.to_rect(3.0), NRectType::Dev(true, "Lime".to_string())))));
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_inner.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                            let apoint_outer = do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
+                            let apoint_inner = do_attachmentpoint_articulation_inner(&nid, stem_info, &item2note);
+                            let fpoint_outer = do_attachmentpoint_slurfrom_outer(&nid, stem_info, &item2note, true);
+                            let fpoint_inner = do_attachmentpoint_slurfrom_inner(&nid, stem_info, &item2note, true);
+                            let tpoint_outer = do_attachmentpoint_slurto_outer(&nid, stem_info, &item2note, false);
+                            let tpoint_inner = do_attachmentpoint_slurto_inner(&nid, stem_info, &item2note, false);
+                            if DRAW_POINTS {
+                                for point in [apoint_outer, apoint_inner, fpoint_outer, fpoint_inner, tpoint_outer, tpoint_inner] {
+                                    item.nrects
+                                        .as_mut()
+                                        .unwrap()
+                                        .push(Rc::new(RefCell::new(NRectExt::new(point.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                                }
+                            }
                         }
                     }
 
@@ -895,28 +787,30 @@ impl RMatrix {
                                         let middle_y = first_y + (last_y - first_y) * fraction;
                                         let middle_h = first_h + (last_h - first_h) * fraction;
 
-                                        let mut middle_stem_info = StemInfo::FullInfo(*stem_x, middle_y, *head_width, middle_h);
-                                        let point_outer = do_attachmentpoint_articulation_outer(&middle_nid, &middle_stem_info, &item2note);
-
                                         let middle_note = item2note.get(&middle_nid).expect(format!("could not get note id {} from item2note", middle_nid).as_str()).borrow();
                                         let inner_level = match beamgroup.direction.unwrap() {
                                             DirUD::Up => middle_note.bottom_level() as f32 * SPACE_HALF,
                                             DirUD::Down => middle_note.top_level() as f32 * SPACE_HALF,
                                         };
-                                        let mut middle_stem_info = StemInfo::FullInfo(*stem_x, inner_level, *head_width, 0.0);
-                                        let point_inner = do_attachmentpoint_articulation_inner(&middle_nid, &middle_stem_info, &item2note);
 
-                                        middle_item
-                                            .nrects
-                                            .as_mut()
-                                            .unwrap()
-                                            .push(Rc::new(RefCell::new(NRectExt::new(point_outer.to_rect(3.0), NRectType::Dev(true, "Red".to_string())))));
+                                        let mut middle_stem_info_outer = StemInfo::FullInfo(*stem_x, middle_y, *head_width, middle_h);
+                                        let mut middle_stem_info_inner = StemInfo::FullInfo(*stem_x, inner_level, *head_width, 0.0);
 
-                                        middle_item
-                                            .nrects
-                                            .as_mut()
-                                            .unwrap()
-                                            .push(Rc::new(RefCell::new(NRectExt::new(point_inner.to_rect(3.0), NRectType::Dev(true, "Purple".to_string())))));
+                                        let apoint_outer = do_attachmentpoint_articulation_outer(&middle_nid, &middle_stem_info_outer, &item2note);
+                                        let apoint_inner = do_attachmentpoint_articulation_inner(&middle_nid, &middle_stem_info_inner, &item2note);
+                                        let fpoint_outer = do_attachmentpoint_slurfrom_outer(&middle_nid, &middle_stem_info_outer, &item2note, true);
+                                        let fpoint_inner = do_attachmentpoint_slurfrom_inner(&middle_nid, &middle_stem_info_inner, &item2note, true);
+                                        let tpoint_outer = do_attachmentpoint_slurto_outer(&middle_nid, &middle_stem_info_outer, &item2note, true);
+                                        let tpoint_inner = do_attachmentpoint_slurto_inner(&middle_nid, &middle_stem_info_inner, &item2note, true);
+                                        if DRAW_POINTS {
+                                            for point in [apoint_outer, apoint_inner, fpoint_outer, fpoint_inner, tpoint_outer, tpoint_inner] {
+                                                middle_item
+                                                    .nrects
+                                                    .as_mut()
+                                                    .unwrap()
+                                                    .push(Rc::new(RefCell::new(NRectExt::new(point.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                                            }
+                                        }
                                     }
                                     _ => {}
                                 }
@@ -924,49 +818,20 @@ impl RMatrix {
                             //-------------------------------------------------------------------------------
                             let stem_info = &item.note2_steminfo.clone();
 
-                            // articulations
-
-                            let point_outer = do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
-                            let point_inner = do_attachmentpoint_articulation_inner(&nid, stem_info, &item2note);
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(point_outer.to_rect(3.0), NRectType::Dev(true, "Red".to_string())))));
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(point_inner.to_rect(3.0), NRectType::Dev(true, "Purple".to_string())))));
-
-                            // slurs from
-                            let spoint_outer = do_attachmentpoint_slurfrom_outer(&nid, stem_info, &item2note, false);
-                            let spoint_inner = do_attachmentpoint_slurfrom_inner(&nid, stem_info, &item2note, false);
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_outer.to_rect(3.0), NRectType::Dev(true, "Lime".to_string())))));
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_inner.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
-
-                            // slurs to
-
-                            let spoint_outer = do_attachmentpoint_slurto_outer(&nid, stem_info, &item2note, true);
-                            let spoint_inner = do_attachmentpoint_slurto_inner(&nid, stem_info, &item2note, true);
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_outer.to_rect(3.0), NRectType::Dev(true, "Lime".to_string())))));
-
-                            item.nrects
-                                .as_mut()
-                                .unwrap()
-                                .push(Rc::new(RefCell::new(NRectExt::new(spoint_inner.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                            let apoint_outer = do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
+                            let apoint_inner = do_attachmentpoint_articulation_inner(&nid, stem_info, &item2note);
+                            let tpoint_outer = do_attachmentpoint_slurto_outer(&nid, stem_info, &item2note, true);
+                            let tpoint_inner = do_attachmentpoint_slurto_inner(&nid, stem_info, &item2note, true);
+                            let fpoint_outer = do_attachmentpoint_slurfrom_outer(&nid, stem_info, &item2note, false);
+                            let fpoint_inner = do_attachmentpoint_slurfrom_inner(&nid, stem_info, &item2note, false);
+                            if DRAW_POINTS {
+                                for point in [apoint_outer, apoint_inner, fpoint_outer, fpoint_inner, tpoint_outer, tpoint_inner] {
+                                    item.nrects
+                                        .as_mut()
+                                        .unwrap()
+                                        .push(Rc::new(RefCell::new(NRectExt::new(point.to_rect(3.0), NRectType::Dev(true, "Orange".to_string())))));
+                                }
+                            }
                         }
                     }
                     RItemBeam::None => {}

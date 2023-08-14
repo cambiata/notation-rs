@@ -65,12 +65,11 @@ fn main() {
 
     // let bar_data = QCode::bars(" nv16 0 -1 -2 -3 % 2 ").unwrap();
     // let bar_data = QCode::bars(" -5 nv16 -1 -3 -1 -3  % nv16 4 1 4 1 nv4 1").unwrap();
-    let bar_data = QCode::bars(" -3 nv8 0 nv4 1 nv8 1 nv1 -2 2 % nv2 3 3 3").unwrap();
-    let bar_data = QCode::bars("-3 -1 1 3 nv1 -3 -1 1 3 % nv1 3 4 nv4 5 4 3").unwrap();
+    // let bar_data = QCode::bars(" -3 nv8 0 nv4 1 nv8 1 nv1 -2 2 % nv2 3 3 3").unwrap();
+    // let bar_data = QCode::bars("-3 -1 1 3 nv1 -3 -1 1 3 % nv1 3 4 nv4 5 4 3").unwrap();
+    // let bar_data = QCode::bars("2 nv16 2 1 0 -1  -3 -2 -1 0 nv4 -2 % nv16 7 4 5 6 nv4 4 nv16 7 6 5 4 nv4 2").unwrap();
 
-    let bar_data = QCode::bars("2 nv16 2 1 0 -1  -3 -2 -1 0 nv4 -2 % nv16 7 4 5 6 nv4 4 nv16 7 6 5 4 nv4 2").unwrap();
-
-    // let bar_data = QCode::bars(" nv8 0 0 nv4 1 % 1 nv8 2 2 ").unwrap();
+    let bar_data = QCode::bars(" 0 p 0 0 %  4 4 p 4").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();

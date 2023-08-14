@@ -95,6 +95,8 @@ impl Part {
                     match beamgroup.notes.len() {
                         0 => panic!("Beamgroup has no notes"),
                         1 => {
+
+                            
                             let note = beamgroup.notes[0].clone();
                             let mut note = note.borrow_mut();
 
@@ -110,6 +112,9 @@ impl Part {
                             };
 
                             beamgroup.start_level = tilt as f32;
+
+
+
                         }
                         _ => {
                             // println!("Two notes or more");
@@ -448,7 +453,7 @@ impl Part {
                         // println!("{idx}- Single: Set beamgroup direction to {dir:?}");
                         beamgroup.direction = Some(dir);
                     } else {
-                        println!("{idx}- Two upper: Beamgroup direction is already set");
+                        // println!("{idx}- Two upper: Beamgroup direction is already set");
                     }
                 }
                 ComplexType::Two(upper, lower, _) => {
@@ -458,7 +463,7 @@ impl Part {
                         // println!("{idx}- Two upper: Set beamgroup direction to Up");
                         upper_beamgroup.direction = Some(DirUD::Up);
                     } else {
-                        println!("{idx}- Two upper: Beamgroup direction is already set");
+                        // println!("{idx}- Two upper: Beamgroup direction is already set");
                     }
 
                     let lower = lower.borrow();
@@ -467,7 +472,7 @@ impl Part {
                         // println!("{idx}- Two lower: Set beamgroup direction to Down");
                         lower_beamgroup.direction = Some(DirUD::Down);
                     } else {
-                        println!("{idx}- Two lower: Beamgroup direction is already set");
+                        // println!("{idx}- Two lower: Beamgroup direction is already set");
                     }
                 }
                 ComplexType::Upper(upper, overflow) => {
