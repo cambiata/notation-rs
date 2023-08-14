@@ -349,6 +349,9 @@ impl NPoint {
     pub fn new(x: f32, y: f32) -> Self {
         Self(x, y)
     }
+    pub fn to_rect(&self, diameter: f32) -> NRect {
+        NRect(self.0 - diameter, self.1 - diameter, 2.0 * diameter, 2.0 * diameter)
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

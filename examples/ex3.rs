@@ -63,7 +63,14 @@ fn main() {
     // let bar_data = QCode::bars("|clef - G - |/lyr lyr:aa lyr:bb / 0  0 /lyr tpl:3 tpl:-2").unwrap();
     // let bar_data = QCode::bars("|clef G - - | 0 0 0 0 /lyr lyr:Hej lyr:och lyr:hopp /lyr lyr:Ky lyr:ri lyr:e").unwrap();
 
-    let bar_data = QCode::bars(" nv16 0 -1 -2 -3 ").unwrap();
+    // let bar_data = QCode::bars(" nv16 0 -1 -2 -3 % 2 ").unwrap();
+    // let bar_data = QCode::bars(" -5 nv16 -1 -3 -1 -3  % nv16 4 1 4 1 nv4 1").unwrap();
+    let bar_data = QCode::bars(" -3 nv8 0 nv4 1 nv8 1 nv1 -2 2 % nv2 3 3 3").unwrap();
+    let bar_data = QCode::bars("-3 -1 1 3 nv1 -3 -1 1 3 % nv1 3 4 nv4 5 4 3").unwrap();
+
+    let bar_data = QCode::bars("2 nv16 2 1 0 -1  -3 -2 -1 0 nv4 -2 % nv16 7 4 5 6 nv4 4 nv16 7 6 5 4 nv4 2").unwrap();
+
+    // let bar_data = QCode::bars(" nv8 0 0 nv4 1 % 1 nv8 2 2 ").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
@@ -72,7 +79,8 @@ fn main() {
 
     matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);
     matrix.calculate_beamgroups();
-    matrix.calculate_articulations(bars.note_id_map);
+    matrix.calculate_attachment_points(bars.note_id_map);
+    // matrix.calculate_attachement_type();
 
     matrix.calculate_row_spacing();
     matrix.calculate_col_row_item_measurements();

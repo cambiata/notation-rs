@@ -895,9 +895,13 @@ impl Bars {
                             let complex = complex.borrow();
                             let mut ritem = complex.matrix_item.as_ref().unwrap().borrow_mut();
                             match complex.ctype {
-                                ComplexType::Single(ref note, _) | ComplexType::Upper(ref note, _) | ComplexType::Lower(ref note, _) => {
+                                ComplexType::Single(ref note, _) | ComplexType::Upper(ref note, _) => {
                                     self.note_id_map.insert(note.borrow().id, note.clone());
                                     ritem.note_id = Some(note.borrow().id);
+                                }
+                                ComplexType::Lower(ref note, _) => {
+                                    self.note_id_map.insert(note.borrow().id, note.clone());
+                                    ritem.note2_id = Some(note.borrow().id);
                                 }
                                 ComplexType::Two(ref upper, ref lower, _) => {
                                     self.note_id_map.insert(upper.borrow().id, upper.clone());

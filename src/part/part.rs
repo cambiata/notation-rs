@@ -142,7 +142,7 @@ impl Part {
                                     let middle_top = betweens_top_bottom.iter().map(|f| f.0).min().unwrap();
                                     let middle_bottom = betweens_top_bottom.iter().map(|f| f.1).max().unwrap();
                                     let middle_top_bottom = (middle_top, middle_bottom);
-                                    println!("======================================================");
+
                                     let direction = beamgroup.direction.unwrap();
                                     tilt = match direction {
                                         DirUD::Up => {
@@ -289,10 +289,10 @@ impl Part {
                         do_beamgroup(&voice.beamgroups);
                     }
                     Voices::Two(upper, lower) => {
-                        println!("Upper");
+                        // println!("Upper");
                         let mut upper = upper.borrow_mut();
                         do_beamgroup(&upper.beamgroups);
-                        println!("Lower");
+                        // println!("Lower");
                         let mut lower = lower.borrow_mut();
                         do_beamgroup(&lower.beamgroups);
                     }
@@ -447,7 +447,6 @@ impl Part {
                         };
                         // println!("{idx}- Single: Set beamgroup direction to {dir:?}");
                         beamgroup.direction = Some(dir);
-                        
                     } else {
                         println!("{idx}- Two upper: Beamgroup direction is already set");
                     }
