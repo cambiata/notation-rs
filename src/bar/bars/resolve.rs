@@ -42,6 +42,7 @@ impl Bars {
                         }
                     }
                 }
+
                 _ => {
                     for (noteidx, (left, right)) in notes.iter().tuple_windows().enumerate() {
                         let mut left = left.borrow_mut();

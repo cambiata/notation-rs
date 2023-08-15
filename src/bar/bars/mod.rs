@@ -1,3 +1,4 @@
+pub mod playback;
 pub mod resolve;
 
 use crate::prelude::*;
@@ -19,12 +20,15 @@ pub struct Bars {
 
 impl Bars {
     pub fn new(items: Vec<Rc<RefCell<Bar>>>) -> Self {
+        // calculate positions
+        calculate_bar_positions(&items);
         Self {
             items,
             matrix: None,
             note_id_map: BTreeMap::new(),
         }
     }
+
     pub fn create_matrix(&mut self, bartemplate: Option<BarTemplate>) -> Result<RMatrix> {
         let bartemplate = match bartemplate {
             Some(bartemplate) => bartemplate,
@@ -242,6 +246,10 @@ impl Bars {
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
                 },
+
+                BarType::Invisible(_) => {
+                    //
+                }
             }
         }
 
@@ -436,8 +444,6 @@ impl Bars {
 
                             if let Some(item) = &complex.matrix_item {
                                 let mut item: RefMut<RItem> = item.borrow_mut();
-                                // let coords = item.coords.unwrap();
-                                dbg!(&complex.ctype);
 
                                 match &complex.ctype {
                                     ComplexType::Single(note, _) | ComplexType::Upper(note, _) | ComplexType::Lower(note, _) => {
@@ -766,6 +772,8 @@ impl Bars {
                 BarType::NonContent(_) => {
                     // println!("BarType::NonContent +  this should NOT cause new chunks!");
                 }
+
+                BarType::Invisible(_) => {}
             }
         }
 
@@ -777,5 +785,15 @@ impl Bars {
             result.push((partidx, voiceidx, value));
         }
         result
+    }
+}
+
+fn calculate_bar_positions(items: &Vec<Rc<RefCell<Bar>>>) {
+    let mut position = 0;
+    for item in items {
+        let mut item = item.borrow_mut();
+        let duration = item.duration;
+        item.position = position;
+        position += duration;
     }
 }
