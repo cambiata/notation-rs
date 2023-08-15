@@ -69,10 +69,12 @@ fn main() {
     // let bar_data = QCode::bars("-3 -1 1 3 nv1 -3 -1 1 3 % nv1 3 4 nv4 5 4 3").unwrap();
     // let bar_data = QCode::bars("2 nv16 2 1 0 -1  -3 -2 -1 0 nv4 -2 % nv16 7 4 5 6 nv4 4 nv16 7 6 5 4 nv4 2").unwrap();
 
-    let bar_data = QCode::bars(" 0 p 0 0 %  4 4 p 4").unwrap();
+    let bar_data = QCode::bars(" 0_ 0 p 0  % 4 p 4_ 4 ").unwrap(); // bindebågar för voice2?
 
     let (bartemplate, mut bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
+
+    bars.resolve_stuff();
     bars.matrix_add_beamgroups();
     bars.matrix_add_ties();
 

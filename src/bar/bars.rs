@@ -244,12 +244,20 @@ impl Bars {
         }
 
         let matrix = RMatrix::new(matrix_cols, Some(bartemplate));
-        self.map_note_id_to_note();
-        self.resolve_ties();
-        self.resolve_slurs();
+        // self.map_note_id_to_note();
+        // self.resolve_ties();
+        // self.resolve_slurs();
+
+        // self.resolve_stuff();
 
         Ok(matrix)
         // Ok(())
+    }
+
+    pub fn resolve_stuff(&mut self) {
+        self.map_note_id_to_note();
+        self.resolve_ties();
+        self.resolve_slurs();
     }
 
     pub fn matrix_add_beamgroups(&self) {
@@ -725,7 +733,7 @@ impl Bars {
         let items = self.consecutive_note_chunks();
         for item in items {
             let notes = item.2;
-            dbg!(&item.0, &item.1, notes.len());
+            // dbg!(&item.0, &item.1, notes.len());
         }
     }
 
