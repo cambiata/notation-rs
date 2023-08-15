@@ -13,11 +13,12 @@ pub struct RCol {
     pub spacing_overlap: f32,
     pub overlap_overshoot: f32,
     pub alloted_duration: f32,
-    // pub distance_x_after_allot: f32,
+
+    pub position: Option<Position>,
 }
 
 impl RCol {
-    pub fn new(items: Vec<Option<Rc<RefCell<RItem>>>>, duration: Option<Duration>) -> Self {
+    pub fn new(items: Vec<Option<Rc<RefCell<RItem>>>>, duration: Option<Duration>, position: Option<Position>) -> Self {
         Self {
             items,
             duration: duration.unwrap_or(0),
@@ -28,7 +29,8 @@ impl RCol {
             spacing_overlap: 0.0,
             overlap_overshoot: 0.0,
             alloted_duration: 0.0,
-            // distance_x_after_allot: 0.0,
+
+            position,
         }
     }
 }

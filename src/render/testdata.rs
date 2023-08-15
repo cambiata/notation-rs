@@ -8,6 +8,7 @@ pub fn matrix_test3() -> RMatrix {
             //
         ],
         None,
+        None,
     );
 
     let col1 = RCol::new(
@@ -17,6 +18,7 @@ pub fn matrix_test3() -> RMatrix {
             //
         ],
         Some(NV4),
+        None,
     );
 
     let col2 = RCol::new(
@@ -26,6 +28,7 @@ pub fn matrix_test3() -> RMatrix {
             //
         ],
         Some(NV4),
+        None,
     );
 
     let col3 = RCol::new(
@@ -35,6 +38,7 @@ pub fn matrix_test3() -> RMatrix {
             //
         ],
         Some(NV8),
+        None,
     );
     let col4 = RCol::new(
         vec![
@@ -43,6 +47,7 @@ pub fn matrix_test3() -> RMatrix {
             //
         ],
         Some(NV8),
+        None,
     );
 
     let col5 = RCol::new(
@@ -51,6 +56,7 @@ pub fn matrix_test3() -> RMatrix {
             Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
             //
         ],
+        None,
         None,
     );
 
@@ -78,6 +84,7 @@ pub fn matrix_test1() -> RMatrix {
             //
         ],
         None,
+        None,
     );
     let col1 = RCol::new(
         vec![
@@ -87,6 +94,7 @@ pub fn matrix_test1() -> RMatrix {
             //
         ],
         Some(NV4),
+        None,
     );
     let col2 = RCol::new(
         vec![
@@ -95,6 +103,7 @@ pub fn matrix_test1() -> RMatrix {
             None, //
         ],
         Some(NV4),
+        None,
     );
     let col3 = RCol::new(
         vec![
@@ -103,6 +112,7 @@ pub fn matrix_test1() -> RMatrix {
             Some(Rc::new(RefCell::new(RItem::new(r10(), NV2)))),
         ],
         Some(NV2),
+        None,
     );
 
     let matrix = RMatrix::new(
@@ -121,6 +131,7 @@ pub fn matrix_test2() -> RMatrix {
             //
         ],
         None,
+        None,
     );
     let col1 = RCol::new(
         vec![
@@ -129,6 +140,7 @@ pub fn matrix_test2() -> RMatrix {
             //
         ],
         Some(NV4),
+        None,
     );
     let col2 = RCol::new(
         vec![
@@ -136,6 +148,7 @@ pub fn matrix_test2() -> RMatrix {
             Some(Rc::new(RefCell::new(RItem::new(vec![NRect::new(0.0, 0.0, 10.0, 5.0)], NV4)))),
         ],
         Some(NV4),
+        None,
     );
     let col3 = RCol::new(
         vec![
@@ -143,6 +156,7 @@ pub fn matrix_test2() -> RMatrix {
             // Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
             None, //
         ],
+        None,
         None,
     );
 
@@ -153,6 +167,7 @@ pub fn matrix_test2() -> RMatrix {
             //
         ],
         Some(NV2),
+        None,
     );
 
     let col5 = RCol::new(
@@ -160,6 +175,7 @@ pub fn matrix_test2() -> RMatrix {
             Some(Rc::new(RefCell::new(RItem::new(vec![NRect::new(0.0, 0.0, 5.0, 20.0)], 0)))),
             Some(Rc::new(RefCell::new(RItem::new(r20(), 0)))),
         ],
+        None,
         None,
     );
 

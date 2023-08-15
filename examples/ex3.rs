@@ -71,12 +71,9 @@ fn main() {
 
     // let bar_data = QCode::bars(" p 0  % 4_ 4_ 4 ").unwrap(); // bindebågar för voice2?
 
-    let bar_data = QCode::bars("|clef F |key b | 1 -5 | 0 #0  ").unwrap(); // bindebågar för voice2?
+    let bar_data = QCode::bars("0 0 / nv8 1 2 3 4 ").unwrap(); // bindebågar för voice2?
 
     let (bartemplate, mut bars) = bar_data;
-
-    bars.calc_playback();
-
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
 
     bars.resolve_stuff();
@@ -85,14 +82,18 @@ fn main() {
 
     matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);
     matrix.calculate_beamgroups();
-    matrix.calculate_attachment_points(bars.note_id_map);
+    matrix.calculate_attachment_points(&bars.note_id_map);
     // matrix.calculate_attachement_type();
 
     matrix.calculate_row_spacing();
     matrix.calculate_col_row_item_measurements();
     matrix.calculate_matrix_size();
+
     let svg = matrix_to_svg(&matrix, true);
     std::fs::write("./examples/ex3A.svg", svg).unwrap();
+
+    let playdata = bars.calc_playback();
+    // let playpositions = matrix.calculate_playpositions();
 
     matrix.add_horizontal_space(100.0);
     matrix.add_vertical_space(50.0);

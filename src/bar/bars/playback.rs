@@ -3,10 +3,43 @@ use std::{cell::Ref, collections::BTreeMap};
 use crate::prelude::*;
 use core::any::type_name;
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct PlayNote {
+    midinote: u8,
+    volocity: u8,
+    duration: Duration,
+    position: Position,
+    partidx: u8,
+    voiceidx: u8,
+    noteidx: u8,
+}
+
+pub type PlayNotes = Vec<PlayNote>;
+
+#[derive(Debug)]
+pub struct PlayNotesData {
+    playnotes: PlayNotes,
+    duration: Duration,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct PlayPosition {
+    position: Option<Position>,
+    x: f32,
+}
+
+pub type PlayPositions = Vec<PlayPosition>;
+
+#[derive(Debug)]
+pub struct PlayPositionsData {
+    positions: PlayPositions,
+    top_y: f32,
+    bottom_y: f32,
+}
+
 impl Bars {
-    pub fn calc_playback(&self) {
+    pub fn calc_playback(&self) -> PlayNotesData {
         let parts_voices = self.count_music_parts_voices();
-        dbg!(&parts_voices);
 
         let mut part_clef: BTreeMap<usize, Clef> = BTreeMap::new();
         let mut part_key: BTreeMap<usize, Key> = BTreeMap::new();
@@ -18,16 +51,15 @@ impl Bars {
             part_time.insert(partidx, Time::Common);
         }
 
+        let mut playnotes: PlayNotes = Vec::new();
+
         for (baridx, bar) in self.items.iter().enumerate() {
             let bar: Ref<Bar> = bar.borrow();
-            println!("new bar: {} {} ", bar.duration, bar.position);
             match &bar.btype {
                 BarType::Standard(parts) => {
                     for (partidx, part) in parts.iter().enumerate() {
                         let part: Ref<Part> = part.borrow();
-
                         let (part_note_map, mut part_sign_map) = setup_level_to_midinote_maps(part_clef.get(&partidx).unwrap(), part_key.get(&partidx).unwrap());
-
                         match &part.ptype {
                             PartType::Music(music_type) => match music_type {
                                 PartMusicType::Voices(voices) => match voices {
@@ -48,9 +80,15 @@ impl Bars {
                                                             }
                                                             let signed_note = mapnote + (*mapsign as i8);
                                                             let position = bar.position + note.position;
-                                                            dbg!(position, &level, signed_note);
-
-                                                            // }
+                                                            playnotes.push(PlayNote {
+                                                                midinote: signed_note as u8,
+                                                                volocity: 100,
+                                                                duration: note.duration,
+                                                                position,
+                                                                partidx: partidx as u8,
+                                                                voiceidx: 0,
+                                                                noteidx: noteidx as u8,
+                                                            })
                                                         }
                                                     }
                                                     _ => {}
@@ -64,6 +102,32 @@ impl Bars {
                                             VoiceType::Notes(ref notes) => {
                                                 for (noteidx, note) in notes.items.iter().enumerate() {
                                                     let note = note.borrow();
+                                                    match note.ntype {
+                                                        NoteType::Heads(ref heads) => {
+                                                            for (headidx, head) in heads.heads.iter().enumerate() {
+                                                                let head = head.borrow();
+                                                                let level = head.level;
+                                                                let mapnote = part_note_map.get(&level).unwrap();
+                                                                let mut mapsign = part_sign_map.get(&level).unwrap();
+                                                                if let Some(accidental) = &head.accidental {
+                                                                    part_sign_map.insert(level, accidental.clone());
+                                                                    mapsign = &accidental;
+                                                                }
+                                                                let signed_note = mapnote + (*mapsign as i8);
+                                                                let position = bar.position + note.position;
+                                                                playnotes.push(PlayNote {
+                                                                    midinote: signed_note as u8,
+                                                                    volocity: 100,
+                                                                    duration: note.duration,
+                                                                    position,
+                                                                    partidx: partidx as u8,
+                                                                    voiceidx: 0,
+                                                                    noteidx: noteidx as u8,
+                                                                })
+                                                            }
+                                                        }
+                                                        _ => {}
+                                                    }
                                                 }
                                             }
                                             _ => {}
@@ -72,6 +136,32 @@ impl Bars {
                                             VoiceType::Notes(ref notes) => {
                                                 for (noteidx, note) in notes.items.iter().enumerate() {
                                                     let note = note.borrow();
+                                                    match note.ntype {
+                                                        NoteType::Heads(ref heads) => {
+                                                            for (headidx, head) in heads.heads.iter().enumerate() {
+                                                                let head = head.borrow();
+                                                                let level = head.level;
+                                                                let mapnote = part_note_map.get(&level).unwrap();
+                                                                let mut mapsign = part_sign_map.get(&level).unwrap();
+                                                                if let Some(accidental) = &head.accidental {
+                                                                    part_sign_map.insert(level, accidental.clone());
+                                                                    mapsign = &accidental;
+                                                                }
+                                                                let signed_note = mapnote + (*mapsign as i8);
+                                                                let position = bar.position + note.position;
+                                                                playnotes.push(PlayNote {
+                                                                    midinote: signed_note as u8,
+                                                                    volocity: 100,
+                                                                    duration: note.duration,
+                                                                    position,
+                                                                    partidx: partidx as u8,
+                                                                    voiceidx: 0,
+                                                                    noteidx: noteidx as u8,
+                                                                })
+                                                            }
+                                                        }
+                                                        _ => {}
+                                                    }
                                                 }
                                             }
                                             _ => {}
@@ -86,7 +176,29 @@ impl Bars {
                 }
                 BarType::MultiRest(_) => {}
                 BarType::NonContent(_) => {}
-                BarType::Invisible(notes) => {}
+                BarType::Invisible(ref notes) => {
+                    for (noteidx, note) in notes.items.iter().enumerate() {
+                        let note = note.borrow();
+                        match note.ntype {
+                            NoteType::Heads(ref heads) => {
+                                for (headidx, head) in heads.heads.iter().enumerate() {
+                                    let head = head.borrow();
+                                    let position = bar.position + note.position;
+                                    playnotes.push(PlayNote {
+                                        midinote: 60,
+                                        volocity: 100,
+                                        duration: note.duration,
+                                        position,
+                                        partidx: 255,
+                                        voiceidx: 0,
+                                        noteidx: noteidx as u8,
+                                    })
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                }
                 BarType::BarAttribute(attribute) => match attribute {
                     BarAttributeType::Clefs(clefs) => {
                         for (partidx, item) in clefs.iter().enumerate() {
@@ -118,6 +230,11 @@ impl Bars {
                 },
             }
         }
+        let lastbar = self.items.last().unwrap().borrow();
+        PlayNotesData {
+            playnotes: playnotes,
+            duration: lastbar.position + lastbar.duration,
+        }
     }
 
     pub fn count_music_parts_voices(&self) -> Vec<u8> {
@@ -125,7 +242,6 @@ impl Bars {
 
         for (baridx, bar) in self.items.iter().enumerate() {
             let bar: Ref<Bar> = bar.borrow();
-            println!("new bar: {} {} ", bar.duration, bar.position);
             match &bar.btype {
                 BarType::Standard(parts) => {
                     for (partidx, part) in parts.iter().enumerate() {
@@ -176,6 +292,24 @@ impl Bars {
             }
         }
         parts_voices
+    }
+}
+
+impl RMatrix {
+    pub fn calculate_playpositions(&self) -> PlayPositionsData {
+        let mut positions: PlayPositions = Vec::new();
+
+        for (colidx, col) in self.cols.iter().enumerate() {
+            let col: Ref<RCol> = col.borrow();
+            let position = col.position;
+            let x = col.x;
+            positions.push(PlayPosition { position, x });
+        }
+
+        let top_y = self.rows.first().unwrap().borrow().y;
+        let bottom_y = self.rows.last().unwrap().borrow().y;
+
+        PlayPositionsData { positions, top_y, bottom_y }
     }
 }
 

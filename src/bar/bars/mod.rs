@@ -38,6 +38,7 @@ impl Bars {
         };
 
         let mut matrix_cols: Vec<Rc<RefCell<RCol>>> = vec![];
+
         for (baridx, bar) in self.items.iter().enumerate() {
             let bar = bar.borrow();
 
@@ -95,7 +96,10 @@ impl Bars {
 
                             colitems.push(item);
                         }
-                        let rcol: RCol = RCol::new(colitems, colduration);
+
+                        println!("barposition: {:?} colposition {:}", bar.position, position);
+
+                        let rcol: RCol = RCol::new(colitems, colduration, Some(bar.position + position));
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
                 }
@@ -119,7 +123,7 @@ impl Bars {
                             ))));
                             colitems.push(item);
                         }
-                        let rcol: RCol = RCol::new(colitems, None);
+                        let rcol: RCol = RCol::new(colitems, None, None);
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
                     NonContentType::Barline => {
@@ -133,7 +137,7 @@ impl Bars {
                                 PartTemplate::Nonmusic => None,
                             });
                         }
-                        let rcol: RCol = RCol::new(colitems, None);
+                        let rcol: RCol = RCol::new(colitems, None, None);
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
                 },
@@ -169,7 +173,7 @@ impl Bars {
                             }
                             colitems.push(item);
                         }
-                        let rcol: RCol = RCol::new(colitems, None);
+                        let rcol: RCol = RCol::new(colitems, None, None);
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
 
@@ -213,7 +217,7 @@ impl Bars {
                             }
                             ritems.push(item);
                         }
-                        let rcol: RCol = RCol::new(ritems, None);
+                        let rcol: RCol = RCol::new(ritems, None, None);
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
 
@@ -221,7 +225,6 @@ impl Bars {
                         let mut ritems = vec![];
                         for (idx, sig) in items.iter().enumerate() {
                             let mut item: Option<Rc<RefCell<RItem>>> = None;
-                            // let mut item_rects: Vec<NRect> = vec![];
                             if let Some(sig) = sig {
                                 let mut nrects = Vec::new();
                                 match sig {
@@ -243,7 +246,7 @@ impl Bars {
                             }
                             ritems.push(item);
                         }
-                        let rcol: RCol = RCol::new(ritems, None);
+                        let rcol: RCol = RCol::new(ritems, None, None);
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
                 },
@@ -253,6 +256,11 @@ impl Bars {
                 }
             }
         }
+
+        // for col in &matrix_cols {
+        //     let col = col.borrow();
+        //     dbg!(col.position);
+        // }
 
         let matrix = RMatrix::new(matrix_cols, Some(bartemplate));
         // self.map_note_id_to_note();
