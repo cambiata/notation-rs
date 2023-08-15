@@ -136,8 +136,9 @@ impl Bars {
                         let rcol: RCol = RCol::new(colitems, None);
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
-
-                    NonContentType::Clefs(clefs) => {
+                },
+                BarType::BarAttribute(attribute) => match attribute {
+                    BarAttributeType::Clefs(clefs) => {
                         let mut colitems = vec![];
                         for (clefidx, clefsig) in clefs.iter().enumerate() {
                             let mut item: Option<Rc<RefCell<RItem>>> = None;
@@ -172,7 +173,7 @@ impl Bars {
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
 
-                    NonContentType::Keys(items) => {
+                    BarAttributeType::Keys(items) => {
                         let mut ritems = vec![];
                         for (idx, sig) in items.iter().enumerate() {
                             let mut item: Option<Rc<RefCell<RItem>>> = None;
@@ -216,7 +217,7 @@ impl Bars {
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
 
-                    NonContentType::Times(items) => {
+                    BarAttributeType::Times(items) => {
                         let mut ritems = vec![];
                         for (idx, sig) in items.iter().enumerate() {
                             let mut item: Option<Rc<RefCell<RItem>>> = None;
@@ -772,6 +773,7 @@ impl Bars {
                 BarType::NonContent(_) => {
                     // println!("BarType::NonContent +  this should NOT cause new chunks!");
                 }
+                BarType::BarAttribute(_) => {}
 
                 BarType::Invisible(_) => {}
             }

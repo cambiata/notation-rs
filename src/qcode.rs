@@ -62,7 +62,7 @@ impl QCode {
 
                     let mut n = Note::new(NoteType::Heads(Heads::new(heads)), cur_val.unwrap_or(NV4));
                     n.articulation = articulation;
-                    
+
                     // let n = Note::new(24, NoteType::Dummy, NoteAttributes { color: None });
                     notes.push(n);
                 }
@@ -215,6 +215,11 @@ impl QCode {
         if code.starts_with("bl") {
             let code = code.split(' ').skip(1).collect::<Vec<_>>().join(" ");
             let bar = Bar::new(BarType::NonContent(NonContentType::Barline));
+            return Ok((BarTemplate(vec![]), bar));
+        } else if code.starts_with("inv") {
+            //
+            let notes = QCode::notes("0 0 0 ").unwrap();
+            let bar = Bar::new(BarType::Invisible(notes));
             return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("mul") {
             let bar = Bar::new(BarType::MultiRest(0));

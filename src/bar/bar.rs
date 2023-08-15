@@ -45,7 +45,7 @@ impl Bar {
     }
 
     pub fn from_clefs(clefs: Vec<Option<ClefSignature>>) -> Self {
-        let btype = BarType::NonContent(NonContentType::Clefs(clefs));
+        let btype = BarType::BarAttribute(BarAttributeType::Clefs(clefs));
         let duration = btype.duration();
         Self {
             btype,
@@ -56,7 +56,7 @@ impl Bar {
     }
 
     pub fn from_keys(keys: Vec<Option<KeySignature>>) -> Self {
-        let btype = BarType::NonContent(NonContentType::Keys(keys));
+        let btype = BarType::BarAttribute(BarAttributeType::Keys(keys));
         let duration = btype.duration();
         Self {
             btype,
@@ -67,7 +67,7 @@ impl Bar {
     }
 
     pub fn from_times(times: Vec<Option<TimeSignature>>) -> Self {
-        let btype = BarType::NonContent(NonContentType::Times(times));
+        let btype = BarType::BarAttribute(BarAttributeType::Times(times));
         let duration = btype.duration();
         Self {
             btype,
@@ -93,6 +93,7 @@ impl Bar {
             BarType::MultiRest(_) => 0,
             BarType::NonContent(_) => 0,
             BarType::Invisible(_) => 0,
+            BarType::BarAttribute(_) => 0,
         }
     }
 }
@@ -100,6 +101,7 @@ impl Bar {
 #[derive(Debug, PartialEq)]
 pub enum BarType {
     Standard(Parts),
+    BarAttribute(BarAttributeType),
     MultiRest(usize),
     NonContent(NonContentType),
     Invisible(Notes),
@@ -116,18 +118,10 @@ impl BarType {
                 }
                 duration
             }
-            BarType::MultiRest(_) => {
-                //
-                todo!()
-            }
-            BarType::NonContent(_) => {
-                //
-                0
-            }
-            BarType::Invisible(notes) => {
-                //
-                notes.duration
-            }
+            BarType::MultiRest(_) => todo!(),
+            BarType::NonContent(_) => 0,
+            BarType::BarAttribute(_) => 0,
+            BarType::Invisible(notes) => notes.duration,
         }
     }
 }
@@ -136,6 +130,10 @@ impl BarType {
 pub enum NonContentType {
     Barline,
     VerticalLine,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum BarAttributeType {
     Clefs(Vec<Option<ClefSignature>>),
     Times(Vec<Option<TimeSignature>>),
     Keys(Vec<Option<KeySignature>>),

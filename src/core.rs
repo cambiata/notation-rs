@@ -52,13 +52,13 @@ pub const ACCIDENTAL_WIDTH_DBLFLAT: f32 = SPACE * 1.5;
 pub const TIME_SIGNATURE_WIDTH: f32 = SPACE * 1.7;
 //------------------------------------------------------------
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum Accidental {
-    DblSharp,
-    Sharp,
-    Natural,
-    Flat,
-    DblFlat,
+    DblSharp = 2,
+    Sharp = 1,
+    Natural = 0,
+    Flat = -1,
+    DblFlat = -2,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
