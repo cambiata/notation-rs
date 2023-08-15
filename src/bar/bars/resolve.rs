@@ -20,7 +20,6 @@ impl Bars {
             match notes.len() {
                 1 => {
                     let mut note = notes[0].borrow_mut();
-
                     if note.ties.len() > 0 {
                         let mut ties_to_change_to_unresolved: Vec<usize> = Vec::new();
                         for (tiedataidx, tiedata) in note.ties.iter().enumerate() {
@@ -46,16 +45,22 @@ impl Bars {
                 _ => {
                     for (noteidx, (left, right)) in notes.iter().tuple_windows().enumerate() {
                         let mut left = left.borrow_mut();
+
+                        // dbg!(left.top_level(), &left.ties, left.ties_to.len());
+
                         if left.ties.len() > 0 {
+                            // dbg!(left.id, left.ties.len(), left.ties_to.len());
                             let mut ties_to_change_to_unresolved: Vec<usize> = Vec::new();
                             let mut right: RefMut<Note> = right.borrow_mut();
 
                             for (tiedataidx, tiedata) in left.ties.iter().enumerate() {
                                 let level = tiedata.level;
+                                // dbg!(&level, &tiedata.ttype, right.has_level(level));
                                 let ttype = &tiedata.ttype;
+
                                 if right.has_level(level) {
                                     if let Some(tie_to) = right.get_level_tie_to(level) {
-                                        // println!("Right Level  has a tie_to! {:?}", tie_to);
+                                        println!("Right Level already has a tie_to! {:?}", tie_to);
                                     } else {
                                         let right_id = right.id;
                                         right.ties_to.push(TieToData {

@@ -437,87 +437,86 @@ impl Bars {
                             if let Some(item) = &complex.matrix_item {
                                 let mut item: RefMut<RItem> = item.borrow_mut();
                                 // let coords = item.coords.unwrap();
+                                dbg!(&complex.ctype);
 
                                 match &complex.ctype {
                                     ComplexType::Single(note, _) | ComplexType::Upper(note, _) | ComplexType::Lower(note, _) => {
                                         let note = note.borrow();
-                                        if !note.is_heads() {
-                                            continue;
-                                        };
+                                        if note.is_heads() {
+                                            let note_direction = note.direction.unwrap();
+                                            let (head_width, adjust_x) = note.adjust_x.unwrap();
+                                            let ties_count = &note.ties.len();
+                                            let mut tieidx = 0;
 
-                                        let note_direction = note.direction.unwrap();
-                                        let (head_width, adjust_x) = note.adjust_x.unwrap();
-                                        let ties_count = &note.ties.len();
-                                        let mut tieidx = 0;
-
-                                        for tie in &note.ties {
-                                            let tie_direction = match &complex.ctype {
-                                                ComplexType::Single(_, _) => {
-                                                    if note.ties.len() == 1 {
-                                                        note_direction.flip()
-                                                    } else if tieidx < &note.ties.len() / 2 {
-                                                        DirUD::Up
-                                                    } else {
-                                                        DirUD::Down
-                                                    }
-                                                }
-                                                ComplexType::Upper(_, _) => DirUD::Up,
-                                                ComplexType::Lower(_, _) => DirUD::Down,
-                                                ComplexType::Two(_, _, _) => todo!(), // shouldn't matter!
-                                            };
-
-                                            let tie_placement = match &complex.ctype {
-                                                ComplexType::Single(_, _) => {
-                                                    if note.ties.len() == 1 {
-                                                        match note_direction {
-                                                            DirUD::Up => TiePlacement::Bottom,
-                                                            DirUD::Down => TiePlacement::Top,
+                                            for tie in &note.ties {
+                                                let tie_direction = match &complex.ctype {
+                                                    ComplexType::Single(_, _) => {
+                                                        if note.ties.len() == 1 {
+                                                            note_direction.flip()
+                                                        } else if tieidx < &note.ties.len() / 2 {
+                                                            DirUD::Up
+                                                        } else {
+                                                            DirUD::Down
                                                         }
-                                                    } else if tieidx == 0 {
-                                                        TiePlacement::Top
-                                                    } else if tieidx == ties_count - 1 {
-                                                        TiePlacement::Bottom
-                                                    } else {
-                                                        TiePlacement::Mid
                                                     }
-                                                }
-                                                ComplexType::Upper(_, _) => {
-                                                    if tieidx == 0 {
-                                                        TiePlacement::Top
-                                                    } else {
-                                                        TiePlacement::Mid
-                                                    }
-                                                }
-                                                ComplexType::Lower(_, _) => {
-                                                    if tieidx == ties_count - 1 {
-                                                        TiePlacement::Bottom
-                                                    } else {
-                                                        TiePlacement::Mid
-                                                    }
-                                                }
+                                                    ComplexType::Upper(_, _) => DirUD::Up,
+                                                    ComplexType::Lower(_, _) => DirUD::Down,
+                                                    ComplexType::Two(_, _, _) => todo!(), // shouldn't matter!
+                                                };
 
-                                                ComplexType::Two(_, _, _) => todo!(),
-                                            };
+                                                let tie_placement = match &complex.ctype {
+                                                    ComplexType::Single(_, _) => {
+                                                        if note.ties.len() == 1 {
+                                                            match note_direction {
+                                                                DirUD::Up => TiePlacement::Bottom,
+                                                                DirUD::Down => TiePlacement::Top,
+                                                            }
+                                                        } else if tieidx == 0 {
+                                                            TiePlacement::Top
+                                                        } else if tieidx == ties_count - 1 {
+                                                            TiePlacement::Bottom
+                                                        } else {
+                                                            TiePlacement::Mid
+                                                        }
+                                                    }
+                                                    ComplexType::Upper(_, _) => {
+                                                        if tieidx == 0 {
+                                                            TiePlacement::Top
+                                                        } else {
+                                                            TiePlacement::Mid
+                                                        }
+                                                    }
+                                                    ComplexType::Lower(_, _) => {
+                                                        if tieidx == ties_count - 1 {
+                                                            TiePlacement::Bottom
+                                                        } else {
+                                                            TiePlacement::Mid
+                                                        }
+                                                    }
 
-                                            let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_FROM_WIDTH, TIE_SPACE);
-                                            let nrects = item.nrects.as_mut();
-                                            if nrects.is_none() {
-                                                item.nrects = Some(vec![]);
+                                                    ComplexType::Two(_, _, _) => todo!(),
+                                                };
+
+                                                let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_FROM_WIDTH, TIE_SPACE);
+                                                let nrects = item.nrects.as_mut();
+                                                if nrects.is_none() {
+                                                    item.nrects = Some(vec![]);
+                                                }
+                                                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(
+                                                    rect,
+                                                    NRectType::TieFrom(note.id, tie.level, tie.ttype.clone(), note.duration, note_direction, tie_direction, tie_placement),
+                                                ))));
+                                                tieidx += 1;
                                             }
-                                            item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(
-                                                rect,
-                                                NRectType::TieFrom(note.id, tie.level, tie.ttype.clone(), note.duration, note_direction, tie_direction, tie_placement),
-                                            ))));
-                                            tieidx += 1;
-                                        }
 
-                                        for tie_to in &note.ties_to {
-                                            let rect: NRect = NRect::new(-TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_TO_WIDTH, TIE_SPACE);
-                                            let nrects = item.nrects.as_mut();
-                                            if nrects.is_none() {
-                                                item.nrects = Some(vec![]);
+                                            for tie_to in &note.ties_to {
+                                                let rect: NRect = NRect::new(-TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_TO_WIDTH, TIE_SPACE);
+                                                let nrects = item.nrects.as_mut();
+                                                if nrects.is_none() {
+                                                    item.nrects = Some(vec![]);
+                                                }
+                                                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(rect, NRectType::TieTo(tie_to.ttype.clone())))));
                                             }
-                                            item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(rect, NRectType::TieTo(tie_to.ttype.clone())))));
                                         }
                                         //
                                     }
@@ -525,73 +524,69 @@ impl Bars {
                                     ComplexType::Two(note, note2, adjust) => {
                                         // upper
                                         let note = note.borrow();
-                                        if !note.is_heads() {
-                                            continue;
+                                        if note.is_heads() {
+                                            let note_direction = note.direction.unwrap();
+                                            let (head_width, adjust_x) = note.adjust_x.unwrap();
+
+                                            let ties_count = &note.ties.len();
+                                            let mut tieidx = 0;
+                                            for tie in &note.ties {
+                                                let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_FROM_WIDTH, TIE_SPACE);
+                                                let nrects = item.nrects.as_mut();
+                                                if nrects.is_none() {
+                                                    item.nrects = Some(vec![]);
+                                                }
+                                                let tie_direction = DirUD::Up;
+                                                let tie_placement = if tieidx == 0 { TiePlacement::Top } else { TiePlacement::Mid };
+                                                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(
+                                                    rect,
+                                                    NRectType::TieFrom(note.id, tie.level, tie.ttype.clone(), note.duration, note_direction, tie_direction, tie_placement),
+                                                ))));
+                                            }
+
+                                            for tie_to in &note.ties_to {
+                                                let rect: NRect = NRect::new(adjust_x - TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_TO_WIDTH, TIE_SPACE);
+                                                let nrects = item.nrects.as_mut();
+                                                if nrects.is_none() {
+                                                    item.nrects = Some(vec![]);
+                                                }
+                                                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(rect, NRectType::TieTo(tie_to.ttype.clone())))));
+                                            }
                                         };
-
-                                        let note_direction = note.direction.unwrap();
-                                        let (head_width, adjust_x) = note.adjust_x.unwrap();
-
-                                        let ties_count = &note.ties.len();
-                                        let mut tieidx = 0;
-                                        for tie in &note.ties {
-                                            let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_FROM_WIDTH, TIE_SPACE);
-                                            let nrects = item.nrects.as_mut();
-                                            if nrects.is_none() {
-                                                item.nrects = Some(vec![]);
-                                            }
-                                            let tie_direction = DirUD::Up;
-                                            let tie_placement = if tieidx == 0 { TiePlacement::Top } else { TiePlacement::Mid };
-                                            item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(
-                                                rect,
-                                                NRectType::TieFrom(note.id, tie.level, tie.ttype.clone(), note.duration, note_direction, tie_direction, tie_placement),
-                                            ))));
-                                        }
-
-                                        for tie_to in &note.ties_to {
-                                            let rect: NRect = NRect::new(adjust_x - TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_TO_WIDTH, TIE_SPACE);
-                                            let nrects = item.nrects.as_mut();
-                                            if nrects.is_none() {
-                                                item.nrects = Some(vec![]);
-                                            }
-                                            item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(rect, NRectType::TieTo(tie_to.ttype.clone())))));
-                                        }
 
                                         // lower
                                         let note2 = note2.borrow();
-                                        if !note2.is_heads() {
-                                            continue;
+                                        if note2.is_heads() {
+                                            let note_direction = note2.direction.unwrap();
+                                            let (head_width, adjust_x) = note2.adjust_x.unwrap();
+
+                                            let ties_count = &note2.ties.len();
+                                            let mut tieidx = 0;
+                                            for tie in &note2.ties {
+                                                let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_FROM_WIDTH, TIE_SPACE);
+                                                let nrects = item.nrects.as_mut();
+                                                if nrects.is_none() {
+                                                    item.nrects = Some(vec![]);
+                                                }
+
+                                                let tie_direction = DirUD::Down;
+                                                let tie_placement = if tieidx == ties_count - 1 { TiePlacement::Bottom } else { TiePlacement::Mid };
+
+                                                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(
+                                                    rect,
+                                                    NRectType::TieFrom(note2.id, tie.level, tie.ttype.clone(), note.duration, note_direction, tie_direction, tie_placement),
+                                                ))));
+                                            }
+
+                                            for tie_to in &note2.ties_to {
+                                                let rect: NRect = NRect::new(adjust_x + -TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_TO_WIDTH, TIE_SPACE);
+                                                let nrects = item.nrects.as_mut();
+                                                if nrects.is_none() {
+                                                    item.nrects = Some(vec![]);
+                                                }
+                                                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(rect, NRectType::TieTo(tie_to.ttype.clone())))));
+                                            }
                                         };
-
-                                        let note_direction = note2.direction.unwrap();
-                                        let (head_width, adjust_x) = note2.adjust_x.unwrap();
-
-                                        let ties_count = &note2.ties.len();
-                                        let mut tieidx = 0;
-                                        for tie in &note2.ties {
-                                            let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_FROM_WIDTH, TIE_SPACE);
-                                            let nrects = item.nrects.as_mut();
-                                            if nrects.is_none() {
-                                                item.nrects = Some(vec![]);
-                                            }
-
-                                            let tie_direction = DirUD::Down;
-                                            let tie_placement = if tieidx == ties_count - 1 { TiePlacement::Bottom } else { TiePlacement::Mid };
-
-                                            item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(
-                                                rect,
-                                                NRectType::TieFrom(note2.id, tie.level, tie.ttype.clone(), note.duration, note_direction, tie_direction, tie_placement),
-                                            ))));
-                                        }
-
-                                        for tie_to in &note2.ties_to {
-                                            let rect: NRect = NRect::new(adjust_x + -TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_TO_WIDTH, TIE_SPACE);
-                                            let nrects = item.nrects.as_mut();
-                                            if nrects.is_none() {
-                                                item.nrects = Some(vec![]);
-                                            }
-                                            item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(rect, NRectType::TieTo(tie_to.ttype.clone())))));
-                                        }
                                     }
                                 }
                             }
