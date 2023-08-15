@@ -1,0 +1,11 @@
+{
+"top_y": 0,
+"bottom_y": 200, 
+"positions": [
+	{ "position": 0, "duration": 0, "x": 0 },
+	{ "position": 0, "duration": 12, "x": 10 },
+	{ "position": 12, "duration": 12, "x": 85 },
+	{ "position": 24, "duration": 12, "x": 160 },
+	{ "position": 36, "duration": 12, "x": 235 },
+	{ "position": 48, "duration": 0, "x": 310 }
+]}

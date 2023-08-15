@@ -1,0 +1,59 @@
+{
+  "duration": 48,
+  "positions": [
+    {
+      "position": 0,
+      "midinote": 71,
+      "duration": 24,
+      "volocity": 100,
+      "partidx": 0,
+      "voiceidx": 0,
+      "noteidx": 0
+    },
+    {
+      "position": 24,
+      "midinote": 71,
+      "duration": 24,
+      "volocity": 100,
+      "partidx": 0,
+      "voiceidx": 0,
+      "noteidx": 1
+    },
+    {
+      "position": 0,
+      "midinote": 69,
+      "duration": 12,
+      "volocity": 100,
+      "partidx": 1,
+      "voiceidx": 0,
+      "noteidx": 0
+    },
+    {
+      "position": 12,
+      "midinote": 67,
+      "duration": 12,
+      "volocity": 100,
+      "partidx": 1,
+      "voiceidx": 0,
+      "noteidx": 1
+    },
+    {
+      "position": 24,
+      "midinote": 65,
+      "duration": 12,
+      "volocity": 100,
+      "partidx": 1,
+      "voiceidx": 0,
+      "noteidx": 2
+    },
+    {
+      "position": 36,
+      "midinote": 64,
+      "duration": 12,
+      "volocity": 100,
+      "partidx": 1,
+      "voiceidx": 0,
+      "noteidx": 3
+    }
+  ]
+}

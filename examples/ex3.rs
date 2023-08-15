@@ -93,7 +93,9 @@ fn main() {
     std::fs::write("./examples/ex3A.svg", svg).unwrap();
 
     let playdata = bars.calc_playback();
-    // let playpositions = matrix.calculate_playpositions();
+    std::fs::write("./examples/ex3A.playdata.json", playdata.to_json()).unwrap();
+    let playpositions = matrix.calculate_playpositions();
+    std::fs::write("./examples/ex3A.positions.json", playpositions.to_json()).unwrap();
 
     matrix.add_horizontal_space(100.0);
     matrix.add_vertical_space(50.0);

@@ -97,8 +97,6 @@ impl Bars {
                             colitems.push(item);
                         }
 
-                        println!("barposition: {:?} colposition {:}", bar.position, position);
-
                         let rcol: RCol = RCol::new(colitems, colduration, Some(bar.position + position));
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
@@ -123,7 +121,7 @@ impl Bars {
                             ))));
                             colitems.push(item);
                         }
-                        let rcol: RCol = RCol::new(colitems, None, None);
+                        let rcol: RCol = RCol::new(colitems, None, Some(bar.position));
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
                     NonContentType::Barline => {
@@ -137,7 +135,7 @@ impl Bars {
                                 PartTemplate::Nonmusic => None,
                             });
                         }
-                        let rcol: RCol = RCol::new(colitems, None, None);
+                        let rcol: RCol = RCol::new(colitems, None, Some(bar.position));
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
                 },
@@ -173,7 +171,7 @@ impl Bars {
                             }
                             colitems.push(item);
                         }
-                        let rcol: RCol = RCol::new(colitems, None, None);
+                        let rcol: RCol = RCol::new(colitems, None, Some(bar.position));
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
 
@@ -217,7 +215,7 @@ impl Bars {
                             }
                             ritems.push(item);
                         }
-                        let rcol: RCol = RCol::new(ritems, None, None);
+                        let rcol: RCol = RCol::new(ritems, None, Some(bar.position));
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
 
@@ -246,7 +244,7 @@ impl Bars {
                             }
                             ritems.push(item);
                         }
-                        let rcol: RCol = RCol::new(ritems, None, None);
+                        let rcol: RCol = RCol::new(ritems, None, Some(bar.position));
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
                 },

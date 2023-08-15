@@ -22,8 +22,34 @@ pub struct PlayNotesData {
     duration: Duration,
 }
 
+impl PlayNotesData {
+    pub fn to_json(&self) -> String {
+        let mut s = "{\n".to_string();
+        s.push_str(format!("\"duration\": {},\n", self.duration).as_str());
+        s.push_str("\"positions\": [\n");
+        for p in self.playnotes.iter() {
+            s.push_str("\t{");
+            s.push_str(&format!("\"position\": {:?},", p.position).to_string());
+            s.push_str(&format!("\"midinote\": {:?},", p.midinote).to_string());
+            s.push_str(&format!("\"duration\": {:?},", p.duration).to_string());
+            s.push_str(&format!("\"volocity\": {:?},", p.volocity).to_string());
+            s.push_str(&format!("\"partidx\": {:?},", p.partidx).to_string());
+            s.push_str(&format!("\"voiceidx\": {:?},", p.voiceidx).to_string());
+            s.push_str(&format!("\"noteidx\": {:?}", p.noteidx).to_string());
+            s.push_str("}");
+            if p != self.playnotes.last().unwrap() {
+                s.push_str(",");
+            }
+            s.push_str("\n");
+        }
+        s.push_str("]}\n");
+        s
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct PlayPosition {
+    duration: Duration,
     position: Option<Position>,
     x: f32,
 }
@@ -35,6 +61,26 @@ pub struct PlayPositionsData {
     positions: PlayPositions,
     top_y: f32,
     bottom_y: f32,
+}
+
+impl PlayPositionsData {
+    pub fn to_json(&self) -> String {
+        let mut s = "{\n".to_string();
+        s.push_str(format!("\"top_y\": {},\n", self.top_y).as_str());
+        s.push_str(format!("\"bottom_y\": {}, \n", self.bottom_y).as_str());
+        s.push_str("\"positions\": [\n");
+        let mut lines = vec![];
+        for p in self.positions.iter() {
+            let pos = p.position.unwrap_or(0);
+            let dur = p.duration;
+            let x = p.x.clone();
+            lines.push(format!("\t{{ \"position\": {:?}, \"duration\": {:?}, \"x\": {} }}", pos, dur, x));
+        }
+        let joined = lines.join(",\n");
+        s.push_str(joined.as_str());
+        s.push_str("\n]}\n");
+        s
+    }
 }
 
 impl Bars {
@@ -302,8 +348,9 @@ impl RMatrix {
         for (colidx, col) in self.cols.iter().enumerate() {
             let col: Ref<RCol> = col.borrow();
             let position = col.position;
+            let duration = col.duration;
             let x = col.x;
-            positions.push(PlayPosition { position, x });
+            positions.push(PlayPosition { position, x, duration });
         }
 
         let top_y = self.rows.first().unwrap().borrow().y;
