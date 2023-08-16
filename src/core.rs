@@ -50,6 +50,9 @@ pub const ACCIDENTAL_WIDTH_DBLSHARP: f32 = SPACE * 1.5;
 pub const ACCIDENTAL_WIDTH_DBLFLAT: f32 = SPACE * 1.5;
 
 pub const TIME_SIGNATURE_WIDTH: f32 = SPACE * 1.7;
+
+pub const BARLINE_WIDTH_SINGLE: f32 = SPACE * 0.25;
+pub const BARLINE_DOUBLE_SPACE: f32 = BARLINE_WIDTH_SINGLE * 2.0 + SPACE * 0.4;
 //------------------------------------------------------------
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
@@ -166,6 +169,19 @@ pub enum Key {
 }
 
 pub type KeySignature = Option<Key>;
+
+//============================================================
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub enum BarlineType {
+    Single,
+    Double,
+    Final,
+    RepeatTo,
+    RepeatFrom,
+    RepeatToAndFrom,
+    FraseTick,
+}
 
 //============================================================
 
@@ -573,6 +589,7 @@ pub enum NRectType {
     ColorRect(String),
     StrokeRect(String),
     DUMMY,
+    Barline(BarlineType),
     Dev(bool, String),
     Spacer(String),
     HelpLine,

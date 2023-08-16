@@ -71,7 +71,9 @@ fn main() {
 
     // let bar_data = QCode::bars(" p 0  % 4_ 4_ 4 ").unwrap(); // bindebågar för voice2?
 
-    let bar_data = QCode::bars("0 0 / nv8 1 2 3 4 ").unwrap(); // bindebågar för voice2?
+    let bar_data = QCode::bars("|sp1 x 80 |clef G |sp2 |key # |sp2 |time 2:4 |sp2 |time 3:4 |sp2 |time 6:4 |sp3 |   0 1 |bld |spc | 0 -1 |bl ").unwrap(); // bindebågar för voice2?
+
+    let bar_data = QCode::bars("|ci  0 0 |sp3 | 0 0 |bl ").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
@@ -93,8 +95,8 @@ fn main() {
     std::fs::write("./examples/ex3A.svg", svg).unwrap();
 
     let playdata = bars.calc_playback();
-    std::fs::write("./examples/ex3A.playdata.json", playdata.to_json()).unwrap();
     let playpositions = matrix.calculate_playpositions();
+    std::fs::write("./examples/ex3A.playdata.json", playdata.to_json()).unwrap();
     std::fs::write("./examples/ex3A.positions.json", playpositions.to_json()).unwrap();
 
     matrix.add_horizontal_space(100.0);

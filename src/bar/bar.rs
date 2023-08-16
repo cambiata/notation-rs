@@ -92,7 +92,7 @@ impl Bar {
             }
             BarType::MultiRest(_) => 0,
             BarType::NonContent(_) => 0,
-            BarType::Invisible(_) => 0,
+            BarType::CountIn(_) => 0,
             BarType::BarAttribute(_) => 0,
         }
     }
@@ -104,7 +104,7 @@ pub enum BarType {
     BarAttribute(BarAttributeType),
     MultiRest(usize),
     NonContent(NonContentType),
-    Invisible(Notes),
+    CountIn(Notes),
 }
 
 impl BarType {
@@ -121,15 +121,16 @@ impl BarType {
             BarType::MultiRest(_) => todo!(),
             BarType::NonContent(_) => 0,
             BarType::BarAttribute(_) => 0,
-            BarType::Invisible(notes) => notes.duration,
+            BarType::CountIn(notes) => notes.duration,
         }
     }
 }
 
 #[derive(Debug, PartialEq)]
 pub enum NonContentType {
-    Barline,
+    Barline(BarlineType),
     VerticalLine,
+    Spacer(f32, f32),
 }
 
 #[derive(Debug, PartialEq)]

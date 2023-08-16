@@ -17,7 +17,6 @@ impl QCode {
                 a if a.starts_with("$lyr:") => {
                     todo!("Remove $ from lyrics!");
                 }
-
                 a if a.starts_with("lyr:") => {
                     let mut s = &segment[4..];
                     s = s.trim();
@@ -25,18 +24,13 @@ impl QCode {
                     let n = Note::new(NoteType::Lyric(syllable), cur_val.unwrap_or(NV4));
                     notes.push(n);
                 }
-
                 a if a.starts_with("tpl:") => {
                     let s = segment.trim();
                     let mut s = &segment[4..];
-                    dbg!(&s);
-
                     let level: i8 = s.parse().unwrap();
-
                     let n = Note::new(NoteType::Tpl('2', TplOctave::Mid, TplAccidental::Neutral, level), cur_val.unwrap_or(NV4));
                     notes.push(n);
                 }
-
                 "p" => {
                     let n = Note::new(NoteType::Pause, cur_val.unwrap_or(NV4)); // NoteAttributes { color: None });
                     notes.push(n);
@@ -57,7 +51,6 @@ impl QCode {
                         let tie_to = crate::utils::parse_tie_to(segment);
                         let head = Head::new_with_attributes(level as i8, accidental, tie, tie_to);
                         heads.push(head);
-                        // , HeadAttributes {}
                     }
 
                     let mut n = Note::new(NoteType::Heads(Heads::new(heads)), cur_val.unwrap_or(NV4));
@@ -200,26 +193,54 @@ impl QCode {
 
         //======================================================================
         // include vertical line first
-        bars.insert(0, Rc::new(RefCell::new(Bar::new(BarType::NonContent(NonContentType::VerticalLine)))));
+        // bars.insert(0, Rc::new(RefCell::new(Bar::new(BarType::NonContent(NonContentType::VerticalLine)))));
         // add vertical line to end
-        bars.push(Rc::new(RefCell::new(Bar::new(BarType::NonContent(NonContentType::VerticalLine)))));
+        // bars.push(Rc::new(RefCell::new(Bar::new(BarType::NonContent(NonContentType::VerticalLine)))));
         //======================================================================
 
         Ok((first_bar_template.unwrap(), Bars::new(bars)))
     }
 
     pub fn bar(mut code: &str) -> Result<(BarTemplate, Bar)> {
-        // pub fn bar(mut code: &str) -> Result<()> {
         code = code.trim();
 
-        if code.starts_with("bl") {
-            let code = code.split(' ').skip(1).collect::<Vec<_>>().join(" ");
-            let bar = Bar::new(BarType::NonContent(NonContentType::Barline));
+        if code.starts_with("bld") {
+            let bar = Bar::new(BarType::NonContent(NonContentType::Barline(BarlineType::Double)));
             return Ok((BarTemplate(vec![]), bar));
-        } else if code.starts_with("inv") {
-            //
-            let notes = QCode::notes("0 0 0 ").unwrap();
-            let bar = Bar::new(BarType::Invisible(notes));
+        } else if code.starts_with("blf") {
+            let bar = Bar::new(BarType::NonContent(NonContentType::Barline(BarlineType::FraseTick)));
+            return Ok((BarTemplate(vec![]), bar));
+        } else if code.starts_with("bl") {
+            let bar = Bar::new(BarType::NonContent(NonContentType::Barline(BarlineType::Single)));
+            return Ok((BarTemplate(vec![]), bar));
+        } else if code.starts_with("vl") {
+            let bar = Bar::new(BarType::NonContent(NonContentType::VerticalLine));
+            return Ok((BarTemplate(vec![]), bar));
+        } else if code.starts_with("ci") {
+            let code = code.split(' ').skip(1).collect::<Vec<_>>().join(" ");
+            let notes = QCode::notes(&code).unwrap();
+            let bar = Bar::new(BarType::CountIn(notes));
+            return Ok((BarTemplate(vec![]), bar));
+        } else if code.starts_with("sp1") {
+            let bar = Bar::new(BarType::NonContent(NonContentType::Spacer(5., 200.)));
+            return Ok((BarTemplate(vec![]), bar));
+        } else if code.starts_with("sp2") {
+            let bar = Bar::new(BarType::NonContent(NonContentType::Spacer(10., 100.)));
+            return Ok((BarTemplate(vec![]), bar));
+        } else if code.starts_with("sp3") {
+            let bar = Bar::new(BarType::NonContent(NonContentType::Spacer(30., 200.)));
+            return Ok((BarTemplate(vec![]), bar));
+        } else if code.starts_with("sp") {
+            let segments = code.split(' ').skip(1).collect::<Vec<_>>();
+            let mut width = 30.0;
+            if segments.len() >= 1 {
+                width = segments[0].parse::<f32>().unwrap_or(30.)
+            };
+            let mut height = 100.;
+            if segments.len() >= 2 {
+                height = segments[1].parse::<f32>().unwrap_or(100.);
+            }
+            let bar = Bar::new(BarType::NonContent(NonContentType::Spacer(width, height)));
             return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("mul") {
             let bar = Bar::new(BarType::MultiRest(0));
@@ -243,6 +264,7 @@ impl QCode {
                     _ => todo!("other clefs {}", segment),
                 }
             }
+
             let bar = Bar::from_clefs(clefs);
             return Ok((BarTemplate(parttemplates), bar));
         } else if code.starts_with("tim") {
@@ -254,10 +276,8 @@ impl QCode {
                 match segment {
                     n if n.contains(":") => {
                         let nsegments = n.split(':').collect::<Vec<_>>();
-                        dbg!(&nsegments);
                         let nominator = TimeNominator::from_str(nsegments[0]);
                         let denominator = TimeDenominator::from_str(nsegments[1]);
-
                         times.push(Some(Some(Time::Standard(nominator, denominator))));
                     }
                     "c" => times.push(Some(Some(Time::Cut))),

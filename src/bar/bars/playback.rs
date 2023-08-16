@@ -222,7 +222,7 @@ impl Bars {
                 }
                 BarType::MultiRest(_) => {}
                 BarType::NonContent(_) => {}
-                BarType::Invisible(ref notes) => {
+                BarType::CountIn(ref notes) => {
                     for (noteidx, note) in notes.items.iter().enumerate() {
                         let note = note.borrow();
                         match note.ntype {

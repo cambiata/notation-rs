@@ -124,12 +124,53 @@ impl Bars {
                         let rcol: RCol = RCol::new(colitems, None, Some(bar.position));
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
-                    NonContentType::Barline => {
+                    NonContentType::Barline(btype) => {
+                        let mut colitems = vec![];
+                        for parttemplate in bartemplate.0.iter() {
+                            colitems.push(match parttemplate {
+                                PartTemplate::Music => {
+                                    let rects = match btype {
+                                        BarlineType::Single => {
+                                            vec![Rc::new(RefCell::new(NRectExt::new(
+                                                NRect::new(0., -50., BARLINE_WIDTH_SINGLE, 100.),
+                                                NRectType::Barline(btype.clone()),
+                                            )))]
+                                        }
+                                        BarlineType::Double => {
+                                            vec![Rc::new(RefCell::new(NRectExt::new(
+                                                NRect::new(0., -50., BARLINE_DOUBLE_SPACE, 100.),
+                                                NRectType::Barline(btype.clone()),
+                                            )))]
+                                        }
+                                        BarlineType::Final => todo!(),
+                                        BarlineType::RepeatTo => todo!(),
+                                        BarlineType::RepeatFrom => todo!(),
+                                        BarlineType::RepeatToAndFrom => todo!(),
+                                        BarlineType::FraseTick => {
+                                            vec![Rc::new(RefCell::new(NRectExt::new(
+                                                NRect::new(0., -50., BARLINE_DOUBLE_SPACE, 100.),
+                                                NRectType::Barline(btype.clone()),
+                                            )))]
+                                        }
+                                    };
+
+                                    Some(Rc::new(RefCell::new(RItem::new_from_nrects(rects, 0))))
+                                }
+                                PartTemplate::Nonmusic => None,
+                            });
+                        }
+                        let rcol: RCol = RCol::new(colitems, None, Some(bar.position));
+                        matrix_cols.push(Rc::new(RefCell::new(rcol)));
+                    }
+                    NonContentType::Spacer(width, height) => {
                         let mut colitems = vec![];
                         for parttemplate in bartemplate.0.iter() {
                             colitems.push(match parttemplate {
                                 PartTemplate::Music => Some(Rc::new(RefCell::new(RItem::new_from_nrects(
-                                    vec![Rc::new(RefCell::new(NRectExt::new(NRect::new(0., -30.0, 5., 60.), NRectType::WIP("barline".to_string()))))],
+                                    vec![Rc::new(RefCell::new(NRectExt::new(
+                                        NRect::new(0., -height / 2.0, *width, *height),
+                                        NRectType::WIP("spacer".to_string()),
+                                    )))],
                                     0,
                                 )))),
                                 PartTemplate::Nonmusic => None,
@@ -249,7 +290,7 @@ impl Bars {
                     }
                 },
 
-                BarType::Invisible(_) => {
+                BarType::CountIn(_) => {
                     //
                 }
             }
@@ -781,7 +822,7 @@ impl Bars {
                 }
                 BarType::BarAttribute(_) => {}
 
-                BarType::Invisible(_) => {}
+                BarType::CountIn(_) => {}
             }
         }
 
