@@ -2,8 +2,22 @@
 "top_y": 0,
 "bottom_y": 0, 
 "positions": [
-	{ "position": 48, "duration": 0, "x": 0 },
-	{ "position": 48, "duration": 24, "x": 30 },
-	{ "position": 72, "duration": 24, "x": 135 },
-	{ "position": 96, "duration": 0, "x": 240 }
+	{ "position": 0, "duration": 0, "x": 0 },
+	{ "position": 0, "duration": 0, "x": 5 },
+	{ "position": 0, "duration": 0, "x": 79 },
+	{ "position": 0, "duration": 0, "x": 89 },
+	{ "position": 0, "duration": 0, "x": 119 },
+	{ "position": 0, "duration": 0, "x": 129 },
+	{ "position": 0, "duration": 0, "x": 172 },
+	{ "position": 0, "duration": 0, "x": 182 },
+	{ "position": 0, "duration": 0, "x": 225 },
+	{ "position": 0, "duration": 0, "x": 235 },
+	{ "position": 0, "duration": 0, "x": 278 },
+	{ "position": 0, "duration": 24, "x": 308 },
+	{ "position": 24, "duration": 24, "x": 413 },
+	{ "position": 48, "duration": 0, "x": 518 },
+	{ "position": 48, "duration": 0, "x": 541 },
+	{ "position": 48, "duration": 24, "x": 571 },
+	{ "position": 72, "duration": 24, "x": 676 },
+	{ "position": 96, "duration": 0, "x": 781 }
 ]}

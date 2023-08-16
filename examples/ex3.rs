@@ -73,7 +73,7 @@ fn main() {
 
     let bar_data = QCode::bars("|sp1 x 80 |clef G |sp2 |key # |sp2 |time 2:4 |sp2 |time 3:4 |sp2 |time 6:4 |sp3 |   0 1 |bld |spc | 0 -1 |bl ").unwrap(); // bindebågar för voice2?
 
-    let bar_data = QCode::bars("|ci  0 0 |sp3 | 0 0 |bl ").unwrap();
+    // let bar_data = QCode::bars("|ci  0 0 |sp3 | 0 0 |bl ").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();

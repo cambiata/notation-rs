@@ -1,8 +1,8 @@
 {
 "duration": 96,
 "positions": [
-	{"position": 0,"midinote": 60,"duration": 24,"volocity": 100,"partidx": 255,"voiceidx": 0,"noteidx": 0},
-	{"position": 24,"midinote": 60,"duration": 24,"volocity": 100,"partidx": 255,"voiceidx": 0,"noteidx": 1},
+	{"position": 0,"midinote": 71,"duration": 24,"volocity": 100,"partidx": 0,"voiceidx": 0,"noteidx": 0},
+	{"position": 24,"midinote": 69,"duration": 24,"volocity": 100,"partidx": 0,"voiceidx": 0,"noteidx": 1},
 	{"position": 48,"midinote": 71,"duration": 24,"volocity": 100,"partidx": 0,"voiceidx": 0,"noteidx": 0},
-	{"position": 72,"midinote": 71,"duration": 24,"volocity": 100,"partidx": 0,"voiceidx": 0,"noteidx": 1}
+	{"position": 72,"midinote": 72,"duration": 24,"volocity": 100,"partidx": 0,"voiceidx": 0,"noteidx": 1}
 ]}
