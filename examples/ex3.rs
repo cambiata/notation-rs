@@ -73,19 +73,18 @@ fn main() {
 
     // let bar_data = QCode::bars("|sp1 x 80 |clef G |sp2 |key # |sp2 |time 2:4 |sp2 |time 3:4 |sp2 |time 6:4 |sp3 |   0 1 |bld |spc | 0 -1 |bl ").unwrap(); // bindebågar för voice2?
 
-    let bar_data = QCode::bars("|ci 0 0 |sp3 | 0 0 |bld ").unwrap();
+    let bar_data = QCode::bars("0 0 1 -2 |sp3 | 0 0 |bld ").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
-    let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
+    bars.create_matrix(Some(bartemplate)).unwrap();
 
     bars.resolve_stuff();
     bars.matrix_add_beamgroups();
     bars.matrix_add_ties();
-
+    let matrix = bars.matrix.as_mut().unwrap();
     matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);
     matrix.calculate_beamgroups();
     matrix.calculate_attachment_points(&bars.note_id_map);
-    // matrix.calculate_attachement_type();
 
     matrix.calculate_row_spacing();
     matrix.calculate_col_row_item_measurements();
@@ -95,16 +94,16 @@ fn main() {
     std::fs::write("./examples/ex3A.svg", svg).unwrap();
 
     let playdata = bars.calc_playback();
-    let playpositions = matrix.calculate_playpositions();
+    let playpositions = bars.calculate_playpositions();
     std::fs::write("./examples/ex3A.playdata.json", playdata.to_json()).unwrap();
     std::fs::write("./examples/ex3A.positions.json", playpositions.to_json()).unwrap();
 
-    matrix.add_horizontal_space(100.0);
-    matrix.add_vertical_space(50.0);
-    matrix.calculate_col_row_item_measurements();
-    matrix.calculate_matrix_size();
-    let svg = matrix_to_svg(&matrix, true, None);
-    std::fs::write("./examples/ex3B.svg", svg).unwrap();
+    // matrix.add_horizontal_space(100.0);
+    // matrix.add_vertical_space(50.0);
+    // matrix.calculate_col_row_item_measurements();
+    // matrix.calculate_matrix_size();
+    // let svg = matrix_to_svg(&matrix, true, None);
+    // std::fs::write("./examples/ex3B.svg", svg).unwrap();
 }
 
 #[cfg(test)]

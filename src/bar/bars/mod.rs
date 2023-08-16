@@ -29,7 +29,7 @@ impl Bars {
         }
     }
 
-    pub fn create_matrix(&mut self, bartemplate: Option<BarTemplate>) -> Result<RMatrix> {
+    pub fn create_matrix(&mut self, bartemplate: Option<BarTemplate>) -> Result<()> {
         let bartemplate = match bartemplate {
             Some(bartemplate) => bartemplate,
             None => {
@@ -301,15 +301,14 @@ impl Bars {
         //     dbg!(col.position);
         // }
 
-        let matrix = RMatrix::new(matrix_cols, Some(bartemplate));
         // self.map_note_id_to_note();
         // self.resolve_ties();
         // self.resolve_slurs();
 
         // self.resolve_stuff();
-
-        Ok(matrix)
-        // Ok(())
+        self.matrix = Some(RMatrix::new(matrix_cols, Some(bartemplate)));
+        // Ok(matrix)
+        Ok(())
     }
 
     pub fn matrix_add_beamgroups(&self) {

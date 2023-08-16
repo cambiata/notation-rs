@@ -26,7 +26,7 @@ impl PlayNotesData {
     pub fn to_json(&self) -> String {
         let mut s = "{\n".to_string();
         s.push_str(format!("\"duration\": {},\n", self.duration).as_str());
-        s.push_str("\"positions\": [\n");
+        s.push_str("\"notes\": [\n");
         for p in self.notes.iter() {
             s.push_str("\t{");
             s.push_str(&format!("\"time\": {:?},", p.time).to_string());
@@ -61,6 +61,7 @@ pub struct PlayPositionsData {
     positions: PlayPositions,
     width: f32,
     height: f32,
+    duration: Duration,
 }
 
 impl PlayPositionsData {
@@ -83,7 +84,28 @@ impl PlayPositionsData {
     }
 }
 
+const DEFAULT_VELOCITY: u8 = 70;
+
 impl Bars {
+    pub fn calculate_playpositions(&self) -> PlayPositionsData {
+        let mut positions: PlayPositions = Vec::new();
+
+        for (colidx, col) in self.matrix.as_ref().unwrap().cols.iter().enumerate() {
+            let col: Ref<RCol> = col.borrow();
+            let position = col.position;
+            let duration = col.duration;
+            let x = col.x;
+            positions.push(PlayPosition { position, x, duration });
+        }
+
+        PlayPositionsData {
+            positions,
+            width: self.matrix.as_ref().unwrap().width,
+            height: self.matrix.as_ref().unwrap().height,
+            duration: self.items.last().unwrap().borrow().position + self.items.last().unwrap().borrow().duration,
+        }
+    }
+
     pub fn calc_playback(&self) -> PlayNotesData {
         let parts_voices = self.count_music_parts_voices();
 
@@ -128,7 +150,7 @@ impl Bars {
                                                             let time = bar.position + note.position;
                                                             items.push(PlayNote {
                                                                 note: signed_note as u8,
-                                                                volocity: 100,
+                                                                volocity: DEFAULT_VELOCITY,
                                                                 duration: note.duration,
                                                                 time,
                                                                 partidx: partidx as u8,
@@ -341,27 +363,28 @@ impl Bars {
     }
 }
 
-impl RMatrix {
-    pub fn calculate_playpositions(&self) -> PlayPositionsData {
-        let mut positions: PlayPositions = Vec::new();
+// impl RMatrix {
+//     pub fn calculate_playpositions(&self, duration: Duration) -> PlayPositionsData {
+//         let mut positions: PlayPositions = Vec::new();
 
-        for (colidx, col) in self.cols.iter().enumerate() {
-            let col: Ref<RCol> = col.borrow();
-            let position = col.position;
-            let duration = col.duration;
-            let x = col.x;
-            positions.push(PlayPosition { position, x, duration });
-        }
+//         for (colidx, col) in self.cols.iter().enumerate() {
+//             let col: Ref<RCol> = col.borrow();
+//             let position = col.position;
+//             let duration = col.duration;
+//             let x = col.x;
+//             positions.push(PlayPosition { position, x, duration });
+//         }
 
-        let width = self.width;
+//         let width = self.width;
 
-        PlayPositionsData {
-            positions,
-            width: self.width,
-            height: self.height,
-        }
-    }
-}
+//         PlayPositionsData {
+//             positions,
+//             width: self.width,
+//             height: self.height,
+//             duration: duration,
+//         }
+//     }
+// }
 
 fn setup_level_to_note_maps(clef: &Clef, key: &Key) -> (BTreeMap<i8, i8>, BTreeMap<i8, Accidental>) {
     const LEVEL_LIMIT: i8 = 10;

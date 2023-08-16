@@ -1,8 +1,10 @@
 {
-"duration": 96,
-"positions": [
-	{"time": 0,"note": 60,"duration": 24,"volocity": 100,"partidx": 255,"voiceidx": 0,"noteidx": 0},
-	{"time": 24,"note": 60,"duration": 24,"volocity": 100,"partidx": 255,"voiceidx": 0,"noteidx": 1},
-	{"time": 48,"note": 71,"duration": 24,"volocity": 100,"partidx": 0,"voiceidx": 0,"noteidx": 0},
-	{"time": 72,"note": 71,"duration": 24,"volocity": 100,"partidx": 0,"voiceidx": 0,"noteidx": 1}
+"duration": 144,
+"notes": [
+	{"time": 0,"note": 71,"duration": 24,"volocity": 70,"partidx": 0,"voiceidx": 0,"noteidx": 0},
+	{"time": 24,"note": 71,"duration": 24,"volocity": 70,"partidx": 0,"voiceidx": 0,"noteidx": 1},
+	{"time": 48,"note": 69,"duration": 24,"volocity": 70,"partidx": 0,"voiceidx": 0,"noteidx": 2},
+	{"time": 72,"note": 74,"duration": 24,"volocity": 70,"partidx": 0,"voiceidx": 0,"noteidx": 3},
+	{"time": 96,"note": 71,"duration": 24,"volocity": 70,"partidx": 0,"voiceidx": 0,"noteidx": 0},
+	{"time": 120,"note": 71,"duration": 24,"volocity": 70,"partidx": 0,"voiceidx": 0,"noteidx": 1}
 ]}
