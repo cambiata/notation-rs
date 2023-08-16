@@ -5,10 +5,10 @@ use core::any::type_name;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct PlayNote {
-    midinote: u8,
+    note: u8,
     volocity: u8,
     duration: Duration,
-    position: Position,
+    time: Position,
     partidx: u8,
     voiceidx: u8,
     noteidx: u8,
@@ -18,7 +18,7 @@ pub type PlayNotes = Vec<PlayNote>;
 
 #[derive(Debug)]
 pub struct PlayNotesData {
-    playnotes: PlayNotes,
+    notes: PlayNotes,
     duration: Duration,
 }
 
@@ -27,17 +27,17 @@ impl PlayNotesData {
         let mut s = "{\n".to_string();
         s.push_str(format!("\"duration\": {},\n", self.duration).as_str());
         s.push_str("\"positions\": [\n");
-        for p in self.playnotes.iter() {
+        for p in self.notes.iter() {
             s.push_str("\t{");
-            s.push_str(&format!("\"position\": {:?},", p.position).to_string());
-            s.push_str(&format!("\"midinote\": {:?},", p.midinote).to_string());
+            s.push_str(&format!("\"time\": {:?},", p.time).to_string());
+            s.push_str(&format!("\"note\": {:?},", p.note).to_string());
             s.push_str(&format!("\"duration\": {:?},", p.duration).to_string());
             s.push_str(&format!("\"volocity\": {:?},", p.volocity).to_string());
             s.push_str(&format!("\"partidx\": {:?},", p.partidx).to_string());
             s.push_str(&format!("\"voiceidx\": {:?},", p.voiceidx).to_string());
             s.push_str(&format!("\"noteidx\": {:?}", p.noteidx).to_string());
             s.push_str("}");
-            if p != self.playnotes.last().unwrap() {
+            if p != self.notes.last().unwrap() {
                 s.push_str(",");
             }
             s.push_str("\n");
@@ -59,15 +59,15 @@ pub type PlayPositions = Vec<PlayPosition>;
 #[derive(Debug)]
 pub struct PlayPositionsData {
     positions: PlayPositions,
-    top_y: f32,
-    bottom_y: f32,
+    width: f32,
+    height: f32,
 }
 
 impl PlayPositionsData {
     pub fn to_json(&self) -> String {
         let mut s = "{\n".to_string();
-        s.push_str(format!("\"top_y\": {},\n", self.top_y).as_str());
-        s.push_str(format!("\"bottom_y\": {}, \n", self.bottom_y).as_str());
+        s.push_str(format!("\"width\": {},\n", self.width).as_str());
+        s.push_str(format!("\"height\": {}, \n", self.height).as_str());
         s.push_str("\"positions\": [\n");
         let mut lines = vec![];
         for p in self.positions.iter() {
@@ -97,7 +97,7 @@ impl Bars {
             part_time.insert(partidx, Time::Common);
         }
 
-        let mut playnotes: PlayNotes = Vec::new();
+        let mut items: PlayNotes = Vec::new();
 
         for (baridx, bar) in self.items.iter().enumerate() {
             let bar: Ref<Bar> = bar.borrow();
@@ -105,7 +105,7 @@ impl Bars {
                 BarType::Standard(parts) => {
                     for (partidx, part) in parts.iter().enumerate() {
                         let part: Ref<Part> = part.borrow();
-                        let (part_note_map, mut part_sign_map) = setup_level_to_midinote_maps(part_clef.get(&partidx).unwrap(), part_key.get(&partidx).unwrap());
+                        let (part_note_map, mut part_sign_map) = setup_level_to_note_maps(part_clef.get(&partidx).unwrap(), part_key.get(&partidx).unwrap());
                         match &part.ptype {
                             PartType::Music(music_type) => match music_type {
                                 PartMusicType::Voices(voices) => match voices {
@@ -125,12 +125,12 @@ impl Bars {
                                                                 mapsign = &accidental;
                                                             }
                                                             let signed_note = mapnote + (*mapsign as i8);
-                                                            let position = bar.position + note.position;
-                                                            playnotes.push(PlayNote {
-                                                                midinote: signed_note as u8,
+                                                            let time = bar.position + note.position;
+                                                            items.push(PlayNote {
+                                                                note: signed_note as u8,
                                                                 volocity: 100,
                                                                 duration: note.duration,
-                                                                position,
+                                                                time,
                                                                 partidx: partidx as u8,
                                                                 voiceidx: 0,
                                                                 noteidx: noteidx as u8,
@@ -160,12 +160,12 @@ impl Bars {
                                                                     mapsign = &accidental;
                                                                 }
                                                                 let signed_note = mapnote + (*mapsign as i8);
-                                                                let position = bar.position + note.position;
-                                                                playnotes.push(PlayNote {
-                                                                    midinote: signed_note as u8,
+                                                                let time = bar.position + note.position;
+                                                                items.push(PlayNote {
+                                                                    note: signed_note as u8,
                                                                     volocity: 100,
                                                                     duration: note.duration,
-                                                                    position,
+                                                                    time,
                                                                     partidx: partidx as u8,
                                                                     voiceidx: 0,
                                                                     noteidx: noteidx as u8,
@@ -194,12 +194,12 @@ impl Bars {
                                                                     mapsign = &accidental;
                                                                 }
                                                                 let signed_note = mapnote + (*mapsign as i8);
-                                                                let position = bar.position + note.position;
-                                                                playnotes.push(PlayNote {
-                                                                    midinote: signed_note as u8,
+                                                                let time = bar.position + note.position;
+                                                                items.push(PlayNote {
+                                                                    note: signed_note as u8,
                                                                     volocity: 100,
                                                                     duration: note.duration,
-                                                                    position,
+                                                                    time,
                                                                     partidx: partidx as u8,
                                                                     voiceidx: 0,
                                                                     noteidx: noteidx as u8,
@@ -229,12 +229,12 @@ impl Bars {
                             NoteType::Heads(ref heads) => {
                                 for (headidx, head) in heads.heads.iter().enumerate() {
                                     let head = head.borrow();
-                                    let position = bar.position + note.position;
-                                    playnotes.push(PlayNote {
-                                        midinote: 60,
+                                    let time = bar.position + note.position;
+                                    items.push(PlayNote {
+                                        note: 60,
                                         volocity: 100,
                                         duration: note.duration,
-                                        position,
+                                        time,
                                         partidx: 255,
                                         voiceidx: 0,
                                         noteidx: noteidx as u8,
@@ -278,7 +278,7 @@ impl Bars {
         }
         let lastbar = self.items.last().unwrap().borrow();
         PlayNotesData {
-            playnotes: playnotes,
+            notes: items,
             duration: lastbar.position + lastbar.duration,
         }
     }
@@ -353,14 +353,17 @@ impl RMatrix {
             positions.push(PlayPosition { position, x, duration });
         }
 
-        let top_y = self.rows.first().unwrap().borrow().y;
-        let bottom_y = self.rows.last().unwrap().borrow().y;
+        let width = self.width;
 
-        PlayPositionsData { positions, top_y, bottom_y }
+        PlayPositionsData {
+            positions,
+            width: self.width,
+            height: self.height,
+        }
     }
 }
 
-fn setup_level_to_midinote_maps(clef: &Clef, key: &Key) -> (BTreeMap<i8, i8>, BTreeMap<i8, Accidental>) {
+fn setup_level_to_note_maps(clef: &Clef, key: &Key) -> (BTreeMap<i8, i8>, BTreeMap<i8, Accidental>) {
     const LEVEL_LIMIT: i8 = 10;
     let mut levels_notes: BTreeMap<i8, i8> = BTreeMap::new();
     let mut levels_keymapsign: BTreeMap<i8, Accidental> = BTreeMap::new();
@@ -414,13 +417,13 @@ fn setup_level_to_midinote_maps(clef: &Clef, key: &Key) -> (BTreeMap<i8, i8>, BT
 
 #[cfg(test)]
 mod tests2 {
-    use super::setup_level_to_midinote_maps;
+    use super::setup_level_to_note_maps;
     use crate::prelude::*;
     use std::collections::BTreeMap;
 
     #[test]
     fn example() {
-        setup_level_to_midinote_maps(&Clef::F, &Key::Flats(2));
+        setup_level_to_note_maps(&Clef::F, &Key::Flats(2));
     }
 }
 

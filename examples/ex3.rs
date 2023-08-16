@@ -71,9 +71,9 @@ fn main() {
 
     // let bar_data = QCode::bars(" p 0  % 4_ 4_ 4 ").unwrap(); // bindebågar för voice2?
 
-    let bar_data = QCode::bars("|sp1 x 80 |clef G |sp2 |key # |sp2 |time 2:4 |sp2 |time 3:4 |sp2 |time 6:4 |sp3 |   0 1 |bld |spc | 0 -1 |bl ").unwrap(); // bindebågar för voice2?
+    // let bar_data = QCode::bars("|sp1 x 80 |clef G |sp2 |key # |sp2 |time 2:4 |sp2 |time 3:4 |sp2 |time 6:4 |sp3 |   0 1 |bld |spc | 0 -1 |bl ").unwrap(); // bindebågar för voice2?
 
-    // let bar_data = QCode::bars("|ci  0 0 |sp3 | 0 0 |bl ").unwrap();
+    let bar_data = QCode::bars("|ci 0 0 |sp3 | 0 0 |bld ").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
     let mut matrix = bars.create_matrix(Some(bartemplate)).unwrap();
@@ -91,7 +91,7 @@ fn main() {
     matrix.calculate_col_row_item_measurements();
     matrix.calculate_matrix_size();
 
-    let svg = matrix_to_svg(&matrix, true);
+    let svg = matrix_to_svg(&matrix, true, None);
     std::fs::write("./examples/ex3A.svg", svg).unwrap();
 
     let playdata = bars.calc_playback();
@@ -103,7 +103,7 @@ fn main() {
     matrix.add_vertical_space(50.0);
     matrix.calculate_col_row_item_measurements();
     matrix.calculate_matrix_size();
-    let svg = matrix_to_svg(&matrix, true);
+    let svg = matrix_to_svg(&matrix, true, None);
     std::fs::write("./examples/ex3B.svg", svg).unwrap();
 }
 

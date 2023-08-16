@@ -51,7 +51,7 @@ pub const ACCIDENTAL_WIDTH_DBLFLAT: f32 = SPACE * 1.5;
 
 pub const TIME_SIGNATURE_WIDTH: f32 = SPACE * 1.7;
 
-pub const BARLINE_WIDTH_SINGLE: f32 = SPACE * 0.25;
+pub const BARLINE_WIDTH_SINGLE: f32 = SPACE * 0.22;
 pub const BARLINE_DOUBLE_SPACE: f32 = BARLINE_WIDTH_SINGLE * 2.0 + SPACE * 0.4;
 //------------------------------------------------------------
 
