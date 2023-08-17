@@ -69,6 +69,7 @@ impl PlayPositionsData {
         let mut s = "{\n".to_string();
         s.push_str(format!("\"width\": {},\n", self.width).as_str());
         s.push_str(format!("\"height\": {}, \n", self.height).as_str());
+        s.push_str(format!("\"duration\": {}, \n", self.duration).as_str());
         s.push_str("\"positions\": [\n");
         let mut lines = vec![];
         for p in self.positions.iter() {

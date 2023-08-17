@@ -1,13 +1,15 @@
 {
-"width": 681,
-"height": 100, 
+"width": 701,
+"height": 200, 
+"duration": 144, 
 "positions": [
-	{ "position": 0, "duration": 24, "x": 0 },
-	{ "position": 24, "duration": 24, "x": 105 },
-	{ "position": 48, "duration": 24, "x": 210 },
-	{ "position": 72, "duration": 24, "x": 315 },
-	{ "position": 96, "duration": 0, "x": 420 },
-	{ "position": 96, "duration": 24, "x": 450 },
-	{ "position": 120, "duration": 24, "x": 555 },
-	{ "position": 144, "duration": 0, "x": 660 }
+	{ "position": 0, "duration": 0, "x": 0 },
+	{ "position": 0, "duration": 24, "x": 20 },
+	{ "position": 24, "duration": 24, "x": 125 },
+	{ "position": 48, "duration": 24, "x": 230 },
+	{ "position": 72, "duration": 24, "x": 335 },
+	{ "position": 96, "duration": 0, "x": 440 },
+	{ "position": 96, "duration": 24, "x": 470 },
+	{ "position": 120, "duration": 24, "x": 575 },
+	{ "position": 144, "duration": 0, "x": 680 }
 ]}
