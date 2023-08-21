@@ -12,6 +12,14 @@ pub enum NoteType {
     // Chord(ChordItem),
     Spacer(i8),
     Tpl(char, TplOctave, TplAccidental, i8),
+    Function(FunctionType),
+    Symbol(SymbolType),
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum SymbolType {
+    RightArrow,
+    LeftArrow,
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -20,6 +28,40 @@ pub enum NoteComplexType {
     Single,
     Upper,
     Lower,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+pub enum FunctionColor {
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    SixFive,
+    Seven,
+    Nine,
+    NineFlat,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+pub enum FunctionBass {
+    None,
+    Bass3,
+    Bass5,
+    Bass7,
+}
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+pub enum FunctionType {
+    Ton(FunctionBass, FunctionColor),
+    SubPar(FunctionBass, FunctionColor),
+    DomDom(FunctionBass, FunctionColor),
+    DomPar(FunctionBass, FunctionColor),
+    Sub(FunctionBass, FunctionColor),
+    Dom(FunctionBass, FunctionColor),
+    DomNoncomplete(FunctionBass, FunctionColor),
+    Dom64,
+    TonPar(FunctionBass, FunctionColor),
+    InvisibleRoot,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
