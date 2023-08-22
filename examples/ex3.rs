@@ -98,6 +98,9 @@ fn main() {
     std::fs::write("./examples/ex3A.playdata.json", playdata.to_json()).unwrap();
     std::fs::write("./examples/ex3A.positions.json", playpositions.to_json()).unwrap();
 
+
+
+    
     // matrix.add_horizontal_space(100.0);
     // matrix.add_vertical_space(50.0);
     // matrix.calculate_col_row_item_measurements();

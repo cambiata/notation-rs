@@ -95,8 +95,6 @@ impl Part {
                     match beamgroup.notes.len() {
                         0 => panic!("Beamgroup has no notes"),
                         1 => {
-
-                            
                             let note = beamgroup.notes[0].clone();
                             let mut note = note.borrow_mut();
 
@@ -112,9 +110,6 @@ impl Part {
                             };
 
                             beamgroup.start_level = tilt as f32;
-
-
-
                         }
                         _ => {
                             // println!("Two notes or more");
@@ -857,8 +852,24 @@ pub fn create_note_rectangles(mut rects: Vec<NRectExt>, note: &Note, placements:
         NoteType::Tpl(char, octave, accidental, display_level) => {
             rects = create_tpl_rectangles(rects, note, char, octave, accidental, display_level)?;
         }
+
+        NoteType::Symbol(symbol_type) => {
+            rects = create_symbol_rectangles(rects, note, symbol_type)?;
+        }
+
+        NoteType::Function(function_type, function_color, function_bass) => {
+            rects = create_function_rectangles(rects, note, function_type, function_color, function_bass)?;
+        }
     }
     Ok(rects)
+}
+
+fn create_function_rectangles(rects: Vec<NRectExt>, note: &Note, function_type: FunctionType, function_color: FunctionColor, function_bass: FunctionBass) -> Result<Vec<NRectExt>> {
+    todo!()
+}
+
+fn create_symbol_rectangles(rects: Vec<NRectExt>, note: &Note, symbol_type: SymbolType) -> Result<Vec<NRectExt>> {
+    todo!()
 }
 
 fn create_tpl_rectangles(mut rects: Vec<NRectExt>, note: &Note, char: char, octave: TplOctave, accidental: TplAccidental, display_level: i8) -> Result<Vec<NRectExt>> {

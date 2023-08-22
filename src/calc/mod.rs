@@ -137,5 +137,7 @@ pub fn note_get_heads_placements(note: &Note) -> Result<HeadsPlacement> {
         NoteType::Lyric(_) => Ok(Vec::new()),
         NoteType::Spacer(_) => Ok(Vec::new()),
         NoteType::Tpl(_, _, _, _) => Ok(Vec::new()),
+        NoteType::Function(_, _, _) => Ok(Vec::new()),
+        NoteType::Symbol(_) => Ok(Vec::new()),
     }
 }
