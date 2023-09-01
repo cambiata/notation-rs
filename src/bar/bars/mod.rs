@@ -228,21 +228,32 @@ impl Bars {
                                         //
                                         let mut x = 0.0;
                                         match key {
-                                            Key::Sharps(ref n) => {
+                                            Key::Sharps(ref n, ref key_clef) => {
+                                                let clef_y: f32 = match key_clef {
+                                                    Clef::G => 0.0,
+                                                    Clef::F => SPACE,
+                                                    Clef::C => SPACE_HALF,
+                                                };
                                                 nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                    NRect::new(x, -SPACE * 3.5, *n as f32 * ACCIDENTAL_WIDTH_SHARP, 6.0 * SPACE),
+                                                    NRect::new(x, -SPACE * 3.5 + clef_y, *n as f32 * ACCIDENTAL_WIDTH_SHARP, 6.0 * SPACE),
                                                     NRectType::KeySignature(key.clone(), None),
                                                 ))));
                                             }
 
-                                            Key::Flats(n) => {
+                                            Key::Flats(n, ref key_clef) => {
+                                                let clef_y: f32 = match key_clef {
+                                                    Clef::G => 0.0,
+                                                    Clef::F => SPACE,
+                                                    Clef::C => SPACE_HALF,
+                                                };
+
                                                 nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                    NRect::new(x, -SPACE * 3.5, *n as f32 * ACCIDENTAL_WIDTH_FLAT, 6.0 * SPACE),
+                                                    NRect::new(x, -SPACE * 3.5 + clef_y, *n as f32 * ACCIDENTAL_WIDTH_FLAT, 6.0 * SPACE),
                                                     NRectType::KeySignature(key.clone(), None),
                                                 ))));
                                             }
                                             Key::Open => {}
-                                            Key::Naturals(n) => todo!("Key::Naturals not defined yet!"),
+                                            Key::Naturals(n, ref key_clef) => todo!("Key::Naturals not defined yet!"),
                                         }
                                     }
                                     None => {

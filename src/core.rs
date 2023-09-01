@@ -162,9 +162,9 @@ pub type TimeSignature = Option<Time>;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub enum Key {
-    Sharps(u8),
-    Flats(u8),
-    Naturals(u8),
+    Sharps(u8, Clef),
+    Flats(u8, Clef),
+    Naturals(u8, Clef),
     Open,
 }
 

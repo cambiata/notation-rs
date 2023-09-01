@@ -19,11 +19,11 @@ impl RMatrix {
         let mut rowitems: Vec<Vec<Option<Rc<RefCell<RItem>>>>> = vec![vec![]; *row_count];
 
         let firstcol = &colitems[0];
-        for item in firstcol.borrow().items.iter() {
-            if item.is_none() {
-                panic!("firstcol has None - shouldn't have!");
-            }
-        }
+        // for item in firstcol.borrow().items.iter() {
+        //     if item.is_none() {
+        //         panic!("firstcol has None - shouldn't have!");
+        //     }
+        // }
 
         let mut colidx = 0;
         for col in &colitems {
@@ -183,7 +183,7 @@ impl RMatrix {
 
             let overlap = nrects_overlap_y(uppers, lowers).unwrap_or(0.0);
             let mut row = self.get_row(rowidx).unwrap().borrow_mut();
-            row.distance_y = row.distance_y.max(overlap);
+            row.distance_y = row.distance_y.max(overlap) + SPACE; // Todo
             rowidx += 1;
         }
     }

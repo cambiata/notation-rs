@@ -29,7 +29,7 @@ fn main() {
     // let bar_data = QCode::bars("|clef G |  0 1 nv8 0 0 1 1 0 2 2 0 -2 0 0 -2 ").unwrap();
     // let bar_data = QCode::bars("|clef G - |  nv4 -1 nv16 3 2 1 0 nv4 -2 nv8 -3 2 % nv4 p nv2 5 nv4 3 /lyr $lyr:aaaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
     // let bar_data = QCode::bars("nv8 -5,-7 5,3 5,3 -5,-7 -4,-2 6,8 6,8 -4,-2").unwrap();
-    let bar_data = QCode::bars("|clef G - | nv8 0 1 /lyr nv8 lyr:aa lyr:bbb ").unwrap();
+    // let bar_data = QCode::bars("|clef G - | nv8 0 1 /lyr nv8 lyr:aa lyr:bbb ").unwrap();
     // let bar_data = QCode::bars("|clef G | -3 nv8 0 1 nv4 1 % nv8 #-2 nv4 7,9 nv8 7 nv4 2").unwrap();
     // let bar_data = QCode::bars("|clef G | nv16 0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16").unwrap();
     // let bar_data = QCode::bars("|clef G - |  nv4 #3 nv16 3 b2 p 0 nv4 -2 nv8 -3 2 % nv4 p nv2dot 4 /lyr $lyr:aaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
@@ -60,8 +60,8 @@ fn main() {
     // let bar_data = QCode::bars("|clef G - | nv8 6 5 4 3  nv4 2 2 /lyr nv8 lyr:Hej,  lyr:sa lyr:Pet lyr:ro nv4 lyr:nel lyr:la").unwrap();
 
     // let bar_data = QCode::bars("|clef G F - |key ## ## - | 0 0 / 0 0 /lyr lyr:123 lyr:eleison").unwrap();
-    // let bar_data = QCode::bars("|clef - G - |/lyr lyr:aa lyr:bb / 0  0 /lyr tpl:3 tpl:-2").unwrap();
-    // let bar_data = QCode::bars("|clef G - - | 0 0 0 0 /lyr lyr:Hej lyr:och lyr:hopp /lyr lyr:Ky lyr:ri lyr:e").unwrap();
+    // let bar_data = QCode::bars("|clef - G - |/lyr lyr:aa lyr:bb / 0  0 /lyr tpl:3:1 tpl:-2:2 tpl:0:3 tpl:0:4").unwrap();
+    // let bar_data = QCode::bars("|sp3 |clef G - - | 0 0 0 0 /lyr lyr:Hej lyr:och lyr:hopp /lyr lyr:Ky lyr:ri lyr:e").unwrap();
 
     // let bar_data = QCode::bars(" nv16 0 -1 -2 -3 % 2 ").unwrap();
     // let bar_data = QCode::bars(" -5 nv16 -1 -3 -1 -3  % nv16 4 1 4 1 nv4 1").unwrap();
@@ -73,7 +73,11 @@ fn main() {
 
     // let bar_data = QCode::bars("|sp1 x 80 |clef G |sp2 |key # |sp2 |time 2:4 |sp2 |time 3:4 |sp2 |time 6:4 |sp3 |   0 1 |bld |spc | 0 -1 |bl ").unwrap(); // bindebågar för voice2?
 
-    let bar_data = QCode::bars("sp 20 400 | 0 0 1 -2 |sp3 | 0 0 |bld ").unwrap();
+    // let bar_data = QCode::bars("sp 20 400 | 0 0 1 -2 |sp3 | 0 0 |bld ").unwrap();
+
+    let bar_data = QCode::bars("|clef - G |key - ## |sp3 | lyr tpl:0:1 tpl:-4:5 tpl:-5:6 tpl:-6:7 tpl:-7:1 / 5 1 0 -1 -2").unwrap();
+
+    // let bar_data = QCode::bars("|sp2 |clef G C |key bbb Cbbb |sp3 | 0 0 0 / 1 0 0 |bl").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
     bars.create_matrix(Some(bartemplate)).unwrap();
@@ -93,14 +97,11 @@ fn main() {
     let svg = matrix_to_svg(&matrix, true, None);
     std::fs::write("./examples/ex3A.svg", svg).unwrap();
 
-    let playdata = bars.calc_playback();
-    let playpositions = bars.calculate_playpositions();
-    std::fs::write("./examples/ex3A.playdata.json", playdata.to_json()).unwrap();
-    std::fs::write("./examples/ex3A.positions.json", playpositions.to_json()).unwrap();
+    // let playdata = bars.calc_playback();
+    // let playpositions = bars.calculate_playpositions();
+    // std::fs::write("./examples/ex3A.playdata.json", playdata.to_json()).unwrap();
+    // std::fs::write("./examples/ex3A.positions.json", playpositions.to_json()).unwrap();
 
-
-
-    
     // matrix.add_horizontal_space(100.0);
     // matrix.add_vertical_space(50.0);
     // matrix.calculate_col_row_item_measurements();

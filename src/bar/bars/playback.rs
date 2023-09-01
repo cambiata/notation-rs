@@ -410,7 +410,7 @@ fn setup_level_to_note_maps(clef: &Clef, key: &Key) -> (BTreeMap<i8, i8>, BTreeM
 
         let mut sign = Accidental::Natural;
         match &key {
-            Key::Sharps(sharp_count) => {
+            Key::Sharps(sharp_count, _) => {
                 if (*sharp_count as i8 >= 1) && (stam == 3) {
                     sign = Accidental::Sharp
                 };
@@ -419,7 +419,7 @@ fn setup_level_to_note_maps(clef: &Clef, key: &Key) -> (BTreeMap<i8, i8>, BTreeM
                 };
             }
             Key::Open => {}
-            Key::Flats(flat_count) => {
+            Key::Flats(flat_count, _) => {
                 if (*flat_count as i8 >= 1) && (stam == 6) {
                     sign = Accidental::Flat
                 };
@@ -427,7 +427,7 @@ fn setup_level_to_note_maps(clef: &Clef, key: &Key) -> (BTreeMap<i8, i8>, BTreeM
                     sign = Accidental::Flat
                 };
             }
-            Key::Naturals(_) => todo!(),
+            Key::Naturals(_, _) => todo!(),
         }
         levels_keymapsign.insert(lev, sign.clone());
     }

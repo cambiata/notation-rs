@@ -27,8 +27,15 @@ impl QCode {
                 a if a.starts_with("tpl:") => {
                     let s = segment.trim();
                     let mut s = &segment[4..];
-                    let level: i8 = s.parse().unwrap();
-                    let n = Note::new(NoteType::Tpl('2', TplOctave::Mid, TplAccidental::Neutral, level), cur_val.unwrap_or(NV4));
+
+                    let subsegments = s.split(':').collect::<Vec<_>>();
+
+                    let level: i8 = subsegments.get(0).unwrap_or(&"").parse().unwrap_or(0);
+
+                    let figure_char: char = if subsegments.len() > 1 { subsegments[1].chars().next().unwrap_or('0') } else { '0' };
+                    dbg!(figure_char);
+
+                    let n = Note::new(NoteType::Tpl(figure_char, TplOctave::Mid, TplAccidental::Neutral, level), cur_val.unwrap_or(NV4));
                     notes.push(n);
                 }
                 "p" => {
@@ -56,7 +63,6 @@ impl QCode {
                     let mut n = Note::new(NoteType::Heads(Heads::new(heads)), cur_val.unwrap_or(NV4));
                     n.articulation = articulation;
 
-                    // let n = Note::new(24, NoteType::Dummy, NoteAttributes { color: None });
                     notes.push(n);
                 }
             }
@@ -207,7 +213,7 @@ impl QCode {
         if code.starts_with("bld") {
             let bar = Bar::new(BarType::NonContent(NonContentType::Barline(BarlineType::Double)));
             return Ok((BarTemplate(vec![]), bar));
-        } else if code.starts_with("blf") {
+        } else if code.starts_with("blt") {
             let bar = Bar::new(BarType::NonContent(NonContentType::Barline(BarlineType::FraseTick)));
             return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("bl") {
@@ -301,24 +307,44 @@ impl QCode {
             let mut parttemplates = vec![];
             for segment in segments {
                 dbg!(&segment);
-                match segment.to_lowercase().as_str() {
-                    "#" => keys.push(Some(Some(Key::Sharps(1)))),
-                    "##" => keys.push(Some(Some(Key::Sharps(2)))),
-                    "###" => keys.push(Some(Some(Key::Sharps(3)))),
-                    "####" => keys.push(Some(Some(Key::Sharps(4)))),
-                    "#####" => keys.push(Some(Some(Key::Sharps(5)))),
-                    "######" => keys.push(Some(Some(Key::Sharps(6)))),
-                    "b" => keys.push(Some(Some(Key::Flats(1)))),
-                    "bb" => keys.push(Some(Some(Key::Flats(2)))),
-                    "bbb" => keys.push(Some(Some(Key::Flats(3)))),
-                    "bbbb" => keys.push(Some(Some(Key::Flats(4)))),
-                    "bbbbb" => keys.push(Some(Some(Key::Flats(5)))),
-                    "bbbbbb" => keys.push(Some(Some(Key::Flats(6)))),
+                let mut key_segment = segment.to_lowercase();
+                let mut key_clef = Clef::G;
+
+                if key_segment.starts_with('f') {
+                    key_segment = key_segment[1..].to_string();
+                    println!("F-klav förtecekn!");
+                    dbg!(&key_segment);
+                    key_clef = Clef::F;
+                }
+
+                if key_segment.starts_with('c') {
+                    key_segment = key_segment[1..].to_string();
+                    println!("C-klav förtecekn!");
+                    key_clef = Clef::C;
+                }
+
+                // if &key_segment.chars()[0] == 'f' {
+                //     key_segment = &key_segment[1..];
+                // }
+
+                match key_segment.as_str() {
+                    "#" => keys.push(Some(Some(Key::Sharps(1, key_clef)))),
+                    "##" => keys.push(Some(Some(Key::Sharps(2, key_clef)))),
+                    "###" => keys.push(Some(Some(Key::Sharps(3, key_clef)))),
+                    "####" => keys.push(Some(Some(Key::Sharps(4, key_clef)))),
+                    "#####" => keys.push(Some(Some(Key::Sharps(5, key_clef)))),
+                    "######" => keys.push(Some(Some(Key::Sharps(6, key_clef)))),
+                    "b" => keys.push(Some(Some(Key::Flats(1, key_clef)))),
+                    "bb" => keys.push(Some(Some(Key::Flats(2, key_clef)))),
+                    "bbb" => keys.push(Some(Some(Key::Flats(3, key_clef)))),
+                    "bbbb" => keys.push(Some(Some(Key::Flats(4, key_clef)))),
+                    "bbbbb" => keys.push(Some(Some(Key::Flats(5, key_clef)))),
+                    "bbbbbb" => keys.push(Some(Some(Key::Flats(6, key_clef)))),
                     "n" => keys.push(Some(Some(Key::Open))),
                     "-" => keys.push(None),
                     _ => todo!("other keys {}", segment),
                 }
-                match segment.to_lowercase().as_str() {
+                match key_segment.as_str() {
                     "-" => parttemplates.push(PartTemplate::Nonmusic),
                     a if a.starts_with("#") => parttemplates.push(PartTemplate::Music),
                     a if a.starts_with("b") => parttemplates.push(PartTemplate::Music),
