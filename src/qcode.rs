@@ -56,7 +56,10 @@ impl QCode {
                         let accidental = crate::utils::parse_accidental(segment);
                         let tie = crate::utils::parse_tie(segment);
                         let tie_to = crate::utils::parse_tie_to(segment);
-                        let head = Head::new_with_attributes(level as i8, accidental, tie, tie_to);
+
+                        let line = crate::utils::parse_line(segment);
+
+                        let head = Head::new_with_attributes(level as i8, accidental, tie, tie_to, line);
                         heads.push(head);
                     }
 

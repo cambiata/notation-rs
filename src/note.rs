@@ -111,6 +111,9 @@ pub struct Note {
 
     pub adjust_x: Option<(f32, f32)>,
     pub complex_type: NoteComplexType,
+
+    pub lines: Vec<HeadLine>,
+    pub lines_to: Vec<HeadLineTo>,
 }
 
 impl Note {
@@ -119,10 +122,14 @@ impl Note {
         let mut ties: Vec<TieData> = Vec::new();
         let mut ties_to: Vec<TieToData> = Vec::new();
 
+        let mut lines: Vec<HeadLine> = Vec::new();
+        let mut lines_to: Vec<HeadLineTo> = Vec::new();
+
         match ntype {
             NoteType::Heads(ref mut heads) => {
-                for head in heads.heads.iter() {
+                for (headidx, head) in heads.heads.iter().enumerate() {
                     let head: Ref<Head> = head.borrow();
+
                     if let Some(tie) = &head.tie {
                         ties.push(TieData {
                             note_id: id,
@@ -137,6 +144,13 @@ impl Note {
                             level: head.level,
                         });
                     }
+
+                    if let Some(line) = &head.line {
+                        lines.push(HeadLine(headidx as u8, headidx as u8, line.2));
+                    }
+                    // if let Some(line_to) = &head.line_to {
+                    //     lines.push(HeadLine(headidx as u8, headidx as u8, line_to.2));
+                    // }
                 }
             }
             _ => {}
@@ -157,6 +171,8 @@ impl Note {
             adjust_x: None,
             articulation: NoteArticulation::None,
             complex_type: NoteComplexType::Unset,
+            lines,
+            lines_to,
         }
     }
 

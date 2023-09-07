@@ -521,6 +521,19 @@ impl NRectExt {
             _ => false,
         }
     }
+
+    pub fn is_line_to(&self) -> bool {
+        match self.1 {
+            NRectType::LineTo(_, _, _, _) => true,
+            _ => false,
+        }
+    }
+    pub fn is_line_from(&self) -> bool {
+        match self.1 {
+            NRectType::LineFrom(_, _) => true,
+            _ => false,
+        }
+    }
 }
 
 //============================================================
@@ -596,6 +609,8 @@ pub enum NRectType {
     KeySignature(Key, Option<Clef>),
     TimeSignature(Time),
     TplSymbol(char, TplOctave, TplAccidental),
+    LineFrom(i8, HeadLineType), // item.id, HeadLineType
+    LineTo(i8, i8, HeadLineType, NRect),
     // DevRectRed,
     // DevRectBlue,
 }

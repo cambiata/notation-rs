@@ -59,6 +59,19 @@ pub(crate) fn parse_tie_to(s: &str) -> Option<TieToType> {
     None
 }
 
+pub(crate) fn parse_line(s: &str) -> Option<HeadLine> {
+    if s.contains("L-") {
+        return Some(HeadLine(0, 0, HeadLineType::Line));
+    }
+    if s.contains("LH") {
+        return Some(HeadLine(0, 0, HeadLineType::Halfstep));
+    }
+    if s.contains("LW") {
+        return Some(HeadLine(0, 0, HeadLineType::Wholestep));
+    }
+    None
+}
+
 pub(crate) fn parse_articulation(s: &str) -> (String, NoteArticulation) {
     if s.contains("-.") {
         return (s.replace("=.", ""), NoteArticulation::TenutoStaccato);

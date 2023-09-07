@@ -74,6 +74,7 @@ name = "render_notation"
 version = "0.1.0"
 dependencies = [
  "graphics",
+ "itertools",
  "notation-rs",
 ]
 

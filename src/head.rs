@@ -45,6 +45,25 @@ pub struct Head {
     // calculated
     pub placement: HeadPlacement,
     pub articulation: HeadArticulation,
+
+    pub line: Option<HeadLine>,
+    pub line_to: Option<HeadLineTo>,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash)]
+pub struct HeadLine(pub u8, pub u8, pub HeadLineType);
+
+#[derive(Debug, PartialEq, Eq, Hash)]
+pub struct HeadLineTo(pub i8, pub i8, pub HeadLineType);
+
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
+pub enum HeadLineType {
+    Line,
+    Glissando,
+    GlissandoWave,
+    Halfstep,
+    Wholestep,
+    Other,
 }
 
 impl Head {
@@ -56,10 +75,12 @@ impl Head {
             tie_to: None,
             placement: HeadPlacement::Center,
             articulation: HeadArticulation::None,
+            line: None,
+            line_to: None,
         }
     }
 
-    pub fn new_with_attributes(level: i8, accidental: Option<Accidental>, tie: Option<TieFromType>, tie_to: Option<TieToType>) -> Self {
+    pub fn new_with_attributes(level: i8, accidental: Option<Accidental>, tie: Option<TieFromType>, tie_to: Option<TieToType>, line: Option<HeadLine>) -> Self {
         Self {
             level,
             accidental,
@@ -67,6 +88,8 @@ impl Head {
             tie_to,
             placement: HeadPlacement::Center,
             articulation: HeadArticulation::None,
+            line: line,
+            line_to: None,
         }
     }
 }
@@ -80,6 +103,8 @@ impl Default for Head {
             tie_to: None,
             placement: HeadPlacement::Center,
             articulation: HeadArticulation::None,
+            line: None,
+            line_to: None,
         }
     }
 }

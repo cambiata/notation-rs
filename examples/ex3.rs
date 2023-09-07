@@ -75,9 +75,11 @@ fn main() {
 
     // let bar_data = QCode::bars("sp 20 400 | 0 0 1 -2 |sp3 | 0 0 |bld ").unwrap();
 
-    let bar_data = QCode::bars("|clef - G |key - ## |sp3 | lyr tpl:0:1 tpl:-4:5 tpl:-5:6 tpl:-6:7 tpl:-7:1 / 5 1 0 -1 -2").unwrap();
+    // let bar_data = QCode::bars("|clef - G |key - ## |sp3 | lyr tpl:0:1 tpl:-4:5 tpl:-5:6 tpl:-6:7 tpl:-7:1 / 5 1 0 -1 -2").unwrap();
 
     // let bar_data = QCode::bars("|sp2 |clef G C |key bbb Cbbb |sp3 | 0 0 0 / 1 0 0 |bl").unwrap();
+
+    let bar_data = QCode::bars("0LH,2LW -2,3").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
     bars.create_matrix(Some(bartemplate)).unwrap();
@@ -85,6 +87,7 @@ fn main() {
     bars.resolve_stuff();
     bars.matrix_add_beamgroups();
     bars.matrix_add_ties();
+    bars.matrix_add_lines();
     let matrix = bars.matrix.as_mut().unwrap();
     matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);
     matrix.calculate_beamgroups();
@@ -94,14 +97,13 @@ fn main() {
     matrix.calculate_col_row_item_measurements();
     matrix.calculate_matrix_size();
 
-    let svg = matrix_to_svg(&matrix, true, None);
+    let svg = matrix_to_svg(&matrix, false, None);
     std::fs::write("./examples/ex3A.svg", svg).unwrap();
 
     // let playdata = bars.calc_playback();
     // let playpositions = bars.calculate_playpositions();
     // std::fs::write("./examples/ex3A.playdata.json", playdata.to_json()).unwrap();
     // std::fs::write("./examples/ex3A.positions.json", playpositions.to_json()).unwrap();
-
     // matrix.add_horizontal_space(100.0);
     // matrix.add_vertical_space(50.0);
     // matrix.calculate_col_row_item_measurements();

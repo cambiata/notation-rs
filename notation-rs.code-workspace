@@ -1,11 +1,14 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "../render_notation"
-		}
-	],
-	"settings": {}
+  "folders": [
+	{
+		"path": "."
+	},
+	{
+		"path": "../render_notation"
+	},
+	{
+		"path": "../../GRAPHICS/graphics"
+	}
+],
+  "settings": {}
 }

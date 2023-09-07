@@ -7,7 +7,43 @@ impl Bars {
     pub fn resolve_stuff(&mut self) {
         self.map_note_id_to_note();
         self.resolve_ties();
+        self.resolve_lines();
         self.resolve_slurs();
+    }
+    pub fn resolve_lines(&self) {
+        let items = self.consecutive_note_chunks();
+        for item in items {
+            // println!("partidx {}, voiceidx {} -------------------------------", item.0, item.1);
+            let notes = item.2;
+            match notes.len() {
+                1 => {}
+                _ => {
+                    for (noteidx, (left, right)) in notes.iter().tuple_windows().enumerate() {
+                        let mut left = left.borrow_mut();
+                        let mut right = right.borrow_mut();
+
+                        if left.lines.len() > 0 {
+                            for line in &left.lines {
+                                let left_levels = &left.head_levels();
+                                let left_level = left_levels.get(line.0 as usize);
+                                let right_levels = &right.head_levels();
+                                let right_level = right_levels.get(line.1 as usize);
+
+                                if let Some(left_level) = left_level {
+                                    if let Some(right_level) = right_level {
+                                        right.lines_to.push(HeadLineTo(*left_level, *right_level, line.2))
+                                    } else {
+                                        println!("Right level does not exist! {:?}", line.1);
+                                    }
+                                } else {
+                                    println!("Left level does not exist! {:?}", line.0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     pub fn resolve_ties(&self) {

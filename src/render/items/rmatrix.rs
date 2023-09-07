@@ -839,27 +839,6 @@ impl RMatrix {
             }
         }
     }
-
-    // pub fn calculate_attachement_type(&self) {
-    //     for row in self.rows.iter() {
-    //         let row = row.borrow();
-
-    //         for (itemidx, item) in row.items.iter().enumerate() {
-    //             if item.is_none() {
-    //                 continue;
-    //             }
-    //             let mut item = item.as_ref().unwrap().borrow_mut();
-
-    //             match item.note_beamdata {
-    //                 RItemBeam::None => {}
-    //                 RItemBeam::Single(_) => {}
-    //                 RItemBeam::Start(_) => {}
-    //                 RItemBeam::Middle(_) => {}
-    //                 RItemBeam::End(_) => {}
-    //             }
-    //         }
-    //     }
-    // }
 }
 
 fn do_attachmentpoint_articulation_inner(nid: &usize, stem_info: &StemInfo, item2note: &BTreeMap<usize, Rc<RefCell<Note>>>) -> NPoint {
