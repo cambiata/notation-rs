@@ -512,7 +512,23 @@ impl Bars {
                                             }
                                         }
                                     }
-                                    ComplexType::Two(note, note2, adjust) => {}
+                                    ComplexType::Two(note, note2, adjust) => {
+                                        let note = note.borrow();
+                                        if note.is_heads() {
+                                            let (head_width, adjust_x) = note.adjust_x.unwrap();
+                                            for line in &note.lines_to {
+                                                item.lines.push((line.0, line.1, line.2.clone()));
+                                            }
+                                        }
+
+                                        let note2 = note2.borrow();
+                                        if note2.is_heads() {
+                                            let (head_width, adjust_x) = note2.adjust_x.unwrap();
+                                            for line in &note2.lines_to {
+                                                item.lines.push((line.0, line.1, line.2.clone()));
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

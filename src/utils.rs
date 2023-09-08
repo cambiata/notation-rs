@@ -60,15 +60,25 @@ pub(crate) fn parse_tie_to(s: &str) -> Option<TieToType> {
 }
 
 pub(crate) fn parse_line(s: &str) -> Option<HeadLine> {
-    if s.contains("L-") {
-        return Some(HeadLine(0, 0, HeadLineType::Line));
-    }
     if s.contains("LH") {
         return Some(HeadLine(0, 0, HeadLineType::Halfstep));
     }
     if s.contains("LW") {
         return Some(HeadLine(0, 0, HeadLineType::Wholestep));
     }
+    if s.contains("LR") {
+        return Some(HeadLine(0, 0, HeadLineType::LineColor(NColor::Tomato)));
+    }
+    if s.contains("LB") {
+        return Some(HeadLine(0, 0, HeadLineType::LineColor(NColor::Dodgerblue)));
+    }
+    if s.contains("LG") {
+        return Some(HeadLine(0, 0, HeadLineType::LineColor(NColor::Lime)));
+    }
+    if s.contains("L") {
+        return Some(HeadLine(0, 0, HeadLineType::Line));
+    }
+
     None
 }
 

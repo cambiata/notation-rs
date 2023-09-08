@@ -625,6 +625,22 @@ pub enum PauseShape {
     ThirtySecond,
 }
 
+#[derive(Debug, PartialEq, Copy, Clone, Eq, Hash)]
+pub enum NColor {
+    Red,
+    Tomato,
+    Blue,
+    Dodgerblue,
+    Purple,
+    Green,
+    Lime,
+    Orange,
+    LightGray,
+    Gray,
+    Black,
+    White,
+}
+
 #[cfg(test)]
 mod tests2 {
     use super::*;

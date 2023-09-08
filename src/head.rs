@@ -59,6 +59,7 @@ pub struct HeadLineTo(pub i8, pub i8, pub HeadLineType);
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 pub enum HeadLineType {
     Line,
+    LineColor(NColor),
     Glissando,
     GlissandoWave,
     Halfstep,
