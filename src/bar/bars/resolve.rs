@@ -13,17 +13,16 @@ impl Bars {
     pub fn resolve_lines(&self) {
         let items = self.consecutive_note_chunks();
         for item in items {
-            // println!("partidx {}, voiceidx {} -------------------------------", item.0, item.1);
             let notes = item.2;
             match notes.len() {
                 1 => {}
                 _ => {
                     for (noteidx, (left, right)) in notes.iter().tuple_windows().enumerate() {
-                        let mut left = left.borrow_mut();
-                        let mut right = right.borrow_mut();
+                        let mut left: RefMut<Note> = left.borrow_mut();
+                        let mut right: RefMut<Note> = right.borrow_mut();
 
                         if left.lines.len() > 0 {
-                            for line in &left.lines {
+                            for line in left.lines.iter() {
                                 let left_levels = &left.head_levels();
                                 let left_level = left_levels.get(line.0 as usize);
                                 let right_levels = &right.head_levels();

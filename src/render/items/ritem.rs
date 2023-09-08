@@ -18,6 +18,8 @@ pub struct RItem {
 
     pub note_beamdata: RItemBeam,
     pub note2_beamdata: RItemBeam,
+
+    pub lines: Vec<(i8, i8, HeadLineType)>,
 }
 
 impl RItem {
@@ -39,6 +41,8 @@ impl RItem {
             note2_beamdata: RItemBeam::None,
             note_steminfo: StemInfo::None,
             note2_steminfo: StemInfo::None,
+
+            lines: vec![],
         }
     }
 
@@ -60,6 +64,7 @@ impl RItem {
             note2_beamdata: RItemBeam::None,
             note_steminfo: StemInfo::None,
             note2_steminfo: StemInfo::None,
+            lines: vec![],
         }
     }
 
@@ -89,6 +94,7 @@ impl RItem {
             note2_id: None,
             note_steminfo: StemInfo::None,
             note2_steminfo: StemInfo::None,
+            lines: vec![],
         }
     }
 }

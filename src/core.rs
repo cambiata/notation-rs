@@ -41,7 +41,7 @@ pub const VERTICAL_SPACE_BELOW_NOMUSIC: f32 = SPACE * 4.0;
 pub const VERTICAL_SPACE_ABOVE_NONMUSIC: f32 = SPACE * 0.5;
 pub const VERTICAL_SPACE_BELOW_NONMUSIC: f32 = SPACE * 0.5;
 
-pub const LEDGERLINE_OVERHANG: f32 = SPACE * 0.25;
+pub const LEDGERLINE_OVERHANG: f32 = SPACE * 0.35;
 
 pub const ACCIDENTAL_WIDTH_SHARP: f32 = SPACE * 1.2;
 pub const ACCIDENTAL_WIDTH_FLAT: f32 = SPACE * 1.1;
@@ -51,7 +51,7 @@ pub const ACCIDENTAL_WIDTH_DBLFLAT: f32 = SPACE * 1.5;
 
 pub const TIME_SIGNATURE_WIDTH: f32 = SPACE * 1.7;
 
-pub const BARLINE_WIDTH_SINGLE: f32 = SPACE * 0.22;
+pub const BARLINE_WIDTH_SINGLE: f32 = SPACE * 0.15;
 pub const BARLINE_DOUBLE_SPACE: f32 = BARLINE_WIDTH_SINGLE * 2.0 + SPACE * 0.4;
 //------------------------------------------------------------
 
@@ -524,13 +524,13 @@ impl NRectExt {
 
     pub fn is_line_to(&self) -> bool {
         match self.1 {
-            NRectType::LineTo(_, _, _, _) => true,
+            NRectType::LineTo(_, _, _) => true,
             _ => false,
         }
     }
     pub fn is_line_from(&self) -> bool {
         match self.1 {
-            NRectType::LineFrom(_, _) => true,
+            NRectType::LineFrom(_, _, _) => true,
             _ => false,
         }
     }
@@ -609,8 +609,8 @@ pub enum NRectType {
     KeySignature(Key, Option<Clef>),
     TimeSignature(Time),
     TplSymbol(char, TplOctave, TplAccidental),
-    LineFrom(i8, HeadLineType), // item.id, HeadLineType
-    LineTo(i8, i8, HeadLineType, NRect),
+    LineFrom(i8, i8, HeadLineType), // item.id, HeadLineType
+    LineTo(i8, i8, HeadLineType),
     // DevRectRed,
     // DevRectBlue,
 }

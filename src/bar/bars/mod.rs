@@ -496,41 +496,19 @@ impl Bars {
                     for part in parts {
                         let part = part.borrow();
                         let complexes: &Vec<Rc<RefCell<Complex>>> = part.complexes.as_ref().expect("Part should have complexes!");
-                        for complex in complexes {
+                        for (complexidx, complex) in complexes.iter().enumerate() {
                             let complex = complex.borrow();
                             if let Some(item) = &complex.matrix_item {
                                 let mut item: RefMut<RItem> = item.borrow_mut();
-
+                                println!("complexidx:{}", complexidx);
                                 match &complex.ctype {
                                     ComplexType::Single(note, _) | ComplexType::Upper(note, _) | ComplexType::Lower(note, _) => {
                                         let note = note.borrow();
                                         if note.is_heads() {
                                             let (head_width, adjust_x) = note.adjust_x.unwrap();
-
                                             for line in &note.lines_to {
-                                                let level_from = line.0;
-                                                let level_to = line.1;
-                                                let line_type = line.2;
-                                                dbg!(level_from, level_to);
-
-                                                let nrects = item.nrects.as_mut();
-                                                if nrects.is_none() {
-                                                    item.nrects = Some(vec![]);
-                                                }
-
-                                                // rect for line_from
-                                                let from_rect: NRect = NRect::new(adjust_x + head_width + 10.0, 5.0 + level_from as f32 * SPACE_HALF, 10.0, 10.0);
-                                                // item.nrects
-                                                //     .as_mut()
-                                                //     .unwrap()
-                                                //     .push(Rc::new(RefCell::new(NRectExt(from_rect, NRectType::LineFrom(level_from, line_type.clone())))));
-
-                                                // rect for line_to
-                                                let rect: NRect = NRect::new(adjust_x - 10.0, 5.0 + level_to as f32 * SPACE_HALF, 10.0, 10.0);
-                                                item.nrects
-                                                    .as_mut()
-                                                    .unwrap()
-                                                    .push(Rc::new(RefCell::new(NRectExt(rect, NRectType::LineTo(level_from, level_to, line_type.clone(), from_rect)))));
+                                                dbg!(line);
+                                                item.lines.push((line.0, line.1, line.2.clone()));
                                             }
                                         }
                                     }

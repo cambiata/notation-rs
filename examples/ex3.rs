@@ -79,11 +79,11 @@ fn main() {
 
     // let bar_data = QCode::bars("|sp2 |clef G C |key bbb Cbbb |sp3 | 0 0 0 / 1 0 0 |bl").unwrap();
 
-    let bar_data = QCode::bars("0LH,2LW -2,3").unwrap();
+    // let bar_data = QCode::bars("0LH,2LW -2,3").unwrap();
 
+    let bar_data = QCode::bars("|clef G |sp3 | 6LW 5LW 4LH 3LW 2LW 1LW 0LH -1 |bl").unwrap();
     let (bartemplate, mut bars) = bar_data;
     bars.create_matrix(Some(bartemplate)).unwrap();
-
     bars.resolve_stuff();
     bars.matrix_add_beamgroups();
     bars.matrix_add_ties();
@@ -118,7 +118,6 @@ mod tests2 {
 
     const TEST_1: &[usize] = &[11, 22];
     const TEST_2: &[usize] = &[333, 444, 555];
-
     const A: &[&[usize]] = &[TEST_1, TEST_2];
 
     // pub const MERRIWEATHER_REGULAR_CHAR_45: &'static [PathSegment] = &[M(410.5012, -225.93475), L(89.10103, -225.93475), L(89.10103, -284.00955), L(410.5012, -284.00955), L(410.5012, -225.93475), Z];
