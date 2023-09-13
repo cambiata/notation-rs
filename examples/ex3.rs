@@ -79,10 +79,14 @@ fn main() {
 
     // let bar_data = QCode::bars("|sp2 |clef G C |key bbb Cbbb |sp3 | 0 0 0 / 1 0 0 |bl").unwrap();
 
-    let bar_data = QCode::bars("0LH,2LW -2,3 % 5LG 5").unwrap();
+    // let bar_data = QCode::bars("0LH,2LW -2,3 % 5LG 5 / #1L 0").unwrap();
+
+    // let bar_data = QCode::bars("|sp2 |clef G |sp3 | 0 -1 -2 -3 -4 -5 -6 -7  3 2 1 0 % 0 1 2 3 4 5 6 7").unwrap();
+    let bar_data = QCode::bars("|sp2 |clef G |sp3 | 0 fun:T:64:3:()) ").unwrap();
 
     // let bar_data = QCode::bars("|clef G |sp3 | 6LW 5LW 4LH 3LW 2LW 1LW 0LH -1 |bl").unwrap();
     let (bartemplate, mut bars) = bar_data;
+
     bars.create_matrix(Some(bartemplate)).unwrap();
     bars.resolve_stuff();
     bars.matrix_add_beamgroups();
@@ -97,7 +101,7 @@ fn main() {
     matrix.calculate_col_row_item_measurements();
     matrix.calculate_matrix_size();
 
-    let svg = matrix_to_svg(&matrix, false, None);
+    let svg = matrix_to_svg(&matrix, true, None);
     std::fs::write("./examples/ex3A.svg", svg).unwrap();
 
     // let playdata = bars.calc_playback();

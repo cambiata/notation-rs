@@ -10,13 +10,18 @@ impl QCode {
         let mut notes: Vec<Note> = vec![];
         for segment in segments {
             match segment {
+                // note value
                 a if a.to_lowercase().starts_with("nv") => {
                     let s = &segment[2..];
                     cur_val = duration_from_str(s).ok();
                 }
+
+                // lyric note
                 a if a.starts_with("$lyr:") => {
                     todo!("Remove $ from lyrics!");
                 }
+
+                // lyric note
                 a if a.starts_with("lyr:") => {
                     let mut s = &segment[4..];
                     s = s.trim();
@@ -24,6 +29,8 @@ impl QCode {
                     let n = Note::new(NoteType::Lyric(syllable), cur_val.unwrap_or(NV4));
                     notes.push(n);
                 }
+
+                // tonplats note
                 a if a.starts_with("tpl:") => {
                     let s = segment.trim();
                     let mut s = &segment[4..];
@@ -38,14 +45,30 @@ impl QCode {
                     let n = Note::new(NoteType::Tpl(figure_char, TplOctave::Mid, TplAccidental::Neutral, level), cur_val.unwrap_or(NV4));
                     notes.push(n);
                 }
+
+                // function symbol note
+                a if a.starts_with("fun:") => {
+                    let s = segment.trim();
+                    let mut s = &segment[4..];
+                    let func_pars = crate::utils::parse_function(s).unwrap();
+                    dbg!(&func_pars);
+
+                    let n = Note::new(NoteType::Function(func_pars.0, func_pars.1, func_pars.2, func_pars.3, func_pars.4), cur_val.unwrap_or(NV4));
+                    notes.push(n);
+                }
+
+                // pause
                 "p" => {
                     let n = Note::new(NoteType::Pause, cur_val.unwrap_or(NV4)); // NoteAttributes { color: None });
                     notes.push(n);
                 }
+
+                // sparcer
                 "s" => {
                     let n = Note::new(NoteType::Spacer(0), cur_val.unwrap_or(NV4));
                     notes.push(n);
                 }
+
                 _ => {
                     let (segment, articulation) = crate::utils::parse_articulation(segment);
                     //

@@ -109,6 +109,13 @@ impl Part {
                                 DirUD::Down => tilt.max(-STEM_LENGTH),
                             };
 
+                            if tilt > -3.0 && direction == DirUD::Down {
+                                println!("Should be shortened! {}", tilt);
+                            }
+                            if tilt < 3.0 && direction == DirUD::Up {
+                                println!("Should be shortened! {}", tilt);
+                            }
+
                             beamgroup.start_level = tilt as f32;
                         }
                         _ => {
@@ -857,15 +864,44 @@ pub fn create_note_rectangles(mut rects: Vec<NRectExt>, note: &Note, placements:
             rects = create_symbol_rectangles(rects, note, symbol_type)?;
         }
 
-        NoteType::Function(function_type, function_color, function_bass) => {
-            rects = create_function_rectangles(rects, note, function_type, function_color, function_bass)?;
+        NoteType::Function(function_type, function_color, function_bass, start_par, end_par) => {
+            rects = create_function_rectangles(rects, note, function_type, function_color, function_bass, start_par, end_par)?;
         }
     }
     Ok(rects)
 }
 
-fn create_function_rectangles(rects: Vec<NRectExt>, note: &Note, function_type: FunctionType, function_color: FunctionColor, function_bass: FunctionBass) -> Result<Vec<NRectExt>> {
-    todo!()
+fn create_function_rectangles(
+    mut rects: Vec<NRectExt>,
+    note: &Note,
+    function_type: FunctionType,
+    function_color: FunctionColor,
+    function_bass: FunctionBass,
+    start_par: bool,
+    end_par: bool,
+) -> Result<Vec<NRectExt>> {
+    let mut width = 2.5 * SPACE;
+    let mut x = 0.0;
+    let mut height = 3.0 * SPACE;
+
+    if function_color != FunctionColor::FcNone {
+        width += 1.0 * SPACE;
+    }
+
+    if start_par {
+        width += SPACE;
+    }
+    if end_par {
+        width += SPACE;
+    }
+
+    if function_bass != FunctionBass::FbNone {
+        height += 1.4 * SPACE;
+    }
+
+    let rect = NRect::new(-width / 2.0, -1.5 * SPACE, width, height);
+    rects.push(NRectExt(rect, NRectType::Function(function_type, function_color, function_bass, start_par, end_par)));
+    Ok(rects)
 }
 
 fn create_symbol_rectangles(rects: Vec<NRectExt>, note: &Note, symbol_type: SymbolType) -> Result<Vec<NRectExt>> {

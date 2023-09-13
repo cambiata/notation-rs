@@ -42,6 +42,66 @@ pub fn parse_accidental(s: &str) -> Option<Accidental> {
     None
 }
 
+pub fn parse_function(s: &str) -> Option<(FunctionType, FunctionColor, FunctionBass, bool, bool)> {
+    let segments = s.split(':').collect::<Vec<&str>>();
+    dbg!(&segments);
+    let mut ftype: FunctionType = FunctionType::Spacer;
+    let mut fcolor: FunctionColor = FunctionColor::FcNone;
+    let mut fbass: FunctionBass = FunctionBass::FbNone;
+    let mut start_par: bool = false;
+    let mut end_par: bool = false;
+    let mut segments_len = &segments.len();
+
+    if *segments_len >= 1 {
+        ftype = match segments[0] {
+            "T" => FunctionType::T,
+            "Tp" => FunctionType::Tp,
+            "D" => FunctionType::D,
+            "Dp" => FunctionType::Dp,
+            "DD" => FunctionType::DD,
+            "D/" => FunctionType::DNonComplete,
+            "S" => FunctionType::S,
+            "Sp" => FunctionType::Sp,
+            _ => FunctionType::Spacer,
+        };
+    }
+
+    if *segments_len >= 2 {
+        fcolor = match segments[1] {
+            "2" => FunctionColor::Fc2,
+            "3" => FunctionColor::Fc3,
+            "4" => FunctionColor::Fc4,
+            "5" => FunctionColor::Fc5,
+            "6" => FunctionColor::Fc6,
+            "65" => FunctionColor::Fc65,
+            "64" => FunctionColor::Fc64,
+            "7" => FunctionColor::Fc7,
+            "9" => FunctionColor::Fc9,
+            "9b" => FunctionColor::Fc9flat,
+            _ => FunctionColor::FcNone,
+        };
+    }
+
+    if *segments_len >= 3 {
+        fbass = match segments[2] {
+            "3" => FunctionBass::Fb3,
+            "5" => FunctionBass::Fb5,
+            "7" => FunctionBass::Fb7,
+            _ => FunctionBass::FbNone,
+        };
+    };
+
+    if s.contains("(") {
+        start_par = true;
+    }
+
+    if s.contains(")") {
+        end_par = true;
+    }
+
+    Some((ftype, fcolor, fbass, start_par, end_par))
+}
+
 pub fn parse_tie(s: &str) -> Option<TieFromType> {
     if s.contains("_") {
         return Some(TieFromType::Standard);
