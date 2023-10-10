@@ -31,7 +31,7 @@ fn main() {
     // let bar_data = QCode::bars("|clef G F | 0 -2 % 2 2  / 0,3 0,-3 | nv8 -3 3 nv16 -3 -1 1 3 nv8 -2 4 nv16 -2 0 2 4 / nv8 3 -3 nv16 3 1 -1 -3 nv8 4 -2 nv16 4 2 0 -2 ").unwrap();
     // let bar_data = QCode::bars("|clef G |  0,-5 -1,-6 -4,4 1,-1 1,-3  0 1 3 5 7 0,2 0,4 0,6 0,8 ").unwrap();
     // let bar_data = QCode::bars("|clef G |  0 1 nv8 0 0 1 1 0 2 2 0 -2 0 0 -2 ").unwrap();
-    // let bar_data = QCode::bars("|clef G - |  nv4 -1 nv16 3 2 1 0 nv4 -2 nv8 -3 2 % nv4 p nv2 5 nv4 3 /lyr $lyr:aaaa nv2 $lyr:bbb nv4 $lyr:abc ").unwrap();
+    // let bar_data = QCode::bars("|clef G - |  nv4 -1 nv16 3 2 1 0 nv4 -2 nv8 -3 2 % nv4 p nv2 5 nv4 3 /lyr lyr:aaaa nv2 lyr:bbb nv4 lyr:abc ").unwrap();
     // let bar_data = QCode::bars("nv8 -5,-7 5,3 5,3 -5,-7 -4,-2 6,8 6,8 -4,-2").unwrap();
     // let bar_data = QCode::bars("|clef G - | nv8 0 1 /lyr nv8 lyr:aa lyr:bbb ").unwrap();
     // let bar_data = QCode::bars("|clef G | -3 nv8 0 1 nv4 1 % nv8 #-2 nv4 7,9 nv8 7 nv4 2").unwrap();
@@ -96,7 +96,7 @@ fn main() {
 
     // let bar_data = QCode::bars("/lyr lyr:c¹  lyr:c² lyr:c³ lyr:cº lyr:Cµ lyr:Fiss¶ ").unwrap();
 
-    let bar_data = QCode::bars("|sp2 |clef G F |sp3 | 0LH,2LW -2,3 % 5LG 5 / #1L 0").unwrap();
+    // let bar_data = QCode::bars("|sp2 |clef G F |sp3 | 0LH,2LW -2,3 % 5LG 5 / #1L 0").unwrap();
     // let bar_data = QCode::bars("|sp2 |clef G |sp3 | 0 -1 -2 -3 -4 -5 -6 -7  3 2 1 0 % 0 1 2 3 4 5 6 7").unwrap();
     // let bar_data = QCode::bars("|sp2 |clef G |sp3 | 0 fun:T:64:3:()) ").unwrap();
     // let bar_data = QCode::bars("|sp2 |clef G |sp3 | 0 |bl").unwrap();
@@ -105,7 +105,7 @@ fn main() {
 
     // let bar_data = QCode::bars("|clef G |sp3 | 0 0 chd:Gbmb9:F# chd:A chd:A7 chd:Am7 chd:Abm7 chd:Em:G chd:A#:Gb chd:Amsus4 chd:Gmmaj7:B |bl").unwrap();
     // let bar_data = QCode::bars("|clef - G |sp3 |/lyr chd:Gbmb9:F# chd:A chd:Am chd:D:F# / nv8 0 0 0 0 0 0 0 0 |bl").unwrap();
-    // let bar_data = QCode::bars("|sp2 |clef G F |sp3 | 0 0 / 0 0 |bl").unwrap();
+    let bar_data = QCode::bars("|sp2 | nv8 0 nv16 1 2 nv2 3 |bl").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
 
