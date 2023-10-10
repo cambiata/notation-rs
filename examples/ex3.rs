@@ -81,8 +81,8 @@ fn main() {
 
     // let bar_data = QCode::bars("|clef - G |key - ## |sp3 | lyr tpl:0:1 tpl:-4:5 tpl:-5:6 tpl:-6:7 tpl:-7:1 / 5 1 0 -1 -2").unwrap();
 
-    let bar_data = QCode::bars("|sp2 |clef G - |sp3 | nv4 6 -1 -8 /lyr lyr:c¹  lyr:c² lyr:c³ lyr:c lyr:C lyr:Cº lyr:cµ lyr:c¶  |bl").unwrap();
-    let bar_data = QCode::bars("|sp2 |clef G F - |sp3 | nv4 6 -1 -8 / nv4 0 0 0 /lyr lyr:c¹  lyr:c² lyr:c³ lyr:c lyr:C lyr:Cº lyr:cµ lyr:c¶  |bl").unwrap();
+    // let bar_data = QCode::bars("|sp2 |clef G - |sp3 | nv4 6 -1 -8 /lyr lyr:c¹  lyr:c² lyr:c³ lyr:c lyr:C lyr:Cº lyr:cµ lyr:c¶  |bl").unwrap();
+    // let bar_data = QCode::bars("|sp2 |clef G F - |sp3 | nv4 6 -1 -8 / nv4 0 0 0 /lyr lyr:c¹  lyr:c² lyr:c³ lyr:c lyr:C lyr:Cº lyr:cµ lyr:c¶  |bl").unwrap();
 
     // SUPERSCRIPT
     // lyr:c¹
@@ -96,7 +96,7 @@ fn main() {
 
     // let bar_data = QCode::bars("/lyr lyr:c¹  lyr:c² lyr:c³ lyr:cº lyr:Cµ lyr:Fiss¶ ").unwrap();
 
-    // let bar_data = QCode::bars("|clef G F |sp3 | 0LH,2LW -2,3 % 5LG 5 / #1L 0").unwrap();
+    let bar_data = QCode::bars("|sp2 |clef G F |sp3 | 0LH,2LW -2,3 % 5LG 5 / #1L 0").unwrap();
     // let bar_data = QCode::bars("|sp2 |clef G |sp3 | 0 -1 -2 -3 -4 -5 -6 -7  3 2 1 0 % 0 1 2 3 4 5 6 7").unwrap();
     // let bar_data = QCode::bars("|sp2 |clef G |sp3 | 0 fun:T:64:3:()) ").unwrap();
     // let bar_data = QCode::bars("|sp2 |clef G |sp3 | 0 |bl").unwrap();
@@ -104,7 +104,8 @@ fn main() {
     // let bar_data = QCode::bars("|clef G |sp3 | nv1 6L 0 -1L -8 2LW 1LW 0LH -1 |bl").unwrap();
 
     // let bar_data = QCode::bars("|clef G |sp3 | 0 0 chd:Gbmb9:F# chd:A chd:A7 chd:Am7 chd:Abm7 chd:Em:G chd:A#:Gb chd:Amsus4 chd:Gmmaj7:B |bl").unwrap();
-    let bar_data = QCode::bars("|clef - G |sp3 |/lyr chd:Gbmb9:F# chd:A chd:Am chd:D:F# / nv8 0 0 0 0 0 0 0 0 |bl").unwrap();
+    // let bar_data = QCode::bars("|clef - G |sp3 |/lyr chd:Gbmb9:F# chd:A chd:Am chd:D:F# / nv8 0 0 0 0 0 0 0 0 |bl").unwrap();
+    // let bar_data = QCode::bars("|sp2 |clef G F |sp3 | 0 0 / 0 0 |bl").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
 
