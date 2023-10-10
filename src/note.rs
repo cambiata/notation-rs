@@ -9,11 +9,73 @@ pub enum NoteType {
     // Slash,
     Lyric(Syllable),
     // Dynamic(DynamicItem),
-    // Chord(ChordItem),
     Spacer(i8),
     Tpl(char, TplOctave, TplAccidental, i8),
-    Function(FunctionType, FunctionColor, FunctionBass, bool, bool),
     Symbol(SymbolType),
+    Function(FunctionType, FunctionColor, FunctionBass, bool, bool),
+    ChordSymbol(ChordRoot, ChordFlavour, ChordColor, ChordRoot),
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum ChordRoot {
+    None,
+    CFlat,
+    CNatural,
+    CSharp,
+    DFlat,
+    DNatural,
+    DSharp,
+    EFlat,
+    ENatural,
+    ESharp,
+    FFlat,
+    FNatural,
+    FSharp,
+    GFlat,
+    GNatural,
+    GSharp,
+    AFlat,
+    ANatural,
+    ASharp,
+    BFlat,
+    BNatural,
+    BSharp,
+}
+impl ChordRoot {
+    pub fn get_char(self: ChordRoot) -> char {
+        match self {
+            ChordRoot::None => ' ',
+            ChordRoot::CFlat | ChordRoot::CNatural | ChordRoot::CSharp => 'C',
+            ChordRoot::DFlat | ChordRoot::DNatural | ChordRoot::DSharp => 'D',
+            ChordRoot::EFlat | ChordRoot::ENatural | ChordRoot::ESharp => 'E',
+            ChordRoot::FFlat | ChordRoot::FNatural | ChordRoot::FSharp => 'F',
+            ChordRoot::GFlat | ChordRoot::GNatural | ChordRoot::GSharp => 'G',
+            ChordRoot::AFlat | ChordRoot::ANatural | ChordRoot::ASharp => 'A',
+            ChordRoot::BFlat | ChordRoot::BNatural | ChordRoot::BSharp => 'B',
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum ChordFlavour {
+    Major,
+    Minor,
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum ChordColor {
+    None,
+    SusTwo,
+    SusFour,
+    Five,
+    PlusFive,
+    Six,
+    Seven,
+    MajSeven,
+    Nine,
+    MinusNine,
+    PlusNine,
+    Thirteen,
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -63,7 +125,7 @@ pub enum FunctionType {
     S,
     D,
     DNonComplete,
-    Tp,    
+    Tp,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]

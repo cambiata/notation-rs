@@ -255,7 +255,10 @@ pub fn get_size(c: char) -> &'static (f32, f32) {
         252 => MERRIWEATHER_REGULAR_252_SIZE,
         253 => MERRIWEATHER_REGULAR_253_SIZE,
         254 => MERRIWEATHER_REGULAR_254_SIZE,
-        _ => todo!(),
+        _ => {
+            println!("Not yet implemented: char code {}", c);
+            MERRIWEATHER_REGULAR_0_SIZE
+        }
     }
 }
 

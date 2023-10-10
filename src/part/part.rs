@@ -5,7 +5,7 @@ use std::{
 
 use itertools::Itertools;
 
-use crate::{head, prelude::*};
+use crate::{head, prelude::*, utils::chord_guess_width};
 
 pub type Parts = Vec<Rc<RefCell<Part>>>;
 
@@ -867,7 +867,19 @@ pub fn create_note_rectangles(mut rects: Vec<NRectExt>, note: &Note, placements:
         NoteType::Function(function_type, function_color, function_bass, start_par, end_par) => {
             rects = create_function_rectangles(rects, note, function_type, function_color, function_bass, start_par, end_par)?;
         }
+        NoteType::ChordSymbol(chord_root, chord_flavour, chord_color, chord_bass) => {
+            rects = create_chord_rectangles(rects, note, chord_root, chord_flavour, chord_color, chord_bass)?;
+        }
     }
+    Ok(rects)
+}
+
+fn create_chord_rectangles(mut rects: Vec<NRectExt>, note: &Note, chord_root: ChordRoot, chord_flavour: ChordFlavour, chord_color: ChordColor, chord_bass: ChordRoot) -> Result<Vec<NRectExt>> {
+    let mut width = chord_guess_width(&chord_root, &chord_flavour, &chord_color, &chord_bass) + CHORD_MARGIN;
+    let mut height = 3.0 * SPACE;
+
+    let rect = NRect::new(-width / 4.0, -1.5 * SPACE, width, height);
+    rects.push(NRectExt(rect, NRectType::ChordSymbol(chord_root, chord_flavour, chord_color, chord_bass)));
     Ok(rects)
 }
 
@@ -900,7 +912,7 @@ fn create_function_rectangles(
     }
 
     let rect = NRect::new(-width / 2.0, -1.5 * SPACE, width, height);
-    rects.push(NRectExt(rect, NRectType::Function(function_type, function_color, function_bass, start_par, end_par)));
+    rects.push(NRectExt(rect, NRectType::FunctionSymbol(function_type, function_color, function_bass, start_par, end_par)));
     Ok(rects)
 }
 

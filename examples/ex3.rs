@@ -6,7 +6,11 @@
 #![allow(clippy::uninlined_format_args)]
 #![allow(clippy::useless_format)]
 
-use graphics::{glyphs::ebgaramond::*, prelude::*};
+use graphics::{
+    builder::{BuilderOptions, SizeUnit},
+    glyphs::ebgaramond::*,
+    prelude::*,
+};
 use notation_rs::prelude::*;
 
 use render_notation::prelude::*;
@@ -14,7 +18,7 @@ use render_notation::prelude::*;
 // use render_notation::render::output::*;
 
 fn main() {
-    // let bar_data = QCode::bars("|clef G F - | 0,1,4 1 / 0 0 /lyr $lyr:aa $lyr:c |bl | #0 nv8 1 b2 / 0 0 /lyr nv4dot $lyr:bbb nv8 $lyr:c").unwrap();
+    // let bar_data = QCode::bars("|clef G F - | 0,1,4 1 / 0 0 /lyr lyr:aa lyr:c |bl | #0 nv8 1 b2 / 0 0 /lyr nv4dot lyr:bbb nv8 lyr:c").unwrap();
     // let bar_data = QCode::bars("|clef G - | nv2 #0 nv8 1 nv16 0 -3 nv8 -2,b-1 1#  /lyr nv2 $lyr:aaa $lyr:b").unwrap();
     // let bar_data = QCode::bars("|clef F G C | 0 / 0 / 0 ").unwrap();
     // let bar_data = QCode::bars("|clef G | nv4 0 nv8 0 0 % nv8 2 nv16 2 2 nv4 2 ").unwrap();
@@ -77,14 +81,31 @@ fn main() {
 
     // let bar_data = QCode::bars("|clef - G |key - ## |sp3 | lyr tpl:0:1 tpl:-4:5 tpl:-5:6 tpl:-6:7 tpl:-7:1 / 5 1 0 -1 -2").unwrap();
 
-    // let bar_data = QCode::bars("|sp2 |clef G C |key bbb Cbbb |sp3 | 0 0 0 / 1 0 0 |bl").unwrap();
+    let bar_data = QCode::bars("|sp2 |clef G - |sp3 | nv4 6 -1 -8 /lyr lyr:c¹  lyr:c² lyr:c³ lyr:c lyr:C lyr:Cº lyr:cµ lyr:c¶  |bl").unwrap();
+    let bar_data = QCode::bars("|sp2 |clef G F - |sp3 | nv4 6 -1 -8 / nv4 0 0 0 /lyr lyr:c¹  lyr:c² lyr:c³ lyr:c lyr:C lyr:Cº lyr:cµ lyr:c¶  |bl").unwrap();
 
-    // let bar_data = QCode::bars("0LH,2LW -2,3 % 5LG 5 / #1L 0").unwrap();
+    // SUPERSCRIPT
+    // lyr:c¹
+    // lyr:c²
+    // lyr:c³
 
+    // SUBSCRIPT
+    // lyr:cº
+    // lyr:cµ
+    // lyr:c¶
+
+    // let bar_data = QCode::bars("/lyr lyr:c¹  lyr:c² lyr:c³ lyr:cº lyr:Cµ lyr:Fiss¶ ").unwrap();
+
+    // let bar_data = QCode::bars("|clef G F |sp3 | 0LH,2LW -2,3 % 5LG 5 / #1L 0").unwrap();
     // let bar_data = QCode::bars("|sp2 |clef G |sp3 | 0 -1 -2 -3 -4 -5 -6 -7  3 2 1 0 % 0 1 2 3 4 5 6 7").unwrap();
-    let bar_data = QCode::bars("|sp2 |clef G |sp3 | 0 fun:T:64:3:()) ").unwrap();
-
+    // let bar_data = QCode::bars("|sp2 |clef G |sp3 | 0 fun:T:64:3:()) ").unwrap();
+    // let bar_data = QCode::bars("|sp2 |clef G |sp3 | 0 |bl").unwrap();
     // let bar_data = QCode::bars("|clef G |sp3 | 6LW 5LW 4LH 3LW 2LW 1LW 0LH -1 |bl").unwrap();
+    // let bar_data = QCode::bars("|clef G |sp3 | nv1 6L 0 -1L -8 2LW 1LW 0LH -1 |bl").unwrap();
+
+    // let bar_data = QCode::bars("|clef G |sp3 | 0 0 chd:Gbmb9:F# chd:A chd:A7 chd:Am7 chd:Abm7 chd:Em:G chd:A#:Gb chd:Amsus4 chd:Gmmaj7:B |bl").unwrap();
+    let bar_data = QCode::bars("|clef - G |sp3 |/lyr chd:Gbmb9:F# chd:A chd:Am chd:D:F# / nv8 0 0 0 0 0 0 0 0 |bl").unwrap();
+
     let (bartemplate, mut bars) = bar_data;
 
     bars.create_matrix(Some(bartemplate)).unwrap();
@@ -101,8 +122,25 @@ fn main() {
     matrix.calculate_col_row_item_measurements();
     matrix.calculate_matrix_size();
 
+    //------------------------------------------------------
     let svg = matrix_to_svg(&matrix, true, None);
     std::fs::write("./examples/ex3A.svg", svg).unwrap();
+
+    // //---------------------------------------------------
+    // let script_name = "TestSuperscript1";
+    // let category_name = "MusicClips";
+    // let fuse = matrix_to_fuse(
+    //     matrix,
+    //     false,
+    //     Some(BuilderOptions {
+    //         size_unit: SizeUnit::Pixel,
+    //         size_scaling: 0.005,
+    //     }),
+    //     script_name,
+    //     category_name,
+    // );
+    // // std::fs::write(format!("C:/Users/Cambiata MusikProd/AppData/Roaming/Blackmagic Design/Fusion/Fuses/{}.fuse", script_name), fuse).unwrap();
+    // std::fs::write(format!("./examples/{}.fuse", script_name), fuse).unwrap();
 
     // let playdata = bars.calc_playback();
     // let playpositions = bars.calculate_playpositions();

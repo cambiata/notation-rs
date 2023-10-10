@@ -102,6 +102,98 @@ pub fn parse_function(s: &str) -> Option<(FunctionType, FunctionColor, FunctionB
     Some((ftype, fcolor, fbass, start_par, end_par))
 }
 
+fn parse_chord_root(r: &str) -> ChordRoot {
+    if r.contains("Cb") {
+        return ChordRoot::CFlat;
+    } else if r.contains("C#") {
+        return ChordRoot::CSharp;
+    } else if r.contains("Db") {
+        return ChordRoot::DFlat;
+    } else if r.contains("D#") {
+        return ChordRoot::DSharp;
+    } else if r.contains("Eb") {
+        return ChordRoot::EFlat;
+    } else if r.contains("E#") {
+        return ChordRoot::ESharp;
+    } else if r.contains("Fb") {
+        return ChordRoot::FFlat;
+    } else if r.contains("F#") {
+        return ChordRoot::FSharp;
+    } else if r.contains("Gb") {
+        return ChordRoot::GFlat;
+    } else if r.contains("G#") {
+        return ChordRoot::GSharp;
+    } else if r.contains("Ab") {
+        return ChordRoot::AFlat;
+    } else if r.contains("A#") {
+        return ChordRoot::ASharp;
+    } else if r.contains("Bb") {
+        return ChordRoot::BFlat;
+    } else if r.contains("B#") {
+        return ChordRoot::BSharp;
+    } else if r.contains("C") {
+        return ChordRoot::CNatural;
+    } else if r.contains("D") {
+        return ChordRoot::DNatural;
+    } else if r.contains("E") {
+        return ChordRoot::ENatural;
+    } else if r.contains("F") {
+        return ChordRoot::FNatural;
+    } else if r.contains("G") {
+        return ChordRoot::GNatural;
+    } else if r.contains("A") {
+        return ChordRoot::ANatural;
+    } else if r.contains("B") {
+        return ChordRoot::BNatural;
+    }
+    ChordRoot::None
+}
+
+pub(crate) fn parse_chord(s: &str) -> Option<(ChordRoot, ChordFlavour, ChordColor, ChordRoot)> {
+    let mut croot: ChordRoot = ChordRoot::DSharp;
+    let mut cflavour: ChordFlavour = ChordFlavour::Major;
+    let mut ccolor: ChordColor = ChordColor::None;
+    let mut cbass: ChordRoot = ChordRoot::None;
+
+    let mut s: String = s.to_string();
+
+    if s.contains("sus2") {
+        ccolor = ChordColor::SusTwo;
+    } else if s.contains("sus4") {
+        ccolor = ChordColor::SusFour;
+    } else if s.contains("maj7") {
+        ccolor = ChordColor::MajSeven;
+        s = s.replace("maj7", "");
+    } else if s.contains("#5") {
+        ccolor = ChordColor::PlusFive;
+    } else if s.contains("#9") {
+        ccolor = ChordColor::PlusNine;
+    } else if s.contains("b9") {
+        ccolor = ChordColor::MinusNine;
+    } else if s.contains("5") {
+        ccolor = ChordColor::Five;
+    } else if s.contains("6") {
+        ccolor = ChordColor::Six;
+    } else if s.contains("7") {
+        ccolor = ChordColor::Seven;
+    };
+
+    if s.contains('m') {
+        cflavour = ChordFlavour::Minor;
+    }
+
+    let x = s.split(':').collect::<Vec<&str>>();
+    croot = parse_chord_root(x[0]);
+
+    if x.len() > 1 {
+        cbass = parse_chord_root(x[1]);
+    }
+
+    // dbg!(croot, cbass);
+
+    Some((croot, cflavour, ccolor, cbass))
+}
+
 pub fn parse_tie(s: &str) -> Option<TieFromType> {
     if s.contains("_") {
         return Some(TieFromType::Standard);
@@ -168,4 +260,96 @@ pub fn rect_x(rect: &NRect, nrects: Vec<NRectExt>) -> f32 {
     }
 
     0.0
+}
+
+pub fn chord_guess_width(chord_root: &ChordRoot, chord_flavour: &ChordFlavour, chord_color: &ChordColor, chord_bass: &ChordRoot) -> f32 {
+    let mut width = 0.0;
+
+    match chord_root {
+        ChordRoot::None => {}
+        ChordRoot::CNatural | ChordRoot::CFlat | ChordRoot::CSharp => width += 50.0,
+        ChordRoot::DNatural | ChordRoot::DFlat | ChordRoot::DSharp => width += 60.0,
+        ChordRoot::ENatural | ChordRoot::EFlat | ChordRoot::ESharp => width += 50.0,
+        ChordRoot::FNatural | ChordRoot::FFlat | ChordRoot::FSharp => width += 50.0,
+        ChordRoot::GNatural | ChordRoot::GFlat | ChordRoot::GSharp => width += 60.0,
+        ChordRoot::ANatural | ChordRoot::AFlat | ChordRoot::ASharp => width += 55.0,
+        ChordRoot::BNatural | ChordRoot::BFlat | ChordRoot::BSharp => width += 55.0,
+    };
+
+    match chord_root {
+        ChordRoot::CFlat
+        | ChordRoot::CSharp
+        | ChordRoot::DFlat
+        | ChordRoot::DSharp
+        | ChordRoot::EFlat
+        | ChordRoot::ESharp
+        | ChordRoot::FFlat
+        | ChordRoot::FSharp
+        | ChordRoot::GFlat
+        | ChordRoot::GSharp
+        | ChordRoot::AFlat
+        | ChordRoot::ASharp
+        | ChordRoot::BFlat
+        | ChordRoot::BSharp => width += 30.0,
+        _ => width += 0.0,
+    };
+
+    match chord_flavour {
+        ChordFlavour::Minor => {
+            width += 80.0;
+        }
+        _ => {}
+    }
+    match chord_color {
+        ChordColor::None => {}
+        ChordColor::SusTwo => width += 25.0 + 75.0,
+        ChordColor::SusFour => width += 25.0 + 75.0,
+        ChordColor::MajSeven => width += 100.0,
+        ChordColor::Five => width += 25.0,
+        ChordColor::PlusFive => width += 25.0,
+        ChordColor::Six => width += 25.0,
+        ChordColor::Seven => width += 25.0,
+        ChordColor::Nine => width += 25.0,
+        ChordColor::MinusNine => width += 35.0,
+        ChordColor::PlusNine => width += 25.0,
+        ChordColor::Thirteen => width += 25.0,
+    }
+
+    match chord_bass {
+        ChordRoot::None => {}
+        _ => {
+            width += 28.0;
+
+            match chord_bass {
+                ChordRoot::None => {}
+                ChordRoot::CNatural | ChordRoot::CFlat | ChordRoot::CSharp => width += 50.0,
+                ChordRoot::DNatural | ChordRoot::DFlat | ChordRoot::DSharp => width += 60.0,
+                ChordRoot::ENatural | ChordRoot::EFlat | ChordRoot::ESharp => width += 50.0,
+                ChordRoot::FNatural | ChordRoot::FFlat | ChordRoot::FSharp => width += 50.0,
+                ChordRoot::GNatural | ChordRoot::GFlat | ChordRoot::GSharp => width += 60.0,
+                ChordRoot::ANatural | ChordRoot::AFlat | ChordRoot::ASharp => width += 55.0,
+                ChordRoot::BNatural | ChordRoot::BFlat | ChordRoot::BSharp => width += 55.0,
+            };
+
+            match chord_bass {
+                ChordRoot::CFlat
+                | ChordRoot::CSharp
+                | ChordRoot::DFlat
+                | ChordRoot::DSharp
+                | ChordRoot::EFlat
+                | ChordRoot::ESharp
+                | ChordRoot::FFlat
+                | ChordRoot::FSharp
+                | ChordRoot::GFlat
+                | ChordRoot::GSharp
+                | ChordRoot::AFlat
+                | ChordRoot::ASharp
+                | ChordRoot::BFlat
+                | ChordRoot::BSharp => width += 30.0,
+                _ => width += 0.0,
+            };
+        }
+    }
+
+    width
 }

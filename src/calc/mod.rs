@@ -139,5 +139,6 @@ pub fn note_get_heads_placements(note: &Note) -> Result<HeadsPlacement> {
         NoteType::Tpl(_, _, _, _) => Ok(Vec::new()),
         NoteType::Function(_, _, _, _, _) => Ok(Vec::new()),
         NoteType::Symbol(_) => Ok(Vec::new()),
+        NoteType::ChordSymbol(_, _, _, _) => Ok(Vec::new()),
     }
 }

@@ -51,9 +51,18 @@ impl QCode {
                     let s = segment.trim();
                     let mut s = &segment[4..];
                     let func_pars = crate::utils::parse_function(s).unwrap();
-                    dbg!(&func_pars);
 
                     let n = Note::new(NoteType::Function(func_pars.0, func_pars.1, func_pars.2, func_pars.3, func_pars.4), cur_val.unwrap_or(NV4));
+                    notes.push(n);
+                }
+
+                // chord symbol note
+                a if a.starts_with("chd:") => {
+                    let s = segment.trim();
+                    let mut s = &segment[4..];
+                    let chord_pars = crate::utils::parse_chord(s).unwrap();
+
+                    let n = Note::new(NoteType::ChordSymbol(chord_pars.0, chord_pars.1, chord_pars.2, chord_pars.3), cur_val.unwrap_or(NV4));
                     notes.push(n);
                 }
 
