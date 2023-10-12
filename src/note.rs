@@ -126,6 +126,7 @@ pub enum FunctionType {
     D,
     DNonComplete,
     Tp,
+    Tk,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]

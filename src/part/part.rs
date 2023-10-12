@@ -896,6 +896,16 @@ fn create_function_rectangles(
     let mut x = 0.0;
     let mut height = 3.0 * SPACE;
 
+    match function_type {
+        FunctionType::Sp | FunctionType::Dp | FunctionType::Tp | FunctionType::Tk => {
+            width += 1.4 * SPACE;
+        }
+        FunctionType::DD => {
+            width += 0.8 * SPACE;
+        }
+        _ => {}
+    }
+
     if function_color != FunctionColor::FcNone {
         width += 1.0 * SPACE;
     }
