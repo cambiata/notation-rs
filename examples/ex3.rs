@@ -105,7 +105,8 @@ fn main() {
 
     // let bar_data = QCode::bars("|clef G |sp3 | 0 0 chd:Gbmb9:F# chd:A chd:A7 chd:Am7 chd:Abm7 chd:Em:G chd:A#:Gb chd:Amsus4 chd:Gmmaj7:B |bl").unwrap();
     // let bar_data = QCode::bars("|clef - G |sp3 |/lyr chd:Gbmb9:F# chd:A chd:Am chd:D:F# / nv8 0 0 0 0 0 0 0 0 |bl").unwrap();
-    let bar_data = QCode::bars("|sp2 | nv8 0 nv16 1 2 nv2 3 |bl").unwrap();
+    // let bar_data = QCode::bars("|sp2 |clef G ").unwrap();
+    let bar_data = QCode::bars("| clef - G - |sp3 |/lyr nv2 chd:G7 chd:C / nv2 0,2,3,5 -1,2,4,6 /lyr nv2 fun:D fun:T ").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
 

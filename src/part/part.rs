@@ -911,7 +911,7 @@ fn create_function_rectangles(
         height += 1.4 * SPACE;
     }
 
-    let rect = NRect::new(-width / 2.0, -1.5 * SPACE, width, height);
+    let rect = NRect::new(-width / 4.0, -1.5 * SPACE, width, height);
     rects.push(NRectExt(rect, NRectType::FunctionSymbol(function_type, function_color, function_bass, start_par, end_par)));
     Ok(rects)
 }
