@@ -82,6 +82,7 @@ pub enum ChordColor {
 pub enum SymbolType {
     RightArrow,
     LeftArrow,
+    Square(f32),
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -99,6 +100,7 @@ pub enum FunctionColor {
     Fc3,
     Fc4,
     Fc5,
+    Fc53,
     Fc6,
     Fc65,
     Fc64,

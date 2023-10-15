@@ -71,6 +71,7 @@ pub fn parse_function(s: &str) -> Option<(FunctionType, FunctionColor, FunctionB
             "2" => FunctionColor::Fc2,
             "3" => FunctionColor::Fc3,
             "4" => FunctionColor::Fc4,
+            "53" => FunctionColor::Fc53,
             "5" => FunctionColor::Fc5,
             "6" => FunctionColor::Fc6,
             "65" => FunctionColor::Fc65,
@@ -252,6 +253,10 @@ pub(crate) fn parse_articulation(s: &str) -> (String, NoteArticulation) {
         return (s.replace(">", ""), NoteArticulation::Marcato);
     }
     (s.to_string(), NoteArticulation::None)
+}
+
+pub(crate) fn parse_symbol(s: &str) -> Option<(String, SymbolType)> {
+    return Some((s.to_string(), SymbolType::Square(2.0)));
 }
 
 pub fn rect_x(rect: &NRect, nrects: Vec<NRectExt>) -> f32 {

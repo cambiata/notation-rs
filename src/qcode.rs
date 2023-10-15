@@ -66,6 +66,16 @@ impl QCode {
                     notes.push(n);
                 }
 
+                // symbol
+                a if a.starts_with("sym:") => {
+                    let s = segment.trim();
+                    let mut s = &segment[4..];
+                    let stype = crate::utils::parse_symbol(s).unwrap();
+
+                    let n = Note::new(NoteType::Symbol(stype.1), cur_val.unwrap_or(NV4));
+                    notes.push(n);
+                }
+
                 // pause
                 "p" => {
                     let n = Note::new(NoteType::Pause, cur_val.unwrap_or(NV4)); // NoteAttributes { color: None });

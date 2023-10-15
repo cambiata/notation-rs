@@ -621,6 +621,7 @@ pub enum NRectType {
     LineTo(i8, i8, HeadLineType),
     FunctionSymbol(FunctionType, FunctionColor, FunctionBass, bool, bool),
     ChordSymbol(ChordRoot, ChordFlavour, ChordColor, ChordRoot),
+    Symbol(SymbolType),
     // DevRectRed,
     // DevRectBlue,
 }

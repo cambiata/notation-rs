@@ -897,6 +897,9 @@ fn create_function_rectangles(
     let mut height = 3.0 * SPACE;
 
     match function_type {
+        FunctionType::Spacer => {
+            width = 1.0 * SPACE;
+        }
         FunctionType::Sp | FunctionType::Dp | FunctionType::Tp | FunctionType::Tk => {
             width += 1.4 * SPACE;
         }
@@ -926,8 +929,16 @@ fn create_function_rectangles(
     Ok(rects)
 }
 
-fn create_symbol_rectangles(rects: Vec<NRectExt>, note: &Note, symbol_type: SymbolType) -> Result<Vec<NRectExt>> {
-    todo!()
+fn create_symbol_rectangles(mut rects: Vec<NRectExt>, note: &Note, symbol_type: SymbolType) -> Result<Vec<NRectExt>> {
+    match symbol_type {
+        SymbolType::Square(size) => {
+            let rect: NRect = NRect::new(size * -SPACE, size * -SPACE, 2.0 * size * SPACE, 2.0 * size * SPACE);
+            rects.push(NRectExt(rect, NRectType::Symbol(symbol_type)));
+        }
+        _ => {}
+    }
+
+    Ok(rects)
 }
 
 fn create_tpl_rectangles(mut rects: Vec<NRectExt>, note: &Note, char: char, octave: TplOctave, accidental: TplAccidental, display_level: i8) -> Result<Vec<NRectExt>> {

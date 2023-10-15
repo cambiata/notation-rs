@@ -106,7 +106,19 @@ fn main() {
     // let bar_data = QCode::bars("|clef G |sp3 | 0 0 chd:Gbmb9:F# chd:A chd:A7 chd:Am7 chd:Abm7 chd:Em:G chd:A#:Gb chd:Amsus4 chd:Gmmaj7:B |bl").unwrap();
     // let bar_data = QCode::bars("|clef - G |sp3 |/lyr chd:Gbmb9:F# chd:A chd:Am chd:D:F# / nv8 0 0 0 0 0 0 0 0 |bl").unwrap();
     // let bar_data = QCode::bars("|sp2 |clef G ").unwrap();
-    let bar_data = QCode::bars("/lyr nv1 fun:S s s /lyr nv1 fun:Sp fun:D:7 fun:T /lyr nv1 fun:DD:7 s s ").unwrap();
+    // let bar_data = QCode::bars("/lyr nv1 fun:S s s /lyr nv1 fun:Sp fun:D:7 fun:T /lyr nv1 fun:DD:7 s s ").unwrap();
+    // let bar_data = QCode::bars("/lyr nv1 chd:Bb chd:C7 chd:F /lyr nv1 chd:Bb nv4 chd:F:C nv2dot chd:C7  chd:F ").unwrap();
+    // let bar_data = QCode::bars("/lyr nv1 fun:S fun:D:7 fun:T /lyr nv1 fun:S nv4 fun:D:64 nv2dot fun:D:7 nv1 fun:T  ").unwrap();
+    // let bar_data = QCode::bars("/lyr nv1 chd:Bb chd:C7 chd:F /lyr nv1 chd:Bb nv4 chd:F:C nv2dot chd:C7 nv1 chd:F  ").unwrap();
+    // let bar_data = QCode::bars("   /lyr nv1 chd:Bb nv4 chd:F:C nv2dot chd:C7 nv1 chd:F /lyr nv1 fun:S nv4 fun:D:64 nv2dot fun:D:7 nv1 fun:T ").unwrap();
+    // let bar_data = QCode::bars("   /lyr nv1 chd:Bb chd:C7 chd:F /lyr nv1 fun:S fun:D:7 fun:T").unwrap();
+    // let bar_data = QCode::bars("/lyr nv1 fun:S nv4 s nv2dot fun:D:7  fun:T ").unwrap();
+    // let bar_data = QCode::bars("|sp2 |clef - G F - |sp2 |key - b Fb - |sp3 |/lyr nv2 chd:F chd:C / nv2 1 2 % nv2 3 4  / nv2 -6 -6 % nv2 -2 1 /lyr nv2 fun:T fun:D |bl |sp3 |/lyr nv4 chd:F / nv1 3 % nv1 6 / nv1 -4 % nv1 5 /lyr fun:T |bld").unwrap();
+    // let bar_data = QCode::bars("|sp2 |clef - G F - |sp2 |key - b Fb - |sp3 |/lyr nv2 chd:F nv4 chd:C6 chd:C / nv2 1 nv4 1 2 % nv2 3 4  / nv2 -6 -6 % nv2 -2 1 /lyr nv2 fun:T nv4 fun:D:6 fun:N:5 |bl |sp3 |/lyr nv4 chd:F / nv1 3 % nv1 6 / nv1 -4 % nv1 5 /lyr fun:T |bld").unwrap();
+    // let bar_data = QCode::bars("|sp2 |clef - G F - |sp2 |key - b Fb - |sp3 |/lyr nv2 chd:F nv4 chd:Csus4 chd:C/ nv2 1 2 % nv2 3 nv4 3 4  / nv2 -6 -6 % nv2 -2 1 /lyr nv2 fun:T nv4 fun:D:4 fun:N:3 |bl |sp3 |/lyr nv4 chd:F / nv1 3 % nv1 6 / nv1 -4 % nv1 5 /lyr fun:T |bld").unwrap();
+    let bar_data = QCode::bars("|sp2 |clef - G F - |sp2 |key - b Fb - |sp3 |/lyr nv2 chd:F nv4 chd:F:C chd:C / nv2 1 nv4 1 2 % nv2 3 nv4 3 4  / nv2 -6 -6 % nv2 -2 1 /lyr nv2 fun:T nv4 fun:D:64 fun:D |bl |sp3 |/lyr nv4 chd:F / nv1 3 % nv1 6 / nv1 -4 % nv1 5 /lyr fun:T |bld").unwrap();
+    let bar_data = QCode::bars("/lyr nv2 chd:F7 sym:R1").unwrap();
+    let bar_data = QCode::bars("/lyr nv2 sym:R1 chd:Bm").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
 
