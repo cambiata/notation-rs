@@ -119,45 +119,44 @@ fn main() {
     // let bar_data = QCode::bars("|sp2 |clef - G F - |sp2 |key - b Fb - |sp3 |/lyr nv2 chd:F nv4 chd:F:C chd:C / nv2 1 nv4 1 2 % nv2 3 nv4 3 4  / nv2 -6 -6 % nv2 -2 1 /lyr nv2 fun:T nv4 fun:D:64 fun:D |bl |sp3 |/lyr nv4 chd:F / nv1 3 % nv1 6 / nv1 -4 % nv1 5 /lyr fun:T |bld").unwrap();
     // let bar_data = QCode::bars("/lyr nv2 chd:F7 sym:R1").unwrap();
     // let bar_data = QCode::bars("/lyr nv2 sym:R1 chd:Bm").unwrap();
-    let bar_data = QCode::bars("|sp2 |clef G |sp1 |key b |sp3 | 3 2 1 0 |bl |sp3 | 1 2 nv2 3 |bld ").unwrap();
+    let bar_data =
+        QCode::bars("|sp2 |clef G |sp1 |key b |sp3 | 3 2 1 0 |bl |sp3 | 1 2 nv2 3 |bld ").unwrap();
     let bar_data = QCode::bars(
         "|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F chd:C chd:F chd:Bb / 3,6,8 2,4,6 1,3,6 0,3,5  / -2 1 -2 2 |bl |sp3 |/lyr chd:F chd:C chd:F / 1,3,6 2,4,6 nv2 3,6,8 / -2 1 nv2 5 |bld ",
     )
     .unwrap();
 
     let bar_data = QCode::bars(
-        "|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F chd:C chd:F chd:Bb / 3 2 1 0 % 6 4 3 3  / -4 -6 -6 -7 % -2 1 -2 2 |bl |sp3 |/lyr chd:F chd:C chd:F / 1 2 nv2 3 % 3 4 nv2 5  /  -6 -6 nv2 -4 % -2 1 nv2 5 |bld ",
+        "|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F chd:C chd:F chd:Bb / 3 2 1 0 % 6 4 3 3  / -4 -6 -6 -7 % -2 1 -2 2 |bl |sp3 |/lyr chd:F chd:C chd:F / 1 2 nv2 3 % 3 4 nv2 6  /  -6 -6 nv2 -4 % -2 1 nv2 5 |bld ",
     )
     .unwrap();
 
-    let bar_data = QCode::bars("|sp2 |clef G |time c |sp3 | 2 |bl |sp3| 4 2 1 2 |bl |sp3 | 3 5 4 |blt | 2 |bl|sp3| -1 0 1 1 |bl |sp3 | nv2 2 nv4 p").unwrap();
+    // let bar_data = QCode::bars("|sp2 |clef G |time c |sp3 | 2 |bl |sp3| 4 2 1 2 |bl |sp3 | 3 5 4 |blt | 2 |bl|sp3| -1 0 1 1 |bl |sp3 | nv2 2 nv4 p").unwrap();
 
-    let bar_data = QCode::bars("|sp2 |clef G |time c |sp3 | 2 % p |bl |sp3| 4 2 1 2 % nv1 p |bl |sp3 | 3 5 4 % nv2 p nv4 p |blt | 2 |bl|sp3| -1 0 1 1 |bl |sp3 | nv2 2 nv4 p|bl").unwrap();
+    // let bar_data = QCode::bars("|sp2 |clef G |time c |sp3 | 2 % p |bl |sp3| 4 2 1 2 % nv1 p |bl |sp3 | 3 5 4 % nv2 p nv4 p |blt | 2 |bl|sp3| -1 0 1 1 |bl |sp3 | nv2 2 nv4 p|bl").unwrap();
 
-    let bar_data = QCode::bars("|sp2 |clef G |time c |sp3 | p % 2 |bl |sp3| nv1 p % 4 2 1 2 |bl |sp3 |  nv2 p nv4 p % 3 5 4  |blt | 2 |bl|sp3| -1 0 1 1 |bl |sp3 | nv2 2 nv4 p|bl").unwrap();
+    // let bar_data = QCode::bars("|sp2 |clef G |time c |sp3 | p % 2 |bl |sp3| nv1 p % 4 2 1 2 |bl |sp3 |  nv2 p nv4 p % 3 5 4  |blt | 2 |bl|sp3| -1 0 1 1 |bl |sp3 | nv2 2 nv4 p|bl").unwrap();
 
-    let bar_data = QCode::bars(
-        "|sp2 |clef G F |sp2| time c c |sp3 
-        | s % p / -3 |bl |sp3
-        | nv1 p % nv1 p / -1 -3 -4 -3 |bl |sp3 
-        | nv2 p nv4 p % nv2 p nv4 p / -2 0 -1 |blt |sp3
-        | p % 5 / 2 |bl|sp3
-        | nv1 p % 7 5 4 5 / 4 2 1 2 |bl |sp3 
-        | nv2 p nv4 p % 6 8 7 / 3 0 4 |blt |sp3
-        | 2 % 6 / -1 |bl |sp3
-        | 4 2 1 2 % nv2 6 6 / 1 -1 -2 -1 |bl |sp3
-        | 3 5 4 % 5 7 6  / 0 -3 1 |blt |sp3        
-        ",
-    )
-    .unwrap();
+    // let bar_data = QCode::bars(
+    //     "|sp2 |clef G F |sp2| time c c |sp3
+    //     | s % p / -3 |bl |sp3
+    //     | nv1 p % nv1 p / -1 -3 -4 -3 |bl |sp3
+    //     | nv2 p nv4 p % nv2 p nv4 p / -2 0 -1 |blt |sp3
+    //     | p % 5 / 2 |bl|sp3
+    //     | nv1 p % 7 5 4 5 / 4 2 1 2 |bl |sp3
+    //     | nv2 p nv4 p % 6 8 7 / 3 0 4 |blt |sp3
+    //     | 2 % 6 / -1 |bl |sp3
+    //     | 4 2 1 2 % nv2 6 6 / 1 -1 -2 -1 |bl |sp3
+    //     | 3 5 4 % 5 7 6  / 0 -3 1 |blt |sp3
+    //     ",
+    // )
+    // .unwrap();
 
     // let bar_data = QCode::bars("|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F    / 3     / -2   |bl ").unwrap();
     // let bar_data = QCode::bars("|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F    / 3,6     / -2   |bl ").unwrap();
     // let bar_data = QCode::bars("|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F    / 3,6,8     / -2   |bl ").unwrap();
     // let bar_data = QCode::bars("|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F chd:C   / 3,6,8 2,4,6    / -2 1  |bl ").unwrap();
-
     // let bar_data = QCode::bars("|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F chd:C chd:F  / 3,6,8 2,4,6 1,3,6   / -2 1 -2 |bl ").unwrap();
-
     // let bar_data = QCode::bars("/lyr nv2 chd:F chd:Bb chd:C /lyr nv2 fun:T fun:S fun:D ").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
