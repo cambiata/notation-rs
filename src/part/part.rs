@@ -875,7 +875,7 @@ pub fn create_note_rectangles(mut rects: Vec<NRectExt>, note: &Note, placements:
 }
 
 fn create_chord_rectangles(mut rects: Vec<NRectExt>, note: &Note, chord_root: ChordRoot, chord_flavour: ChordFlavour, chord_color: ChordColor, chord_bass: ChordRoot) -> Result<Vec<NRectExt>> {
-    let mut width = chord_guess_width(&chord_root, &chord_flavour, &chord_color, &chord_bass) + CHORD_MARGIN;
+    let mut width = chord_guess_width(&chord_root, &chord_flavour, &chord_color, &chord_bass) + CHORD_MARGIN * CHORD_FONT_SCALE;
     let mut height = 3.0 * SPACE;
 
     let rect = NRect::new(-width / 4.0, -1.5 * SPACE, width, height);
@@ -892,7 +892,7 @@ fn create_function_rectangles(
     start_par: bool,
     end_par: bool,
 ) -> Result<Vec<NRectExt>> {
-    let mut width = 2.5 * SPACE;
+    let mut width = 2.3 * SPACE;
     let mut x = 0.0;
     let mut height = 3.0 * SPACE;
 
@@ -901,7 +901,7 @@ fn create_function_rectangles(
             width = 1.0 * SPACE;
         }
         FunctionType::Sp | FunctionType::Dp | FunctionType::Tp | FunctionType::Tk => {
-            width += 1.4 * SPACE;
+            width += 1.2 * SPACE;
         }
         FunctionType::DD => {
             width += 0.8 * SPACE;

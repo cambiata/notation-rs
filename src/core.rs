@@ -21,10 +21,10 @@ pub const LYRICS_FONT_EXTRA_CHAR_SPACE: f32 = SPACE * 0.1;
 pub const LYRICS_OFF_AXIS: f32 = 3.0;
 pub const GLYPH_HEIGHT: f32 = 650.0;
 
-pub const FUNCTION_FONT_SCALE: f32 = 0.1;
-pub const FUNCTION_FONT_FIGURE_SCALE: f32 = 0.05;
+pub const FUNCTION_FONT_SCALE: f32 = 0.08;
+pub const FUNCTION_FONT_FIGURE_SCALE: f32 = 0.04;
 
-pub const CHORD_FONT_SCALE: f32 = 0.1;
+pub const CHORD_FONT_SCALE: f32 = 0.08;
 pub const CHORD_FONT_FIGURE_SCALE: f32 = 0.06;
 pub const CHORD_FONT_ACCIDENTAL_SCALE: f32 = 0.07;
 pub const CHORD_MARGIN: f32 = SPACE * 1.0;
