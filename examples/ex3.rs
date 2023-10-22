@@ -131,6 +131,8 @@ fn main() {
     )
     .unwrap();
 
+    let bar_data = QCode::bars("/").unwrap();
+
     // let bar_data = QCode::bars("|sp2 |clef G |time c |sp3 | 2 |bl |sp3| 4 2 1 2 |bl |sp3 | 3 5 4 |blt | 2 |bl|sp3| -1 0 1 1 |bl |sp3 | nv2 2 nv4 p").unwrap();
 
     // let bar_data = QCode::bars("|sp2 |clef G |time c |sp3 | 2 % p |bl |sp3| 4 2 1 2 % nv1 p |bl |sp3 | 3 5 4 % nv2 p nv4 p |blt | 2 |bl|sp3| -1 0 1 1 |bl |sp3 | nv2 2 nv4 p|bl").unwrap();

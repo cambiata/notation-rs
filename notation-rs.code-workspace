@@ -1,14 +1,16 @@
 {
-  "folders": [
-	{
-		"path": "."
-	},
-	{
-		"path": "../render_notation"
-	},
-	{
-		"path": "../../GRAPHICS/graphics"
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../render_notation"
+		},
+		{
+			"path": "../../GRAPHICS/graphics"
+		}
+	],
+	"settings": {
+		"svg.preview.background": "white"
 	}
-],
-  "settings": {}
 }
