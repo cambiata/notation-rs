@@ -8,6 +8,8 @@ pub enum NotationError {
     ComplexError(String),
     QuickCodeError(String),
     DurationError(String),
+    NotYetImplemented(String),
+    Deprecated(String),
     // UnknownElement(String),
     // UnknownAttribute(String),
     // TextfieldEmpty(String),
@@ -26,6 +28,12 @@ impl std::fmt::Display for NotationError {
             }
             NotationError::DurationError(s) => {
                 write!(f, "NotationError::DurationError error: {}", s)
+            }
+            NotationError::NotYetImplemented(s) => {
+                write!(f, "NotationError::NotYetImplemented error: {}", s)
+            }
+            NotationError::Deprecated(s) => {
+                write!(f, "NotationError::NotYetImplemented error: {}", s)
             }
             // NotationError::UnknownElement(s) => write!(f, "NotationError::UnknownElement: {}", s),
             // NotationError::UnknownAttribute(s) => {

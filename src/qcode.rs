@@ -17,9 +17,7 @@ impl QCode {
                 }
 
                 // lyric note
-                a if a.starts_with("$lyr:") => {
-                    todo!("Remove $ from lyrics!");
-                }
+                a if a.starts_with("$lyr:") => println!("Dont use $lyr: anymore!"),
 
                 // lyric note
                 a if a.starts_with("lyr:") => {
@@ -237,7 +235,7 @@ impl QCode {
             let part = Part::from_lyrics(voices)?;
             Ok((PartTemplate::Nonmusic, part))
         } else if code.starts_with("oth") {
-            todo!("other part");
+            Err(Generic("other part not implemented".to_string()).into())
         } else {
             // Music part
             let voices = QCode::voices(code)?;
@@ -353,12 +351,12 @@ impl QCode {
                     "F" => clefs.push(Some(Some(Clef::F))),
                     "C" => clefs.push(Some(Some(Clef::C))),
                     "-" => clefs.push(None),
-                    _ => todo!("other clefs {}", segment),
+                    _ => println!("other clef {}", segment),
                 }
                 match segment.to_uppercase().as_str() {
                     "-" => parttemplates.push(PartTemplate::Nonmusic),
                     "G" | "F" | "C" => parttemplates.push(PartTemplate::Music),
-                    _ => todo!("other clefs {}", segment),
+                    _ => println!("other clef {}", segment),
                 }
             }
 
@@ -380,14 +378,14 @@ impl QCode {
                     "c" => times.push(Some(Some(Time::Cut))),
                     "C" => times.push(Some(Some(Time::Common))),
                     "-" => times.push(None),
-                    _ => todo!("other clefs {}", segment),
+                    _ => println!("other time signature {}", segment),
                 }
                 match segment.to_uppercase().as_str() {
                     "-" => parttemplates.push(PartTemplate::Nonmusic),
                     n if n.contains(":") => parttemplates.push(PartTemplate::Music),
                     "c" => parttemplates.push(PartTemplate::Music),
                     "C" => parttemplates.push(PartTemplate::Music),
-                    _ => todo!("other clefs {}", segment),
+                    _ => println!("other time signature {}", segment),
                 }
             }
             let bar = Bar::from_times(times);
@@ -433,14 +431,15 @@ impl QCode {
                     "bbbbbb" => keys.push(Some(Some(Key::Flats(6, key_clef)))),
                     "n" => keys.push(Some(Some(Key::Open))),
                     "-" => keys.push(None),
-                    _ => todo!("other keys {}", segment),
+                    _ => println!("other keys {}", segment),
                 }
+
                 match key_segment.as_str() {
                     "-" => parttemplates.push(PartTemplate::Nonmusic),
                     a if a.starts_with("#") => parttemplates.push(PartTemplate::Music),
                     a if a.starts_with("b") => parttemplates.push(PartTemplate::Music),
                     a if a.starts_with("n") => parttemplates.push(PartTemplate::Music),
-                    _ => todo!("other keys {}", segment),
+                    _ => println!("other time signature {}", segment),
                 }
             }
             // let bar = Bar::new(BarType::NonContent(NonContentType::Barline));
