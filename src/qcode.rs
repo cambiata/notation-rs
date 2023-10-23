@@ -317,13 +317,13 @@ impl QCode {
             let bar = Bar::new(BarType::CountIn(notes));
             return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("sp1") {
-            let bar = Bar::new(BarType::NonContent(NonContentType::Spacer(5., 200.)));
+            let bar = Bar::new(BarType::NonContent(NonContentType::Spacer(5., 150.)));
             return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("sp2") {
-            let bar = Bar::new(BarType::NonContent(NonContentType::Spacer(10., 100.)));
+            let bar = Bar::new(BarType::NonContent(NonContentType::Spacer(10., 150.)));
             return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("sp3") {
-            let bar = Bar::new(BarType::NonContent(NonContentType::Spacer(30., 200.)));
+            let bar = Bar::new(BarType::NonContent(NonContentType::Spacer(30., 150.)));
             return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("sp") {
             let segments = code.split(' ').skip(1).collect::<Vec<_>>();
@@ -331,7 +331,7 @@ impl QCode {
             if segments.len() >= 1 {
                 width = segments[0].parse::<f32>().unwrap_or(30.)
             };
-            let mut height = 100.;
+            let mut height = 150.;
             if segments.len() >= 2 {
                 height = segments[1].parse::<f32>().unwrap_or(100.);
             }
