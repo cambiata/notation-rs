@@ -593,7 +593,7 @@ pub fn duration_relative(duration: &Duration) -> f32 {
     v * ALLOTMENT_RELATIVE_FACTOR
 }
 
-pub const ALLOTMENT_EQUAL_FACTOR: f32 = 80.0;
+pub const ALLOTMENT_EQUAL_FACTOR: f32 = 140.0;
 pub const ALLOTMENT_EQUAL_FN: SpacingFn = duration_equal;
 
 pub fn duration_equal(duration: &Duration) -> f32 {

@@ -120,22 +120,22 @@ fn main() {
     // let bar_data = QCode::bars("/lyr nv2 chd:F7 sym:R1").unwrap();
     // let bar_data = QCode::bars("/lyr nv2 sym:R1 chd:Bm").unwrap();
 
-    let bar_data =
-        QCode::bars("|sp2 |clef G |sp1 |key b |sp3 | 3 2 1 0 |bl |sp3 | 1 2 nv2 3 |bld ").unwrap();
-    let bar_data = QCode::bars(
-        "|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F chd:C chd:F chd:Bb / 3,6,8 2,4,6 1,3,6 0,3,5  / -2 1 -2 2 |bl |sp3 |/lyr chd:F chd:C chd:F / 1,3,6 2,4,6 nv2 3,6,8 / -2 1 nv2 5 |bld ",
-    )
-    .unwrap();
+    // let bar_data =
+    //     QCode::bars("|sp2 |clef G |sp1 |key b |sp3 | 3 2 1 0 |bl |sp3 | 1 2 nv2 3 |bld ").unwrap();
+    // let bar_data = QCode::bars(
+    //     "|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F chd:C chd:F chd:Bb / 3,6,8 2,4,6 1,3,6 0,3,5  / -2 1 -2 2 |bl |sp3 |/lyr chd:F chd:C chd:F / 1,3,6 2,4,6 nv2 3,6,8 / -2 1 nv2 5 |bld ",
+    // )
+    // .unwrap();
 
-    let bar_data = QCode::bars(
-        "|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F chd:C chd:F chd:Bb / 3 2 1 0 % 6 4 3 3  / -4 -6 -6 -7 % -2 1 -2 2 |bl |sp3 |/lyr chd:F chd:C chd:F / 1 2 nv2 3 % 3 4 nv2 6  /  -6 -6 nv2 -4 % -2 1 nv2 5 |bld ",
-    )
-    .unwrap();
+    // let bar_data = QCode::bars(
+    //     "|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F chd:C chd:F chd:Bb / 3 2 1 0 % 6 4 3 3  / -4 -6 -6 -7 % -2 1 -2 2 |bl |sp3 |/lyr chd:F chd:C chd:F / 1 2 nv2 3 % 3 4 nv2 6  /  -6 -6 nv2 -4 % -2 1 nv2 5 |bld ",
+    // )
+    // .unwrap();
 
-    let bar_data = QCode::bars(
-        "|sp 10 20 |clef G - |sp1 |key ## - |sp 20 |time 3:4 - |sp 30 |6 5 4 3 2 1 0 /lyr lyr:c lyr:d lyr:e lyr:f lyr:apa lyr:apansson lyr:A / |bl",
-    )
-    .unwrap();
+    // let bar_data = QCode::bars(
+    //     "|sp 10 20 |clef G - |sp1 |key ## - |sp 20 |time 3:4 - |sp 30 |6 5 4 3 2 1 0 /lyr lyr:c lyr:d lyr:e lyr:f lyr:apa lyr:apansson lyr:A / |bl",
+    // )
+    // .unwrap();
 
     // let bar_data = QCode::bars("|sp2 |clef G |time c |sp3 | 2 |bl |sp3| 4 2 1 2 |bl |sp3 | 3 5 4 |blt | 2 |bl|sp3| -1 0 1 1 |bl |sp3 | nv2 2 nv4 p").unwrap();
     // let bar_data = QCode::bars("|sp2 |clef G |time c |sp3 | 2 % p |bl |sp3| 4 2 1 2 % nv1 p |bl |sp3 | 3 5 4 % nv2 p nv4 p |blt | 2 |bl|sp3| -1 0 1 1 |bl |sp3 | nv2 2 nv4 p|bl").unwrap();
@@ -163,15 +163,19 @@ fn main() {
     // let bar_data = QCode::bars("|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F chd:C chd:F  / 3,6,8 2,4,6 1,3,6   / -2 1 -2 |bl ").unwrap();
     // let bar_data = QCode::bars("/lyr nv2 chd:F chd:Bb chd:C /lyr nv2 fun:T fun:S fun:D ").unwrap();
 
-    let (bartemplate, mut bars) = bar_data;
+    let bar_data = QCode::bars("nv1 6 5 4 nv2 3 2 1|bl").unwrap();
 
+    let (bartemplate, mut bars) = bar_data;
+    // bars.allotment_fn = ALLOTMENT_RELATIVE_FN;
+    bars.allotment_fn = ALLOTMENT_EQUAL_FN;
     bars.create_matrix(Some(bartemplate)).unwrap();
     bars.resolve_stuff();
     bars.matrix_add_beamgroups();
     bars.matrix_add_ties();
     bars.matrix_add_lines();
     let matrix = bars.matrix.as_mut().unwrap();
-    matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);
+    matrix.calculate_col_spacing(bars.allotment_fn);
+    // matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);
     matrix.calculate_beamgroups();
     matrix.calculate_attachment_points(&bars.note_id_map);
 
