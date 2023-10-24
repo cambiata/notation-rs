@@ -163,7 +163,8 @@ fn main() {
     // let bar_data = QCode::bars("|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F chd:C chd:F  / 3,6,8 2,4,6 1,3,6   / -2 1 -2 |bl ").unwrap();
     // let bar_data = QCode::bars("/lyr nv2 chd:F chd:Bb chd:C /lyr nv2 fun:T fun:S fun:D ").unwrap();
 
-    let bar_data = QCode::bars("nv1 6 5 4 nv2 3 2 1|bl").unwrap();
+    let bar_data = QCode::bars("|sp 10|clef F|sp 50|nv1 -2  |bl").unwrap();
+    // let bar_data = QCode::bars("|sp 10 |clef F|sp 50|nv1  -6 s s s |bl").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
     // bars.allotment_fn = ALLOTMENT_RELATIVE_FN;
