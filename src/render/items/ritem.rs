@@ -9,6 +9,9 @@ pub struct RItem {
     pub col_idx: usize,
     pub row_idx: usize,
     pub coords: Option<NPoint>,
+    pub coord_x: Option<f32>,
+    pub coord_y: Option<f32>,
+
     pub nrects: Option<Vec<Rc<RefCell<NRectExt>>>>,
 
     pub note_id: Option<usize>,
@@ -24,7 +27,10 @@ pub struct RItem {
 
 impl RItem {
     pub fn new(rects: Vec<NRect>, dur: Duration) -> Self {
-        let nrects = rects.iter().map(|r| NRectExt::new(*r, NRectType::DUMMY)).collect::<Vec<_>>();
+        let nrects = rects
+            .iter()
+            .map(|r| NRectExt::new(*r, NRectType::DUMMY))
+            .collect::<Vec<_>>();
 
         Self {
             id: ID_COUNTER.fetch_add(1, Ordering::Relaxed),
@@ -32,6 +38,9 @@ impl RItem {
             col_idx: 0,
             row_idx: 0,
             coords: None,
+            coord_x: None,
+            coord_y: None,
+
             nrects: None,
 
             note_id: None,
@@ -47,7 +56,15 @@ impl RItem {
     }
 
     pub fn new_with_nrectsext(rects: Vec<NRect>, dur: Duration) -> Self {
-        let nrects: Vec<Rc<RefCell<NRectExt>>> = rects.iter().map(|r| Rc::new(RefCell::new(NRectExt::new(*r, NRectType::WIP("hoho".to_string()))))).collect::<Vec<_>>();
+        let nrects: Vec<Rc<RefCell<NRectExt>>> = rects
+            .iter()
+            .map(|r| {
+                Rc::new(RefCell::new(NRectExt::new(
+                    *r,
+                    NRectType::WIP("hoho".to_string()),
+                )))
+            })
+            .collect::<Vec<_>>();
 
         Self {
             id: ID_COUNTER.fetch_add(1, Ordering::Relaxed),
@@ -55,6 +72,8 @@ impl RItem {
             col_idx: 0,
             row_idx: 0,
             coords: None,
+            coord_x: None,
+            coord_y: None,
             nrects: Some(nrects),
 
             note_id: None,
@@ -76,7 +95,8 @@ impl RItem {
             rects.push(nrect.0.clone());
         }
 
-        let nrects_clones: Vec<Rc<RefCell<NRectExt>>> = nrects.iter().map(|nrect| nrect.clone()).collect::<Vec<_>>();
+        let nrects_clones: Vec<Rc<RefCell<NRectExt>>> =
+            nrects.iter().map(|nrect| nrect.clone()).collect::<Vec<_>>();
 
         Self {
             // rects,
@@ -85,6 +105,8 @@ impl RItem {
             col_idx: 0,
             row_idx: 0,
             coords: None,
+            coord_x: None,
+            coord_y: None,
             nrects: Some(nrects_clones),
             note_beamdata: RItemBeam::None,
             note2_beamdata: RItemBeam::None,

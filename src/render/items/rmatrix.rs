@@ -214,6 +214,45 @@ impl RMatrix {
         }
     }
 
+    pub fn calculate_items_x_values(&self) {
+        let mut x = 0.0;
+        for col in &self.cols {
+            let mut col = col.borrow_mut();
+            // let mut y = 0.0;
+            // let mut rowidx = 0;
+            for item in &col.items {
+                if let Some(item) = item {
+                    let mut item: RefMut<RItem> = item.borrow_mut();
+                    item.coord_x = Some(x);
+                }
+            }
+            col.x = x;
+            x += col.distance_x.round();
+            //x += col.distance_x_after_allot;
+        }
+    }
+    pub fn calculate_items_y_values(&self) {
+        // let mut x = 0.0;
+        for col in &self.cols {
+            let mut col = col.borrow_mut();
+            let mut y = 0.0;
+            let mut rowidx = 0;
+            for item in &col.items {
+                if let Some(item) = item {
+                    let mut item: RefMut<RItem> = item.borrow_mut();
+                    item.coord_y = Some(y);
+                }
+                let mut row = self.get_row(rowidx).unwrap().borrow_mut();
+                row.y = y;
+                y += row.distance_y.round();
+                rowidx += 1;
+            }
+            // col.x = x;
+            // x += col.distance_x.round();
+            //x += col.distance_x_after_allot;
+        }
+    }
+
     pub fn calculate_col_row_item_measurements(&mut self) {
         let mut x = 0.0;
         for col in &self.cols {
@@ -339,6 +378,20 @@ impl RMatrix {
             loopcount += 1;
         }
         println!("add_horizontal_count passes:{}", loopcount);
+    }
+
+    pub fn calculate_test(&self) {
+        for row in self.rows.iter() {
+            let row = row.borrow();
+            for item in row.items.iter().flatten() {
+                let item = item.borrow();
+                dbg!(item);
+                // for rect in item.nrects.as_ref().unwrap().iter() {
+                //     let rect: NRect = rect.borrow().0;
+                //     println!("item rect:{:?}", rect);
+                // }
+            }
+        }
     }
 
     pub fn calculate_beamgroups(&self) {

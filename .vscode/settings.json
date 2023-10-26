@@ -1,0 +1,6 @@
+{
+    "svg.preview.background": "white",
+    "files.associations": {
+        "*.fuse": "lua"
+    }
+}

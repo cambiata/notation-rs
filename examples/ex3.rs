@@ -177,16 +177,20 @@ fn main() {
     let matrix = bars.matrix.as_mut().unwrap();
     matrix.calculate_col_spacing(bars.allotment_fn);
     // matrix.calculate_col_spacing(ALLOTMENT_RELATIVE_FN);
+
+    matrix.calculate_items_x_values();
     matrix.calculate_beamgroups();
     matrix.calculate_attachment_points(&bars.note_id_map);
-
+    matrix.calculate_test();
     matrix.calculate_row_spacing();
     matrix.calculate_col_row_item_measurements();
+    matrix.calculate_items_y_values();
+
     matrix.calculate_matrix_size();
 
     //------------------------------------------------------
     let svg = matrix_to_svg(&matrix, true, None);
-    std::fs::write("./examples/ex3A.svg", svg).unwrap();
+    std::fs::write("./examples/ex3.svg", svg).unwrap();
 
     // //---------------------------------------------------
     // let script_name = "TestSuperscript1";
