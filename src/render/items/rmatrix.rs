@@ -253,27 +253,27 @@ impl RMatrix {
         }
     }
 
-    pub fn calculate_col_row_item_measurements(&mut self) {
-        let mut x = 0.0;
-        for col in &self.cols {
-            let mut col = col.borrow_mut();
-            let mut y = 0.0;
-            let mut rowidx = 0;
-            for item in &col.items {
-                if let Some(item) = item {
-                    let mut item: RefMut<RItem> = item.borrow_mut();
-                    item.coords = Some(NPoint::new(x, y));
-                }
-                let mut row = self.get_row(rowidx).unwrap().borrow_mut();
-                row.y = y;
-                y += row.distance_y.round();
-                rowidx += 1;
-            }
-            col.x = x;
-            x += col.distance_x.round();
-            //x += col.distance_x_after_allot;
-        }
-    }
+    // pub fn calculate_col_row_item_measurements(&mut self) {
+    //     let mut x = 0.0;
+    //     for col in &self.cols {
+    //         let mut col = col.borrow_mut();
+    //         let mut y = 0.0;
+    //         let mut rowidx = 0;
+    //         for item in &col.items {
+    //             if let Some(item) = item {
+    //                 let mut item: RefMut<RItem> = item.borrow_mut();
+    //                 item.coords = Some(NPoint::new(x, y));
+    //             }
+    //             let mut row = self.get_row(rowidx).unwrap().borrow_mut();
+    //             row.y = y;
+    //             y += row.distance_y.round();
+    //             rowidx += 1;
+    //         }
+    //         col.x = x;
+    //         x += col.distance_x.round();
+    //         //x += col.distance_x_after_allot;
+    //     }
+    // }
 
     pub fn calculate_matrix_size(&mut self) {
         // matrix size
