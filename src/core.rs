@@ -573,6 +573,7 @@ pub fn duration_relative(duration: &Duration) -> f32 {
         0 => 0.0,
         144 => 8.0, //NV1DOT
         96 => 7.0,  // NV1 =>
+        78 => 6.3,  // ???
         72 => 6.0,  // NV2DOT =>
         54 => 5.4,  // ???
         48 => 5.0,  // NV2 =>
