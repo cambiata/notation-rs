@@ -167,6 +167,7 @@ fn main() {
     // let bar_data = QCode::bars("|sp 10 |clef F|sp 50|nv1  -6 s s s |bl").unwrap();
 
     let bar_data = QCode::bars("nv2 p nv4 0 p % -3 2 nv2 p |bl |sp 30 | 0 p nv2 p |bl").unwrap();
+    let bar_data = QCode::bars("0 0 0 0 % bp |bl |sp 30 |bp |bl").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
     bars.allotment_fn = ALLOTMENT_RELATIVE_FN;

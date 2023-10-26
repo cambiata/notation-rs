@@ -608,6 +608,7 @@ impl Bars {
                                             }
                                         }
                                     }
+                                    ComplexType::OneBarpause(duration) => {}
                                 }
                             }
                         }
@@ -639,6 +640,7 @@ impl Bars {
                                 let mut item: RefMut<RItem> = item.borrow_mut();
 
                                 match &complex.ctype {
+                                    ComplexType::OneBarpause(duration) => {}
                                     ComplexType::Single(note, _)
                                     | ComplexType::Upper(note, _)
                                     | ComplexType::Lower(note, _) => {
@@ -663,6 +665,7 @@ impl Bars {
                                                     ComplexType::Upper(_, _) => DirUD::Up,
                                                     ComplexType::Lower(_, _) => DirUD::Down,
                                                     ComplexType::Two(_, _, _) => todo!(), // shouldn't matter!
+                                                    ComplexType::OneBarpause(duration) => todo!(),
                                                 };
 
                                                 let tie_placement = match &complex.ctype {
@@ -696,6 +699,7 @@ impl Bars {
                                                     }
 
                                                     ComplexType::Two(_, _, _) => todo!(),
+                                                    ComplexType::OneBarpause(duration) => todo!(),
                                                 };
 
                                                 let rect: NRect = NRect::new(

@@ -685,7 +685,7 @@ impl RMatrix {
                 // note1 ===============================================================================
                 match item.notedata.beamdata1 {
                     RItemBeam::Single(ref data) => {
-                        if let Some(nid) = item.notedata.id1 {
+                        if let RItemType::Note(nid) = item.notedata.id1 {
                             let stem_info = &item.notedata.steminfo1.clone();
                             let apoint_outer =
                                 do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
@@ -723,7 +723,7 @@ impl RMatrix {
                     }
 
                     RItemBeam::Start(ref data) => {
-                        if let Some(nid) = item.notedata.id1 {
+                        if let RItemType::Note(nid) = item.notedata.id1 {
                             let stem_info = &item.notedata.steminfo1.clone();
                             steminfo1s = vec![];
                             steminfo1s.push(stem_info.clone());
@@ -763,14 +763,14 @@ impl RMatrix {
                     }
 
                     RItemBeam::Middle(ref data) => {
-                        if let Some(nid) = item.notedata.id1 {
+                        if let RItemType::Note(nid) = item.notedata.id1 {
                             let stem_info = &item.notedata.steminfo1.clone();
                             steminfo1s.push(stem_info.clone());
                         }
                     }
 
                     RItemBeam::End(ref data) => {
-                        if let Some(nid) = item.notedata.id1 {
+                        if let RItemType::Note(nid) = item.notedata.id1 {
                             //-------------------------------------------------------------------------------
                             // calculate for middle items
                             let note = item2note
@@ -948,7 +948,7 @@ impl RMatrix {
                 // note2 ===============================================================================
                 match item.notedata.beamdata2 {
                     RItemBeam::Single(ref data) => {
-                        if let Some(nid) = item.notedata.id2 {
+                        if let RItemType::Note(nid) = item.notedata.id2 {
                             let stem_info = &item.notedata.steminfo2.clone();
 
                             let apoint_outer =
@@ -986,7 +986,7 @@ impl RMatrix {
                     }
 
                     RItemBeam::Start(ref data) => {
-                        if let Some(nid) = item.notedata.id2 {
+                        if let RItemType::Note(nid) = item.notedata.id2 {
                             let stem_info = &item.notedata.steminfo2.clone();
                             steminfo2s = vec![];
                             steminfo2s.push(stem_info.clone());
@@ -1025,14 +1025,14 @@ impl RMatrix {
                     }
 
                     RItemBeam::Middle(ref data) => {
-                        if let Some(nid) = item.notedata.id2 {
+                        if let RItemType::Note(nid) = item.notedata.id2 {
                             let stem_info = &item.notedata.steminfo2.clone();
                             steminfo2s.push(stem_info.clone());
                         }
                     }
 
                     RItemBeam::End(ref data) => {
-                        if let Some(nid) = item.notedata.id2 {
+                        if let RItemType::Note(nid) = item.notedata.id2 {
                             //-------------------------------------------------------------------------------
                             // calculate for middle items
                             let note = item2note

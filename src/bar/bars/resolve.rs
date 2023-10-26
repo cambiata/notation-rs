@@ -183,19 +183,20 @@ impl Bars {
                                 ComplexType::Single(ref note, _)
                                 | ComplexType::Upper(ref note, _) => {
                                     self.id1_map.insert(note.borrow().id, note.clone());
-                                    ritem.notedata.id1 = Some(note.borrow().id);
+                                    ritem.notedata.id1 = RItemType::Note(note.borrow().id);
                                     // ritem.id1 = Some(note.borrow().id);
                                 }
                                 ComplexType::Lower(ref note, _) => {
                                     self.id1_map.insert(note.borrow().id, note.clone());
-                                    ritem.notedata.id2 = Some(note.borrow().id);
+                                    ritem.notedata.id2 = RItemType::Note(note.borrow().id);
                                 }
                                 ComplexType::Two(ref upper, ref lower, _) => {
                                     self.id1_map.insert(upper.borrow().id, upper.clone());
                                     self.id1_map.insert(lower.borrow().id, lower.clone());
-                                    ritem.notedata.id1 = Some(upper.borrow().id);
-                                    ritem.notedata.id2 = Some(lower.borrow().id);
+                                    ritem.notedata.id1 = RItemType::Note(upper.borrow().id);
+                                    ritem.notedata.id2 = RItemType::Note(lower.borrow().id);
                                 }
+                                ComplexType::OneBarpause(duration) => {}
                             }
                         }
                     }

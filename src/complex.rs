@@ -77,7 +77,11 @@ impl Complex {
     pub fn print(&self) {
         match &self.ctype {
             ComplexType::Single(note, _) => {
-                println!("Complex pos {}: Single({:?})", &self.position, note.borrow().position);
+                println!(
+                    "Complex pos {}: Single({:?})",
+                    &self.position,
+                    note.borrow().position
+                );
             }
             ComplexType::Two(note1, note2, overlap) => {
                 println!(
@@ -108,6 +112,9 @@ impl Complex {
                     overflow
                 );
             }
+            ComplexType::OneBarpause(duration) => {
+                println!("Complex pos {}: OneBarpause", &self.position);
+            }
         }
     }
 }
@@ -116,9 +123,14 @@ impl Complex {
 pub enum ComplexType {
     Single(Rc<RefCell<Note>>, bool),
     //
-    Two(Rc<RefCell<Note>>, Rc<RefCell<Note>>, Option<ComplexXAdjustment>),
+    Two(
+        Rc<RefCell<Note>>,
+        Rc<RefCell<Note>>,
+        Option<ComplexXAdjustment>,
+    ),
     Upper(Rc<RefCell<Note>>, bool),
     Lower(Rc<RefCell<Note>>, bool),
+    OneBarpause(Duration),
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]

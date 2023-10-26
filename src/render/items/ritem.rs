@@ -3,9 +3,16 @@ use crate::{prelude::*, types::some_cloneables::SomeCloneablePairs};
 use std::cell::{Ref, RefMut};
 
 #[derive(Debug, PartialEq)]
+pub enum RItemType {
+    Unset,
+    Note(usize),
+    BarPause(Duration),
+    Other,
+}
+#[derive(Debug, PartialEq)]
 pub struct RItemNoteData {
-    pub id1: Option<usize>,
-    pub id2: Option<usize>,
+    pub id1: RItemType,
+    pub id2: RItemType,
     pub steminfo1: StemInfo,
     pub steminfo2: StemInfo,
     pub beamdata1: RItemBeam,
@@ -44,8 +51,8 @@ impl RItem {
             nrects: None,
 
             notedata: RItemNoteData {
-                id1: None,
-                id2: None,
+                id1: RItemType::Unset,
+                id2: RItemType::Unset,
                 beamdata1: RItemBeam::None,
                 beamdata2: RItemBeam::None,
                 steminfo1: StemInfo::None,
@@ -77,8 +84,8 @@ impl RItem {
             nrects: Some(nrects),
 
             notedata: RItemNoteData {
-                id1: None,
-                id2: None,
+                id1: RItemType::Unset,
+                id2: RItemType::Unset,
                 beamdata1: RItemBeam::None,
                 beamdata2: RItemBeam::None,
                 steminfo1: StemInfo::None,
@@ -111,8 +118,8 @@ impl RItem {
             nrects: Some(nrects_clones),
 
             notedata: RItemNoteData {
-                id1: None,
-                id2: None,
+                id1: RItemType::Unset,
+                id2: RItemType::Unset,
                 beamdata1: RItemBeam::None,
                 beamdata2: RItemBeam::None,
                 steminfo1: StemInfo::None,

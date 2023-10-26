@@ -358,18 +358,18 @@ impl Part {
                         }
                     }
                     VoiceType::Barpause(_) => {
-                        //println!("One voice, barpause");
+                        dbg!("One voice: barpause");
                     }
                 },
                 Voices::Two(v1, v2) => {
                     match [&v1.borrow().vtype, &v2.borrow().vtype] {
                         [VoiceType::Barpause(_), VoiceType::Barpause(_)] => {
                             //
-                            //println!("Two voices, barpause, barpause");
+                            dbg!("Two voices: barpause, barpause");
                         }
 
                         [VoiceType::Barpause(_), VoiceType::Notes(notes)] => {
-                            //println!("Two voices, barpause, notes");
+                            dbg!("Two voices: barpause, notes");
                             for note in notes.items.iter() {
                                 let complex = Complex::new(
                                     ComplexType::Lower(note.clone(), false),
@@ -382,7 +382,7 @@ impl Part {
                         }
 
                         [VoiceType::Notes(notes), VoiceType::Barpause(_)] => {
-                            //println!("Two voices, notes, barpause");
+                            dbg!("Two voices: notes, barpause");
                             for note in notes.items.iter() {
                                 let complex = Complex::new(
                                     ComplexType::Upper(note.clone(), false),
@@ -578,6 +578,7 @@ impl Part {
                         // println!("{idx}- Lower: Beamgroup direction is already set");
                     }
                 }
+                ComplexType::OneBarpause(duration) => {}
             }
         }
         None
@@ -587,7 +588,9 @@ impl Part {
         fn do_voices(voices: &Voices) {
             match voices {
                 Voices::One(v) => match v.borrow().vtype {
-                    VoiceType::Barpause(_) => {}
+                    VoiceType::Barpause(_) => {
+                        dbg!("voice is barpause");
+                    }
                     VoiceType::Notes(ref notes) => {
                         for note in notes.items.iter() {
                             note.borrow_mut().voice = Some(v.clone());
@@ -596,7 +599,9 @@ impl Part {
                 },
                 Voices::Two(v1, v2) => {
                     match v1.borrow().vtype {
-                        VoiceType::Barpause(_) => {}
+                        VoiceType::Barpause(_) => {
+                            dbg!("voice1 is barpause");
+                        }
                         VoiceType::Notes(ref notes) => {
                             for note in notes.items.iter() {
                                 note.borrow_mut().voice = Some(v1.clone());
@@ -604,7 +609,9 @@ impl Part {
                         }
                     }
                     match v2.borrow().vtype {
-                        VoiceType::Barpause(_) => {}
+                        VoiceType::Barpause(_) => {
+                            dbg!("voice2 is barpause");
+                        }
                         VoiceType::Notes(ref notes) => {
                             for note in notes.items.iter() {
                                 note.borrow_mut().voice = Some(v1.clone());
@@ -799,6 +806,8 @@ impl Part {
                     levels_accidentals.sort_by(|a, b| a.0.cmp(&b.0));
                     rects = create_accidentals_rectangles(rects, levels_accidentals)?;
                 }
+
+                ComplexType::OneBarpause(duration) => {}
             };
 
             if !rects.is_empty() {
@@ -856,6 +865,7 @@ impl Part {
 
                     lower.adjust_x = Some((head_width, lower_adjust));
                 }
+                ComplexType::OneBarpause(duration) => {}
             }
         }
 
