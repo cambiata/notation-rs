@@ -728,7 +728,12 @@ impl Part {
                     rects = create_accidentals_rectangles(rects, levels_accidentals)?;
                 }
                 ComplexType::Two(ref upper, ref lower, ref adjust) => {
-                    let pause_up = std::cmp::min(lower.borrow().top_level() - 5, -3);
+                    let mut pause_up = std::cmp::min(lower.borrow().top_level() - 4, -3);
+                    dbg!(pause_up, upper.borrow().duration, pause_up % 2);
+                    if (upper.borrow().duration >= NV2) && (pause_up % 2 != 0) {
+                        pause_up += 1;
+                    }
+
                     let upper_placements = note_get_heads_placements(&upper.borrow())?;
                     let upper_adjust: f32 = match adjust.as_ref() {
                         Some(adjust) => match adjust {
@@ -745,7 +750,10 @@ impl Part {
                         upper_adjust,
                         pause_up as f32 * SPACE_HALF,
                     )?;
-                    let pause_down = std::cmp::max(upper.borrow().bottom_level() + 5, 3);
+                    let mut pause_down = std::cmp::max(upper.borrow().bottom_level() + 4, 3);
+                    if (lower.borrow().duration >= NV2) && (pause_down % 2 != 0) {
+                        pause_down -= 1;
+                    }
                     let lower_placements = note_get_heads_placements(&lower.borrow())?;
                     let lower_adjust: f32 = match adjust.as_ref() {
                         Some(adjust) => match adjust {
