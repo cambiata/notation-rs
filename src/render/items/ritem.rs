@@ -3,25 +3,25 @@ use crate::{prelude::*, types::some_cloneables::SomeCloneablePairs};
 use std::cell::{Ref, RefMut};
 
 #[derive(Debug, PartialEq)]
+pub struct RItemNoteData {
+    pub id1: Option<usize>,
+    pub id2: Option<usize>,
+    pub steminfo1: StemInfo,
+    pub steminfo2: StemInfo,
+    pub beamdata1: RItemBeam,
+    pub beamdata2: RItemBeam,
+}
+
+#[derive(Debug, PartialEq)]
 pub struct RItem {
     pub id: usize,
     pub duration: Duration,
     pub col_idx: usize,
     pub row_idx: usize,
-    // pub coords: Option<NPoint>,
     pub coord_x: Option<f32>,
     pub coord_y: Option<f32>,
-
     pub nrects: Option<Vec<Rc<RefCell<NRectExt>>>>,
-
-    pub note_id: Option<usize>,
-    pub note2_id: Option<usize>,
-    pub note_steminfo: StemInfo,
-    pub note2_steminfo: StemInfo,
-
-    pub note_beamdata: RItemBeam,
-    pub note2_beamdata: RItemBeam,
-
+    pub notedata: RItemNoteData,
     pub lines: Vec<(i8, i8, HeadLineType)>,
 }
 
@@ -43,14 +43,14 @@ impl RItem {
 
             nrects: None,
 
-            note_id: None,
-            note2_id: None,
-
-            note_beamdata: RItemBeam::None,
-            note2_beamdata: RItemBeam::None,
-            note_steminfo: StemInfo::None,
-            note2_steminfo: StemInfo::None,
-
+            notedata: RItemNoteData {
+                id1: None,
+                id2: None,
+                beamdata1: RItemBeam::None,
+                beamdata2: RItemBeam::None,
+                steminfo1: StemInfo::None,
+                steminfo2: StemInfo::None,
+            },
             lines: vec![],
         }
     }
@@ -76,13 +76,14 @@ impl RItem {
             coord_y: None,
             nrects: Some(nrects),
 
-            note_id: None,
-            note2_id: None,
-
-            note_beamdata: RItemBeam::None,
-            note2_beamdata: RItemBeam::None,
-            note_steminfo: StemInfo::None,
-            note2_steminfo: StemInfo::None,
+            notedata: RItemNoteData {
+                id1: None,
+                id2: None,
+                beamdata1: RItemBeam::None,
+                beamdata2: RItemBeam::None,
+                steminfo1: StemInfo::None,
+                steminfo2: StemInfo::None,
+            },
             lines: vec![],
         }
     }
@@ -108,14 +109,15 @@ impl RItem {
             coord_x: None,
             coord_y: None,
             nrects: Some(nrects_clones),
-            note_beamdata: RItemBeam::None,
-            note2_beamdata: RItemBeam::None,
-            // note_beam_xyy2: None,
-            // note2_beam_xyy2: None,
-            note_id: None,
-            note2_id: None,
-            note_steminfo: StemInfo::None,
-            note2_steminfo: StemInfo::None,
+
+            notedata: RItemNoteData {
+                id1: None,
+                id2: None,
+                beamdata1: RItemBeam::None,
+                beamdata2: RItemBeam::None,
+                steminfo1: StemInfo::None,
+                steminfo2: StemInfo::None,
+            },
             lines: vec![],
         }
     }
@@ -140,7 +142,7 @@ pub enum RItemBeam {
 #[derive(Debug, PartialEq, Clone)]
 pub struct RItemBeamData {
     pub id: usize,
-    pub note_id: usize,
+    pub id1: usize,
     pub note_position: usize,
     pub direction: DirUD,
     pub duration: Duration,

@@ -385,7 +385,7 @@ impl RMatrix {
             let row = row.borrow();
             for item in row.items.iter().flatten() {
                 let item = item.borrow();
-                dbg!(item.coord_x, item.coord_y);
+                // dbg!(item.coord_x, item.coord_y);
                 // for rect in item.nrects.as_ref().unwrap().iter() {
                 //     let rect: NRect = rect.borrow().0;
                 //     println!("item rect:{:?}", rect);
@@ -398,11 +398,11 @@ impl RMatrix {
         for row in self.rows.iter() {
             let row = row.borrow();
 
-            let mut note_idx_in_beamgroup = 0;
-            // let mut note_steminfos = vec![];
+            let mut id1x_in_beamgroup = 0;
+            // let mut steminfo1s = vec![];
 
-            let mut note2_idx_in_beamgroup = 0;
-            // let mut note2_steminfos = vec![];
+            let mut id2x_in_beamgroup = 0;
+            // let mut steminfo2s = vec![];
 
             for (itemidx, item) in row.items.iter().enumerate() {
                 if item.is_none() {
@@ -413,7 +413,7 @@ impl RMatrix {
 
                 // NOTE 1 ==================================================================================
 
-                match item.note_beamdata {
+                match item.notedata.beamdata1 {
                     RItemBeam::None => {}
                     RItemBeam::Single(ref data)
                     | RItemBeam::Start(ref data)
@@ -431,8 +431,8 @@ impl RMatrix {
 
                         match data.has_stem {
                             true => {
-                                match item.note_beamdata {
-                                    RItemBeam::Start(_) => note_idx_in_beamgroup = 0,
+                                match item.notedata.beamdata1 {
+                                    RItemBeam::Start(_) => id1x_in_beamgroup = 0,
                                     _ => {}
                                 };
 
@@ -457,10 +457,10 @@ impl RMatrix {
 
                                 let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
                                 // store stem coordinates for use in articulation etc
-                                item.note_steminfo =
+                                item.notedata.steminfo1 =
                                     StemInfo::FullInfo(note_x, y, data.head_width, h);
-                                // note_steminfos.clear();
-                                // note_steminfos.push(item.note_steminfo.clone());
+                                // steminfo1s.clear();
+                                // steminfo1s.push(item.steminfo1.clone());
 
                                 // spacer for stem
                                 let nrect = NRectExt::new(
@@ -470,7 +470,7 @@ impl RMatrix {
                                 let mut nrects = item.nrects.as_mut().unwrap();
                                 nrects.push(Rc::new(RefCell::new(nrect)));
 
-                                match item.note_beamdata {
+                                match item.notedata.beamdata1 {
                                     RItemBeam::Start(ref data) => {
                                         let y = match data.direction {
                                             DirUD::Up => y,
@@ -507,13 +507,13 @@ impl RMatrix {
                                 let y = data.top_level as f32 * SPACE_HALF;
                                 let y2 = data.bottom_level as f32 * SPACE_HALF;
                                 let h = y2 - y;
-                                item.note_steminfo =
+                                item.notedata.steminfo1 =
                                     StemInfo::FullInfo(note_x, y, data.head_width, h);
                             }
                         }
                     }
                     RItemBeam::Middle(ref data) => {
-                        note_idx_in_beamgroup += 1;
+                        id1x_in_beamgroup += 1;
                         let note_x = if let Some(adjust_x) = data.adjustment_x {
                             match adjust_x {
                                 ComplexXAdjustment::UpperRight(x) => x,
@@ -523,18 +523,14 @@ impl RMatrix {
                             0.0
                         };
                         let mut adjust_x = note_x.clone();
-                        item.note_steminfo = StemInfo::BeamMiddle(
-                            note_idx_in_beamgroup,
-                            note_x,
-                            0.0,
-                            data.head_width,
-                        );
+                        item.notedata.steminfo1 =
+                            StemInfo::BeamMiddle(id1x_in_beamgroup, note_x, 0.0, data.head_width);
                     } // RItemBeam::End(ref data) => {
                 }
 
                 // NOTE 2 ==================================================================================
 
-                match item.note2_beamdata {
+                match item.notedata.beamdata2 {
                     RItemBeam::None => {}
                     RItemBeam::Single(ref data)
                     | RItemBeam::Start(ref data)
@@ -551,8 +547,8 @@ impl RMatrix {
 
                         match data.has_stem {
                             true => {
-                                match item.note2_beamdata {
-                                    RItemBeam::Start(_) => note2_idx_in_beamgroup = 0,
+                                match item.notedata.beamdata2 {
+                                    RItemBeam::Start(_) => id2x_in_beamgroup = 0,
                                     _ => {}
                                 };
 
@@ -578,7 +574,7 @@ impl RMatrix {
 
                                 let rect = NRect::new(adjust_x, y, STEM_WIDTH, h);
                                 // store stem coordinates for use in articulation etc
-                                item.note2_steminfo =
+                                item.notedata.steminfo2 =
                                     StemInfo::FullInfo(note_x, y, data.head_width, h);
 
                                 // spacer for stem
@@ -590,7 +586,7 @@ impl RMatrix {
                                 nrects.push(Rc::new(RefCell::new(nrect)));
 
                                 // spacer for stem tips
-                                match item.note2_beamdata {
+                                match item.notedata.beamdata2 {
                                     RItemBeam::Start(ref data) => {
                                         let y = match data.direction {
                                             DirUD::Up => y,
@@ -628,14 +624,14 @@ impl RMatrix {
                                 let y = data.top_level as f32 * SPACE_HALF;
                                 let y2 = data.bottom_level as f32 * SPACE_HALF;
                                 let h = y2 - y;
-                                item.note2_steminfo =
+                                item.notedata.steminfo2 =
                                     StemInfo::FullInfo(note_x, y, data.head_width, h);
                             }
                         }
                     }
 
                     RItemBeam::Middle(ref data) => {
-                        note2_idx_in_beamgroup += 1;
+                        id2x_in_beamgroup += 1;
                         let note_x = if let Some(adjust_x) = data.adjustment_x {
                             match adjust_x {
                                 ComplexXAdjustment::UpperRight(x) => x,
@@ -645,16 +641,12 @@ impl RMatrix {
                             0.0
                         };
                         let mut adjust_x = note_x.clone();
-                        item.note2_steminfo = StemInfo::BeamMiddle(
-                            note2_idx_in_beamgroup,
-                            note_x,
-                            0.0,
-                            data.head_width,
-                        );
+                        item.notedata.steminfo2 =
+                            StemInfo::BeamMiddle(id2x_in_beamgroup, note_x, 0.0, data.head_width);
                     } // RItemBeam::End(ref data) => {
                 }
 
-                match item.note_beamdata {
+                match item.notedata.beamdata1 {
                     RItemBeam::Single(ref data) => {
                         if let Some(nrect) = add_flag(data) {
                             let mut nrects = item.nrects.as_mut().unwrap();
@@ -663,7 +655,7 @@ impl RMatrix {
                     }
                     _ => {}
                 }
-                match item.note2_beamdata {
+                match item.notedata.beamdata2 {
                     RItemBeam::Single(ref data) => {
                         if let Some(nrect) = add_flag(data) {
                             let mut nrects = item.nrects.as_mut().unwrap();
@@ -681,8 +673,8 @@ impl RMatrix {
         for row in self.rows.iter() {
             let row = row.borrow();
 
-            let mut note_steminfos = vec![];
-            let mut note2_steminfos = vec![];
+            let mut steminfo1s = vec![];
+            let mut steminfo2s = vec![];
 
             for (itemidx, item) in row.items.iter().enumerate() {
                 if item.is_none() {
@@ -691,10 +683,10 @@ impl RMatrix {
                 let mut item = item.as_ref().unwrap().borrow_mut();
 
                 // note1 ===============================================================================
-                match item.note_beamdata {
+                match item.notedata.beamdata1 {
                     RItemBeam::Single(ref data) => {
-                        if let Some(nid) = item.note_id {
-                            let stem_info = &item.note_steminfo.clone();
+                        if let Some(nid) = item.notedata.id1 {
+                            let stem_info = &item.notedata.steminfo1.clone();
                             let apoint_outer =
                                 do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
                             let apoint_inner =
@@ -731,10 +723,10 @@ impl RMatrix {
                     }
 
                     RItemBeam::Start(ref data) => {
-                        if let Some(nid) = item.note_id {
-                            let stem_info = &item.note_steminfo.clone();
-                            note_steminfos = vec![];
-                            note_steminfos.push(stem_info.clone());
+                        if let Some(nid) = item.notedata.id1 {
+                            let stem_info = &item.notedata.steminfo1.clone();
+                            steminfo1s = vec![];
+                            steminfo1s.push(stem_info.clone());
                             let apoint_outer =
                                 do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
                             let apoint_inner =
@@ -771,14 +763,14 @@ impl RMatrix {
                     }
 
                     RItemBeam::Middle(ref data) => {
-                        if let Some(nid) = item.note_id {
-                            let stem_info = &item.note_steminfo.clone();
-                            note_steminfos.push(stem_info.clone());
+                        if let Some(nid) = item.notedata.id1 {
+                            let stem_info = &item.notedata.steminfo1.clone();
+                            steminfo1s.push(stem_info.clone());
                         }
                     }
 
                     RItemBeam::End(ref data) => {
-                        if let Some(nid) = item.note_id {
+                        if let Some(nid) = item.notedata.id1 {
                             //-------------------------------------------------------------------------------
                             // calculate for middle items
                             let note = item2note
@@ -789,10 +781,10 @@ impl RMatrix {
                                 )
                                 .borrow();
                             let beamgroup = note.beamgroup.as_ref().unwrap().borrow();
-                            let stem_info = &item.note_steminfo.clone();
-                            note_steminfos.push(stem_info.clone());
+                            let stem_info = &item.notedata.steminfo1.clone();
+                            steminfo1s.push(stem_info.clone());
 
-                            let (first_x, first_y, first_headw, first_h) = match note_steminfos[0] {
+                            let (first_x, first_y, first_headw, first_h) = match steminfo1s[0] {
                                 StemInfo::FullInfo(x, y, hw, h) => (x, y, hw, h),
                                 StemInfo::BeamMiddle(_, _, _, _) => todo!(),
                                 StemInfo::None => todo!(),
@@ -803,7 +795,7 @@ impl RMatrix {
                                 StemInfo::None => todo!(),
                             };
 
-                            for beaminfo in &note_steminfos {
+                            for beaminfo in &steminfo1s {
                                 match beaminfo {
                                     StemInfo::BeamMiddle(idx, stem_x, stem_y, head_width) => {
                                         let current = beamgroup
@@ -954,10 +946,10 @@ impl RMatrix {
                 }
 
                 // note2 ===============================================================================
-                match item.note2_beamdata {
+                match item.notedata.beamdata2 {
                     RItemBeam::Single(ref data) => {
-                        if let Some(nid) = item.note2_id {
-                            let stem_info = &item.note2_steminfo.clone();
+                        if let Some(nid) = item.notedata.id2 {
+                            let stem_info = &item.notedata.steminfo2.clone();
 
                             let apoint_outer =
                                 do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
@@ -994,10 +986,10 @@ impl RMatrix {
                     }
 
                     RItemBeam::Start(ref data) => {
-                        if let Some(nid) = item.note2_id {
-                            let stem_info = &item.note2_steminfo.clone();
-                            note2_steminfos = vec![];
-                            note2_steminfos.push(stem_info.clone());
+                        if let Some(nid) = item.notedata.id2 {
+                            let stem_info = &item.notedata.steminfo2.clone();
+                            steminfo2s = vec![];
+                            steminfo2s.push(stem_info.clone());
                             let apoint_outer =
                                 do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
                             let apoint_inner =
@@ -1033,14 +1025,14 @@ impl RMatrix {
                     }
 
                     RItemBeam::Middle(ref data) => {
-                        if let Some(nid) = item.note2_id {
-                            let stem_info = &item.note2_steminfo.clone();
-                            note2_steminfos.push(stem_info.clone());
+                        if let Some(nid) = item.notedata.id2 {
+                            let stem_info = &item.notedata.steminfo2.clone();
+                            steminfo2s.push(stem_info.clone());
                         }
                     }
 
                     RItemBeam::End(ref data) => {
-                        if let Some(nid) = item.note2_id {
+                        if let Some(nid) = item.notedata.id2 {
                             //-------------------------------------------------------------------------------
                             // calculate for middle items
                             let note = item2note
@@ -1051,11 +1043,10 @@ impl RMatrix {
                                 )
                                 .borrow();
                             let beamgroup = note.beamgroup.as_ref().unwrap().borrow();
-                            let stem_info = &item.note2_steminfo.clone();
-                            note2_steminfos.push(stem_info.clone());
+                            let stem_info = &item.notedata.steminfo2.clone();
+                            steminfo2s.push(stem_info.clone());
 
-                            let (first_x, first_y, first_headw, first_h) = match note2_steminfos[0]
-                            {
+                            let (first_x, first_y, first_headw, first_h) = match steminfo2s[0] {
                                 StemInfo::FullInfo(x, y, hw, h) => (x, y, hw, h),
                                 StemInfo::BeamMiddle(_, _, _, _) => todo!(),
                                 StemInfo::None => todo!(),
@@ -1065,7 +1056,7 @@ impl RMatrix {
                                 StemInfo::BeamMiddle(_, _, _, _) => todo!(),
                                 StemInfo::None => todo!(),
                             };
-                            for beaminfo in &note2_steminfos {
+                            for beaminfo in &steminfo2s {
                                 match beaminfo {
                                     StemInfo::BeamMiddle(idx, stem_x, stem_y, head_width) => {
                                         let current = beamgroup
@@ -1178,7 +1169,7 @@ impl RMatrix {
                                 }
                             }
                             //-------------------------------------------------------------------------------
-                            let stem_info = &item.note2_steminfo.clone();
+                            let stem_info = &item.notedata.steminfo2.clone();
 
                             let apoint_outer =
                                 do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);

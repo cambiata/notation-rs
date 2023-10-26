@@ -5,7 +5,7 @@ use itertools::Itertools;
 
 impl Bars {
     pub fn resolve_stuff(&mut self) {
-        self.map_note_id_to_note();
+        self.map_id1_to_note();
         self.resolve_ties();
         self.resolve_lines();
         self.resolve_slurs();
@@ -30,7 +30,11 @@ impl Bars {
 
                                 if let Some(left_level) = left_level {
                                     if let Some(right_level) = right_level {
-                                        right.lines_to.push(HeadLineTo(*left_level, *right_level, line.2))
+                                        right.lines_to.push(HeadLineTo(
+                                            *left_level,
+                                            *right_level,
+                                            line.2,
+                                        ))
                                     } else {
                                         println!("Right level does not exist! {:?}", line.1);
                                     }
@@ -100,7 +104,7 @@ impl Bars {
                                     } else {
                                         let right_id = right.id;
                                         right.ties_to.push(TieToData {
-                                            note_id: right_id,
+                                            id1: right_id,
                                             level,
                                             ttype: TieToType::ResolveTieFrom(left.id, level),
                                         });
@@ -160,7 +164,7 @@ impl Bars {
         }
     }
 
-    fn map_note_id_to_note(&mut self) {
+    fn map_id1_to_note(&mut self) {
         for (baridx, bar) in self.items.iter().enumerate() {
             let bar = bar.borrow();
             match bar.btype {
@@ -168,24 +172,29 @@ impl Bars {
                     for part in parts {
                         // let part = part.borrow();
                         let part = part.borrow();
-                        let complexes = part.complexes.as_ref().expect("Part should have complexes!");
+                        let complexes = part
+                            .complexes
+                            .as_ref()
+                            .expect("Part should have complexes!");
                         for complex in complexes {
                             let complex = complex.borrow();
                             let mut ritem = complex.matrix_item.as_ref().unwrap().borrow_mut();
                             match complex.ctype {
-                                ComplexType::Single(ref note, _) | ComplexType::Upper(ref note, _) => {
-                                    self.note_id_map.insert(note.borrow().id, note.clone());
-                                    ritem.note_id = Some(note.borrow().id);
+                                ComplexType::Single(ref note, _)
+                                | ComplexType::Upper(ref note, _) => {
+                                    self.id1_map.insert(note.borrow().id, note.clone());
+                                    ritem.notedata.id1 = Some(note.borrow().id);
+                                    // ritem.id1 = Some(note.borrow().id);
                                 }
                                 ComplexType::Lower(ref note, _) => {
-                                    self.note_id_map.insert(note.borrow().id, note.clone());
-                                    ritem.note2_id = Some(note.borrow().id);
+                                    self.id1_map.insert(note.borrow().id, note.clone());
+                                    ritem.notedata.id2 = Some(note.borrow().id);
                                 }
                                 ComplexType::Two(ref upper, ref lower, _) => {
-                                    self.note_id_map.insert(upper.borrow().id, upper.clone());
-                                    self.note_id_map.insert(lower.borrow().id, lower.clone());
-                                    ritem.note_id = Some(upper.borrow().id);
-                                    ritem.note2_id = Some(lower.borrow().id);
+                                    self.id1_map.insert(upper.borrow().id, upper.clone());
+                                    self.id1_map.insert(lower.borrow().id, lower.clone());
+                                    ritem.notedata.id1 = Some(upper.borrow().id);
+                                    ritem.notedata.id2 = Some(lower.borrow().id);
                                 }
                             }
                         }

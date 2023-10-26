@@ -15,7 +15,7 @@ use std::rc::Rc;
 pub struct Bars {
     pub items: Vec<Rc<RefCell<Bar>>>,
     pub matrix: Option<RMatrix>,
-    pub note_id_map: BTreeMap<usize, Rc<RefCell<Note>>>, // map note.id to Rc<RefCell<Note>>
+    pub id1_map: BTreeMap<usize, Rc<RefCell<Note>>>, // map note.id to Rc<RefCell<Note>>
     pub allotment_fn: SpacingFn,
 }
 
@@ -26,7 +26,7 @@ impl Bars {
         Self {
             items,
             matrix: None,
-            note_id_map: BTreeMap::new(),
+            id1_map: BTreeMap::new(),
             allotment_fn: ALLOTMENT_EQUAL_FN,
         }
     }
@@ -368,7 +368,7 @@ impl Bars {
         //     dbg!(col.position);
         // }
 
-        // self.map_note_id_to_note();
+        // self.map_id1_to_note();
         // self.resolve_ties();
         // self.resolve_slurs();
 
@@ -391,9 +391,9 @@ impl Bars {
                             .expect("Part should have complexes!");
 
                         let mut note_current_beamgroup_id: usize = 0;
-                        let mut note_current_beamgroup_note_idx: usize = 0;
+                        let mut note_current_beamgroup_id1x: usize = 0;
                         let mut note2_current_beamgroup_id: usize = 0;
-                        let mut note2_current_beamgroup_note_idx: usize = 0;
+                        let mut note2_current_beamgroup_id1x: usize = 0;
 
                         for (complexidx, complex) in complexes.iter().enumerate() {
                             let complex = complex.borrow();
@@ -432,11 +432,11 @@ impl Bars {
                                         let beamgroup = beamgroup_ref.borrow();
                                         if beamgroup.id != note_current_beamgroup_id {
                                             note_current_beamgroup_id = beamgroup.id;
-                                            note_current_beamgroup_note_idx = 0;
+                                            note_current_beamgroup_id1x = 0;
 
                                             let data = RItemBeamData {
                                                 id: beamgroup.id,
-                                                note_id: note.id,
+                                                id1: note.id,
                                                 note_position: note.position,
                                                 direction: beamgroup.direction.unwrap(),
                                                 tip_level: beamgroup.start_level,
@@ -451,16 +451,16 @@ impl Bars {
                                             };
 
                                             if beamgroup.notes.len() == 1 {
-                                                item.note_beamdata = RItemBeam::Single(data);
+                                                item.notedata.beamdata1 = RItemBeam::Single(data);
                                             } else {
-                                                item.note_beamdata = RItemBeam::Start(data);
+                                                item.notedata.beamdata1 = RItemBeam::Start(data);
                                             }
                                         } else {
-                                            note_current_beamgroup_note_idx += 1;
+                                            note_current_beamgroup_id1x += 1;
 
                                             let mut data = RItemBeamData {
                                                 id: beamgroup.id,
-                                                note_id: note.id,
+                                                id1: note.id,
                                                 note_position: note.position,
                                                 direction: beamgroup.direction.unwrap(),
                                                 tip_level: beamgroup.end_level,
@@ -474,14 +474,14 @@ impl Bars {
                                                 lower_voice: false,
                                             };
 
-                                            if note_current_beamgroup_note_idx
+                                            if note_current_beamgroup_id1x
                                                 < beamgroup.notes.len() - 1
                                             {
-                                                item.note_beamdata = RItemBeam::Middle(data);
+                                                item.notedata.beamdata1 = RItemBeam::Middle(data);
                                             } else {
                                                 data.note_durations =
                                                     Some(beamgroup.note_durations.clone());
-                                                item.note_beamdata = RItemBeam::End(data);
+                                                item.notedata.beamdata1 = RItemBeam::End(data);
                                             }
                                         }
                                     }
@@ -500,11 +500,11 @@ impl Bars {
                                         let beamgroup = beamgroup_ref.borrow();
                                         if beamgroup.id != note2_current_beamgroup_id {
                                             note2_current_beamgroup_id = beamgroup.id;
-                                            note2_current_beamgroup_note_idx = 0;
+                                            note2_current_beamgroup_id1x = 0;
 
                                             let data = RItemBeamData {
                                                 id: beamgroup.id,
-                                                note_id: note2.id,
+                                                id1: note2.id,
                                                 note_position: note2.position,
                                                 direction: beamgroup.direction.unwrap(),
                                                 tip_level: beamgroup.start_level,
@@ -519,14 +519,14 @@ impl Bars {
                                             };
 
                                             if beamgroup.notes.len() == 1 {
-                                                item.note2_beamdata = RItemBeam::Single(data);
+                                                item.notedata.beamdata2 = RItemBeam::Single(data);
                                             } else {
-                                                item.note2_beamdata = RItemBeam::Start(data);
+                                                item.notedata.beamdata2 = RItemBeam::Start(data);
                                             }
                                         } else {
                                             let mut data = RItemBeamData {
                                                 id: beamgroup.id,
-                                                note_id: note2.id,
+                                                id1: note2.id,
                                                 note_position: note2.position,
                                                 direction: beamgroup.direction.unwrap(),
                                                 tip_level: beamgroup.end_level,
@@ -540,15 +540,15 @@ impl Bars {
                                                 lower_voice: true,
                                             };
 
-                                            note2_current_beamgroup_note_idx += 1;
-                                            if note2_current_beamgroup_note_idx
+                                            note2_current_beamgroup_id1x += 1;
+                                            if note2_current_beamgroup_id1x
                                                 < beamgroup.notes.len() - 1
                                             {
-                                                item.note2_beamdata = RItemBeam::Middle(data);
+                                                item.notedata.beamdata2 = RItemBeam::Middle(data);
                                             } else {
                                                 data.note_durations =
                                                     Some(beamgroup.note_durations.clone());
-                                                item.note2_beamdata = RItemBeam::End(data);
+                                                item.notedata.beamdata2 = RItemBeam::End(data);
                                             }
                                         }
                                     }

@@ -81,7 +81,7 @@ pub enum TieFromType {
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct TieData {
-    pub note_id: usize,
+    pub id1: usize,
     pub level: i8,
     pub ttype: TieFromType,
 }
@@ -94,7 +94,7 @@ pub enum TieToType {
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct TieToData {
-    pub note_id: usize,
+    pub id1: usize,
     pub level: i8,
     pub ttype: TieToType,
 }
