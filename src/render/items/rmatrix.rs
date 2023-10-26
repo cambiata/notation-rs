@@ -385,7 +385,7 @@ impl RMatrix {
             let row = row.borrow();
             for item in row.items.iter().flatten() {
                 let item = item.borrow();
-                dbg!(item);
+                dbg!(item.coord_x, item.coord_y);
                 // for rect in item.nrects.as_ref().unwrap().iter() {
                 //     let rect: NRect = rect.borrow().0;
                 //     println!("item rect:{:?}", rect);
