@@ -103,6 +103,7 @@ impl Bars {
                                     .map(|nrect| nrect.clone())
                                     .collect::<Vec<_>>();
                                 let ritem = Rc::new(RefCell::new(RItem::new_from_nrects(
+                                    RItemType::Cluster,
                                     item_nrects,
                                     complex.duration,
                                 )));
@@ -136,6 +137,7 @@ impl Bars {
                             };
 
                             let item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                RItemType::NonContent,
                                 vec![Rc::new(RefCell::new(NRectExt::new(
                                     NRect::new(0., -space_above, 10., space_above + space_below),
                                     NRectType::WIP("VerticalLine".to_string()),
@@ -177,7 +179,11 @@ impl Bars {
                                         }
                                     };
 
-                                    Some(Rc::new(RefCell::new(RItem::new_from_nrects(rects, 0))))
+                                    Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                        RItemType::Barline,
+                                        rects,
+                                        0,
+                                    ))))
                                 }
                                 PartTemplate::Nonmusic => None,
                             });
@@ -191,6 +197,7 @@ impl Bars {
                             colitems.push(match parttemplate {
                                 PartTemplate::Music => {
                                     Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                        RItemType::Space,
                                         vec![Rc::new(RefCell::new(NRectExt::new(
                                             NRect::new(0., -height / 2.0, *width, *height),
                                             NRectType::WIP("spacer".to_string()),
@@ -221,6 +228,7 @@ impl Bars {
                                         };
 
                                         item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                            RItemType::Clef,
                                             vec![Rc::new(RefCell::new(NRectExt::new(
                                                 NRect::new(0., y, 74., h),
                                                 NRectType::Clef(clef.clone()),
@@ -231,6 +239,7 @@ impl Bars {
                                     None => {
                                         //item_rects.push(NRect::new(0., -5.0, 10., 10.));
                                         item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                            RItemType::Other,
                                             vec![Rc::new(RefCell::new(NRectExt::new(
                                                 NRect::new(0., -5.0, 10., 10.),
                                                 NRectType::WIP("no clef".to_string()),
@@ -308,8 +317,11 @@ impl Bars {
                                     }
                                 }
 
-                                item =
-                                    Some(Rc::new(RefCell::new(RItem::new_from_nrects(nrects, 0))));
+                                item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                    RItemType::Key,
+                                    nrects,
+                                    0,
+                                ))));
                             } else {
                             }
                             ritems.push(item);
@@ -346,8 +358,11 @@ impl Bars {
                                     }
                                 }
 
-                                item =
-                                    Some(Rc::new(RefCell::new(RItem::new_from_nrects(nrects, 0))));
+                                item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                    RItemType::Time,
+                                    nrects,
+                                    0,
+                                ))));
                             } else {
                             }
                             ritems.push(item);

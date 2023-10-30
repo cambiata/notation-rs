@@ -1,5 +1,6 @@
 use crate::prelude::NRect;
 use crate::{prelude::*, types::some_cloneables::SomeCloneablePairs};
+
 use std::cell::{Ref, RefMut};
 use std::collections::BTreeMap;
 
@@ -19,11 +20,6 @@ impl RMatrix {
         let mut rowitems: Vec<Vec<Option<Rc<RefCell<RItem>>>>> = vec![vec![]; *row_count];
 
         let firstcol = &colitems[0];
-        // for item in firstcol.borrow().items.iter() {
-        //     if item.is_none() {
-        //         panic!("firstcol has None - shouldn't have!");
-        //     }
-        // }
 
         let mut colidx = 0;
         for col in &colitems {
@@ -382,15 +378,17 @@ impl RMatrix {
 
     pub fn calculate_test(&self) {
         for row in self.rows.iter() {
-            let row = row.borrow();
-            for item in row.items.iter().flatten() {
-                let item = item.borrow();
-                // dbg!(item.coord_x, item.coord_y);
-                // for rect in item.nrects.as_ref().unwrap().iter() {
-                //     let rect: NRect = rect.borrow().0;
-                //     println!("item rect:{:?}", rect);
-                // }
+            let mut nrects: Vec<Rc<RefCell<NRectExt>>> = vec![];
+            let mut row = row.borrow_mut();
+            for (item_idx, item) in row.items.iter().flatten().enumerate() {
+                if item_idx == 0 {
+                    nrects.push(Rc::new(RefCell::new(NRectExt::new(
+                        NRect::new(0.0, 0.0, 40.0, 40.0),
+                        NRectType::Spacer("test".to_string()),
+                    ))) as Rc<RefCell<NRectExt>>);
+                }
             }
+            row.nrects = nrects as Vec<_>;
         }
     }
 
@@ -685,7 +683,7 @@ impl RMatrix {
                 // note1 ===============================================================================
                 match item.notedata.beamdata1 {
                     RItemBeam::Single(ref data) => {
-                        if let RItemType::Note(nid) = item.notedata.id1 {
+                        if let RItemNoteType::Note(nid) = item.notedata.id1 {
                             let stem_info = &item.notedata.steminfo1.clone();
                             let apoint_outer =
                                 do_attachmentpoint_articulation_outer(&nid, stem_info, &item2note);
@@ -723,7 +721,7 @@ impl RMatrix {
                     }
 
                     RItemBeam::Start(ref data) => {
-                        if let RItemType::Note(nid) = item.notedata.id1 {
+                        if let RItemNoteType::Note(nid) = item.notedata.id1 {
                             let stem_info = &item.notedata.steminfo1.clone();
                             steminfo1s = vec![];
                             steminfo1s.push(stem_info.clone());
@@ -763,14 +761,14 @@ impl RMatrix {
                     }
 
                     RItemBeam::Middle(ref data) => {
-                        if let RItemType::Note(nid) = item.notedata.id1 {
+                        if let RItemNoteType::Note(nid) = item.notedata.id1 {
                             let stem_info = &item.notedata.steminfo1.clone();
                             steminfo1s.push(stem_info.clone());
                         }
                     }
 
                     RItemBeam::End(ref data) => {
-                        if let RItemType::Note(nid) = item.notedata.id1 {
+                        if let RItemNoteType::Note(nid) = item.notedata.id1 {
                             //-------------------------------------------------------------------------------
                             // calculate for middle items
                             let note = item2note
@@ -948,7 +946,7 @@ impl RMatrix {
                 // note2 ===============================================================================
                 match item.notedata.beamdata2 {
                     RItemBeam::Single(ref data) => {
-                        if let RItemType::Note(nid) = item.notedata.id2 {
+                        if let RItemNoteType::Note(nid) = item.notedata.id2 {
                             let stem_info = &item.notedata.steminfo2.clone();
 
                             let apoint_outer =
@@ -986,7 +984,7 @@ impl RMatrix {
                     }
 
                     RItemBeam::Start(ref data) => {
-                        if let RItemType::Note(nid) = item.notedata.id2 {
+                        if let RItemNoteType::Note(nid) = item.notedata.id2 {
                             let stem_info = &item.notedata.steminfo2.clone();
                             steminfo2s = vec![];
                             steminfo2s.push(stem_info.clone());
@@ -1025,14 +1023,14 @@ impl RMatrix {
                     }
 
                     RItemBeam::Middle(ref data) => {
-                        if let RItemType::Note(nid) = item.notedata.id2 {
+                        if let RItemNoteType::Note(nid) = item.notedata.id2 {
                             let stem_info = &item.notedata.steminfo2.clone();
                             steminfo2s.push(stem_info.clone());
                         }
                     }
 
                     RItemBeam::End(ref data) => {
-                        if let RItemType::Note(nid) = item.notedata.id2 {
+                        if let RItemNoteType::Note(nid) = item.notedata.id2 {
                             //-------------------------------------------------------------------------------
                             // calculate for middle items
                             let note = item2note

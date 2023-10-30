@@ -162,12 +162,11 @@ fn main() {
     // let bar_data = QCode::bars("|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F chd:C   / 3,6,8 2,4,6    / -2 1  |bl ").unwrap();
     // let bar_data = QCode::bars("|sp2 |clef - G F |sp1 |key - b Fb |sp3 |/lyr chd:F chd:C chd:F  / 3,6,8 2,4,6 1,3,6   / -2 1 -2 |bl ").unwrap();
     // let bar_data = QCode::bars("/lyr nv2 chd:F chd:Bb chd:C /lyr nv2 fun:T fun:S fun:D ").unwrap();
-
     // let bar_data = QCode::bars("|sp 10|clef F|sp 50|nv1 nv8 0 nv16 1 #2  % nv1  3 |bl").unwrap();
     // let bar_data = QCode::bars("|sp 10 |clef F|sp 50|nv1  -6 s s s |bl").unwrap();
+    // let bar_data = QCode::bars("nv2 p nv4 0 p % -3 2 nv2 p |bl |sp 30 | 0 p nv2 p |bl").unwrap();
 
-    let bar_data = QCode::bars("nv2 p nv4 0 p % -3 2 nv2 p |bl |sp 30 | 0 p nv2 p |bl").unwrap();
-    let bar_data = QCode::bars("0 0 0 0 % bp |bl |sp 30 |bp |bl").unwrap();
+    let bar_data = QCode::bars("|clef G|key ##|sp 10| time 3:4|sp 30| 0 0 0 0 |bl").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
     bars.allotment_fn = ALLOTMENT_RELATIVE_FN;
@@ -185,10 +184,10 @@ fn main() {
     matrix.calculate_beamgroups();
     matrix.calculate_attachment_points(&bars.id1_map);
     matrix.calculate_test();
+
     matrix.calculate_row_spacing();
     // matrix.calculate_col_row_item_measurements();
     matrix.calculate_items_y_values();
-
     matrix.calculate_matrix_size();
 
     //------------------------------------------------------
