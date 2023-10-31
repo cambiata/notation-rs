@@ -31,7 +31,8 @@
     <rect x="544.25" y="40" width="32.5" height="12.5" fill="black"/>
     <rect x="723" y="317" width="3.7500002" height="100" fill="black"/>
     <rect x="1007" y="40" width="3.7500002" height="100" fill="black"/>
-    <rect x="853.25" y="65" width="32.5" height="12.5" fill="black"/>
+    <rect x="853.25" y="40" width="32.5" height="12.5" fill="black"/>
+    <rect x="853.25" y="115" width="32.5" height="12.5" fill="black"/>
     <rect x="1007" y="317" width="3.7500002" height="100" fill="black"/>
     <rect x="853.25" y="342" width="32.5" height="12.5" fill="black"/>
     <line x1="140.5" y1="94" x2="140.5" y2="179.2857" stroke="black" stroke-width="3"/>
