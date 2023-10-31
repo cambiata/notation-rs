@@ -196,7 +196,8 @@ impl Bars {
                                     ritem.notedata.id1 = RItemNoteType::Note(upper.borrow().id);
                                     ritem.notedata.id2 = RItemNoteType::Note(lower.borrow().id);
                                 }
-                                ComplexType::OneBarpause(duration) => {}
+                                ComplexType::OneBarpause(_) => {}
+                                ComplexType::TwoBarpauses(_, _) => {}
                             }
                         }
                     }

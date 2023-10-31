@@ -167,6 +167,8 @@ impl RMatrix {
             let mut colx = 0.0;
             let row = row.borrow();
             let mut itemrects: Vec<NRect> = Vec::new();
+
+            // add item rects (notes etc...)
             for (colidx, item) in row.items.iter().enumerate() {
                 let col = self.get_column(colidx).unwrap().borrow();
                 if let Some(item) = item {
@@ -187,6 +189,13 @@ impl RMatrix {
                 };
                 colx += col.distance_x;
             }
+
+            // add row rects (tuplet brackets etc...)
+            for nrect in row.nrects.iter() {
+                let rect = nrect.borrow().0;
+                itemrects.push(rect);
+            }
+
             rowrects.push(itemrects);
         }
 
@@ -196,7 +205,7 @@ impl RMatrix {
 
             let overlap = nrects_overlap_y(uppers, lowers).unwrap_or(0.0);
             let mut row = self.get_row(rowidx).unwrap().borrow_mut();
-            row.distance_y = row.distance_y.max(overlap) + SPACE; // Todo
+            row.distance_y = row.distance_y.max(overlap) + SPACE; // Todo: Added one extra space here
             rowidx += 1;
         }
     }
@@ -248,28 +257,6 @@ impl RMatrix {
             //x += col.distance_x_after_allot;
         }
     }
-
-    // pub fn calculate_col_row_item_measurements(&mut self) {
-    //     let mut x = 0.0;
-    //     for col in &self.cols {
-    //         let mut col = col.borrow_mut();
-    //         let mut y = 0.0;
-    //         let mut rowidx = 0;
-    //         for item in &col.items {
-    //             if let Some(item) = item {
-    //                 let mut item: RefMut<RItem> = item.borrow_mut();
-    //                 item.coords = Some(NPoint::new(x, y));
-    //             }
-    //             let mut row = self.get_row(rowidx).unwrap().borrow_mut();
-    //             row.y = y;
-    //             y += row.distance_y.round();
-    //             rowidx += 1;
-    //         }
-    //         col.x = x;
-    //         x += col.distance_x.round();
-    //         //x += col.distance_x_after_allot;
-    //     }
-    // }
 
     pub fn calculate_matrix_size(&mut self) {
         // matrix size
@@ -380,15 +367,38 @@ impl RMatrix {
         for row in self.rows.iter() {
             let mut nrects: Vec<Rc<RefCell<NRectExt>>> = vec![];
             let mut row = row.borrow_mut();
+
+            let first_x = row
+                .items
+                .first()
+                .unwrap()
+                .as_ref()
+                .unwrap()
+                .borrow()
+                .coord_x
+                .unwrap();
+            let last_x = row
+                .items
+                .last()
+                .unwrap()
+                .as_ref()
+                .unwrap()
+                .borrow()
+                .coord_x
+                .unwrap();
+            let width = last_x - first_x;
+
             for (item_idx, item) in row.items.iter().flatten().enumerate() {
                 if item_idx == 0 {
                     nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                        NRect::new(0.0, 0.0, 40.0, 40.0),
-                        NRectType::Spacer("test".to_string()),
+                        NRect::new(first_x, -SPACE * 3.0, width, SPACE * 8.0),
+                        NRectType::Dev(true, "row nrect".to_string()),
                     ))) as Rc<RefCell<NRectExt>>);
                 }
             }
+            // dbg!(nrects.len());
             row.nrects = nrects as Vec<_>;
+            // dbg!(&row.nrects.len());
         }
     }
 

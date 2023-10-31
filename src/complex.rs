@@ -115,6 +115,9 @@ impl Complex {
             ComplexType::OneBarpause(duration) => {
                 println!("Complex pos {}: OneBarpause", &self.position);
             }
+            ComplexType::TwoBarpauses(_, _) => {
+                println!("Complex pos {}: TwoBarpauses", &self.position);
+            }
         }
     }
 }
@@ -131,6 +134,7 @@ pub enum ComplexType {
     Upper(Rc<RefCell<Note>>, bool),
     Lower(Rc<RefCell<Note>>, bool),
     OneBarpause(Duration),
+    TwoBarpauses(Duration, Duration),
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]

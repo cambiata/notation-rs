@@ -359,6 +359,7 @@ impl Part {
                     }
                     VoiceType::Barpause(_) => {
                         dbg!("One voice: barpause");
+                        complexes.push(Complex::new(ComplexType::OneBarpause(0), 0));
                     }
                 },
                 Voices::Two(v1, v2) => {
@@ -366,6 +367,7 @@ impl Part {
                         [VoiceType::Barpause(_), VoiceType::Barpause(_)] => {
                             //
                             dbg!("Two voices: barpause, barpause");
+                            complexes.push(Complex::new(ComplexType::TwoBarpauses(0, 0), 0));
                         }
 
                         [VoiceType::Barpause(_), VoiceType::Notes(notes)] => {
@@ -578,7 +580,8 @@ impl Part {
                         // println!("{idx}- Lower: Beamgroup direction is already set");
                     }
                 }
-                ComplexType::OneBarpause(duration) => {}
+                ComplexType::OneBarpause(_) => {}
+                ComplexType::TwoBarpauses(_, _) => {}
             }
         }
         None
@@ -723,6 +726,7 @@ impl Part {
         let complexes = self.complexes.as_ref().unwrap();
 
         for (idx, complex) in complexes.into_iter().enumerate() {
+            dbg!(idx);
             let mut rects: Vec<NRectExt> = Vec::new();
             let mut complex = complex.borrow_mut();
 
@@ -786,6 +790,7 @@ impl Part {
                     levels_accidentals.sort_by(|a, b| a.0.cmp(&b.0));
                     rects = create_accidentals_rectangles(rects, levels_accidentals)?;
                 }
+
                 ComplexType::Upper(ref note, overflow) => {
                     let placements = note_get_heads_placements(&note.borrow())?;
                     // dbg!(" - Upper", &placements, overflow);
@@ -796,7 +801,16 @@ impl Part {
                     levels_accidentals.sort_by(|a, b| a.0.cmp(&b.0));
                     rects = create_accidentals_rectangles(rects, levels_accidentals)?;
                     // rects = create_note_flags(rects, &note.borrow(), 0.0);
+
+                    // only add barpause for first cluster in part
+                    if idx == 0 {
+                        rects.push(NRectExt(
+                            NRect::new(0.0, SPACE * 2.0, SPACE, SPACE_HALF),
+                            NRectType::Barpause(0),
+                        ));
+                    }
                 }
+
                 ComplexType::Lower(ref note, overflow) => {
                     let placements = note_get_heads_placements(&note.borrow())?;
                     // dbg!(" - Lower", &placements, overflow);
@@ -804,10 +818,36 @@ impl Part {
                     //
                     let mut levels_accidentals = note.borrow().levels_accidentals();
                     levels_accidentals.sort_by(|a, b| a.0.cmp(&b.0));
+
                     rects = create_accidentals_rectangles(rects, levels_accidentals)?;
+
+                    // only add barpause for first cluster in part
+                    if idx == 0 {
+                        rects.push(NRectExt(
+                            NRect::new(0.0, -SPACE * 2.0, SPACE, SPACE_HALF),
+                            NRectType::Barpause(0),
+                        ));
+                    }
                 }
 
-                ComplexType::OneBarpause(duration) => {}
+                ComplexType::OneBarpause(duration) => {
+                    rects = vec![NRectExt(
+                        NRect::new(0.0, -SPACE, SPACE * 10.0, SPACE_HALF), // TODO: How wide should barpause be?
+                        NRectType::Barpause(duration),
+                    )]
+                }
+                ComplexType::TwoBarpauses(duration_upper, duration_lower) => {
+                    rects = vec![
+                        NRectExt(
+                            NRect::new(0.0, -SPACE * 2.0, SPACE * 10.0, SPACE_HALF), // TODO: How wide should barpause be?
+                            NRectType::Barpause(duration_upper),
+                        ),
+                        NRectExt(
+                            NRect::new(0.0, SPACE * 2.0, SPACE * 10.0, SPACE_HALF), // TODO: How wide should barpause be?
+                            NRectType::Barpause(duration_lower),
+                        ),
+                    ]
+                }
             };
 
             if !rects.is_empty() {
@@ -866,6 +906,7 @@ impl Part {
                     lower.adjust_x = Some((head_width, lower_adjust));
                 }
                 ComplexType::OneBarpause(duration) => {}
+                ComplexType::TwoBarpauses(duration_upper, duration_lower) => {}
             }
         }
 

@@ -5,7 +5,7 @@ use std::cell::{Ref, RefMut};
 #[derive(Debug, PartialEq)]
 pub enum RItemType {
     Unset,
-    Cluster,
+    Content,
     Clef,
     Key,
     Time,

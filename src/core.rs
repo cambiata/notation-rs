@@ -635,6 +635,7 @@ pub enum NRectType {
     FunctionSymbol(FunctionType, FunctionColor, FunctionBass, bool, bool),
     ChordSymbol(ChordRoot, ChordFlavour, ChordColor, ChordRoot),
     Symbol(SymbolType),
+    Barpause(Duration),
     // DevRectRed,
     // DevRectBlue,
 }

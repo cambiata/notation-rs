@@ -401,14 +401,14 @@ impl QCode {
 
                 if key_segment.starts_with('f') {
                     key_segment = key_segment[1..].to_string();
-                    println!("F-klav förtecekn!");
-                    dbg!(&key_segment);
+                    // println!("F-klav förtecekn!");
+                    // dbg!(&key_segment);
                     key_clef = Clef::F;
                 }
 
                 if key_segment.starts_with('c') {
                     key_segment = key_segment[1..].to_string();
-                    println!("C-klav förtecekn!");
+                    // println!("C-klav förtecekn!");
                     key_clef = Clef::C;
                 }
 

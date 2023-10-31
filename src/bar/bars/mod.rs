@@ -102,8 +102,9 @@ impl Bars {
                                     .iter()
                                     .map(|nrect| nrect.clone())
                                     .collect::<Vec<_>>();
+
                                 let ritem = Rc::new(RefCell::new(RItem::new_from_nrects(
-                                    RItemType::Cluster,
+                                    RItemType::Content,
                                     item_nrects,
                                     complex.duration,
                                 )));
@@ -623,7 +624,8 @@ impl Bars {
                                             }
                                         }
                                     }
-                                    ComplexType::OneBarpause(duration) => {}
+                                    ComplexType::OneBarpause(_) => {}
+                                    ComplexType::TwoBarpauses(_, _) => {}
                                 }
                             }
                         }
@@ -655,7 +657,8 @@ impl Bars {
                                 let mut item: RefMut<RItem> = item.borrow_mut();
 
                                 match &complex.ctype {
-                                    ComplexType::OneBarpause(duration) => {}
+                                    ComplexType::OneBarpause(_) => {}
+                                    ComplexType::TwoBarpauses(_, _) => {}
                                     ComplexType::Single(note, _)
                                     | ComplexType::Upper(note, _)
                                     | ComplexType::Lower(note, _) => {
@@ -680,7 +683,8 @@ impl Bars {
                                                     ComplexType::Upper(_, _) => DirUD::Up,
                                                     ComplexType::Lower(_, _) => DirUD::Down,
                                                     ComplexType::Two(_, _, _) => todo!(), // shouldn't matter!
-                                                    ComplexType::OneBarpause(duration) => todo!(),
+                                                    ComplexType::OneBarpause(_) => todo!(),
+                                                    ComplexType::TwoBarpauses(_, _) => todo!(),
                                                 };
 
                                                 let tie_placement = match &complex.ctype {
@@ -714,7 +718,8 @@ impl Bars {
                                                     }
 
                                                     ComplexType::Two(_, _, _) => todo!(),
-                                                    ComplexType::OneBarpause(duration) => todo!(),
+                                                    ComplexType::OneBarpause(_) => todo!(),
+                                                    ComplexType::TwoBarpauses(_, _) => todo!(),
                                                 };
 
                                                 let rect: NRect = NRect::new(
