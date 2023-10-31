@@ -391,14 +391,142 @@ impl RMatrix {
             for (item_idx, item) in row.items.iter().flatten().enumerate() {
                 if item_idx == 0 {
                     nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                        NRect::new(first_x, -SPACE * 3.0, width, SPACE * 8.0),
-                        NRectType::Dev(true, "row nrect".to_string()),
+                        NRect::new(first_x, -SPACE * 4.0, width, SPACE * 8.0),
+                        NRectType::Dev(false, "row nrect".to_string()),
                     ))) as Rc<RefCell<NRectExt>>);
                 }
             }
             // dbg!(nrects.len());
             row.nrects = nrects as Vec<_>;
             // dbg!(&row.nrects.len());
+        }
+    }
+
+    pub fn calculate_barpauses(&self) {
+        for row in self.rows.iter() {
+            let mut nrects: Vec<Rc<RefCell<NRectExt>>> = vec![];
+            let mut row = row.borrow_mut();
+
+            let mut bp_rect: Option<(NPoint, ComplexTypeLight)> = None;
+
+            for (item_idx, item) in row.items.iter().flatten().enumerate() {
+                let mut item = item.borrow_mut();
+                match item.itype {
+                    // find barpauses...
+                    RItemType::Complex(partidx, complexidx, ctype) => {
+                        if complexidx == 0 {
+                            // match ctype {
+                            //     ComplexTypeLight::Lower => {
+                            //         let barpauserect =
+                            //             item.nrects.as_ref().unwrap().into_iter().find(|nrect| {
+                            //                 let nrect: Ref<NRectExt> = nrect.borrow();
+                            //                 match nrect.1 {
+                            //                     NRectType::Barpause(_) => true,
+                            //                     _ => false,
+                            //                 }
+                            //             });
+
+                            //         bp_rect = Some(NPoint(item.coord_x.unwrap(), -SPACE * 2.0));
+                            //     }
+                            //     ComplexTypeLight::Upper => {
+                            //         let barpauserect =
+                            //             item.nrects.as_ref().unwrap().into_iter().find(|nrect| {
+                            //                 let nrect: Ref<NRectExt> = nrect.borrow();
+                            //                 match nrect.1 {
+                            //                     NRectType::Barpause(_) => true,
+                            //                     _ => false,
+                            //                 }
+                            //             });
+
+                            //         bp_rect = Some(NPoint(item.coord_x.unwrap(), SPACE * 2.0));
+                            //     }
+                            //     ComplexTypeLight::OneBarpause => {
+                            //         let barpauserect =
+                            //             item.nrects.as_ref().unwrap().into_iter().find(|nrect| {
+                            //                 let nrect: Ref<NRectExt> = nrect.borrow();
+                            //                 match nrect.1 {
+                            //                     NRectType::Barpause(_) => true,
+                            //                     _ => false,
+                            //                 }
+                            //             });
+                            //     }
+                            //     ComplexTypeLight::TwoBarpauses => {}
+                            //     _ => {}
+                            // }
+                            match ctype {
+                                ComplexTypeLight::Lower
+                                | ComplexTypeLight::Upper
+                                | ComplexTypeLight::OneBarpause
+                                | ComplexTypeLight::TwoBarpauses => {
+                                    bp_rect = Some((NPoint(item.coord_x.unwrap(), 0.0), ctype));
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+
+                    RItemType::Barline => {
+                        if let Some((point, ctype)) = bp_rect {
+                            let itemx = item.coord_x.unwrap();
+                            let bpx = point.0;
+                            let bpy = point.1;
+                            let width = itemx - bpx;
+
+                            let pause_width = 1.3 * SPACE;
+                            let pause_x = -((width + pause_width) / 2.0) - SPACE;
+
+                            match ctype {
+                                // Upper barpause
+                                ComplexTypeLight::Lower | ComplexTypeLight::TwoBarpauses => {
+                                    let nrect = NRect::new(
+                                        pause_x,
+                                        bpy - 2.0 * SPACE,
+                                        pause_width,
+                                        SPACE_HALF,
+                                    );
+                                    let nrectext =
+                                        NRectExt::new(nrect, NRectType::Barpause(0, true));
+                                    item.nrects
+                                        .as_mut()
+                                        .unwrap()
+                                        .push(Rc::new(RefCell::new(nrectext)));
+                                }
+                                // Middle barpause
+                                ComplexTypeLight::OneBarpause => {
+                                    let nrect =
+                                        NRect::new(pause_x, bpy - SPACE, pause_width, SPACE_HALF);
+                                    let nrectext =
+                                        NRectExt::new(nrect, NRectType::Barpause(0, true));
+                                    item.nrects
+                                        .as_mut()
+                                        .unwrap()
+                                        .push(Rc::new(RefCell::new(nrectext)));
+                                }
+                                _ => {}
+                            }
+
+                            match ctype {
+                                // Lower barpause
+                                ComplexTypeLight::Upper | ComplexTypeLight::TwoBarpauses => {
+                                    let nrect =
+                                        NRect::new(pause_x, bpy + SPACE, pause_width, SPACE_HALF);
+                                    let nrectext =
+                                        NRectExt::new(nrect, NRectType::Barpause(0, true));
+                                    item.nrects
+                                        .as_mut()
+                                        .unwrap()
+                                        .push(Rc::new(RefCell::new(nrectext)));
+                                }
+                                _ => {}
+                            }
+                        }
+
+                        bp_rect = None;
+                    }
+
+                    _ => {}
+                }
+            }
         }
     }
 

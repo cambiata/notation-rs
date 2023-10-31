@@ -137,6 +137,29 @@ pub enum ComplexType {
     TwoBarpauses(Duration, Duration),
 }
 
+impl ComplexType {
+    pub fn get_complex_type_light(&self) -> ComplexTypeLight {
+        match self {
+            ComplexType::Single(_, _) => ComplexTypeLight::Single,
+            ComplexType::Two(_, _, _) => ComplexTypeLight::Two,
+            ComplexType::Upper(_, _) => ComplexTypeLight::Upper,
+            ComplexType::Lower(_, _) => ComplexTypeLight::Lower,
+            ComplexType::OneBarpause(_) => ComplexTypeLight::OneBarpause,
+            ComplexType::TwoBarpauses(_, _) => ComplexTypeLight::TwoBarpauses,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Copy, Clone)]
+pub enum ComplexTypeLight {
+    Single,
+    Two,
+    Upper,
+    Lower,
+    OneBarpause,
+    TwoBarpauses,
+}
+
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum ComplexXAdjustment {
     UpperRight(f32),

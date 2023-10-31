@@ -726,7 +726,6 @@ impl Part {
         let complexes = self.complexes.as_ref().unwrap();
 
         for (idx, complex) in complexes.into_iter().enumerate() {
-            dbg!(idx);
             let mut rects: Vec<NRectExt> = Vec::new();
             let mut complex = complex.borrow_mut();
 
@@ -806,7 +805,7 @@ impl Part {
                     if idx == 0 {
                         rects.push(NRectExt(
                             NRect::new(0.0, SPACE * 2.0, SPACE, SPACE_HALF),
-                            NRectType::Barpause(0),
+                            NRectType::Barpause(0, false),
                         ));
                     }
                 }
@@ -825,7 +824,7 @@ impl Part {
                     if idx == 0 {
                         rects.push(NRectExt(
                             NRect::new(0.0, -SPACE * 2.0, SPACE, SPACE_HALF),
-                            NRectType::Barpause(0),
+                            NRectType::Barpause(0, false),
                         ));
                     }
                 }
@@ -833,18 +832,18 @@ impl Part {
                 ComplexType::OneBarpause(duration) => {
                     rects = vec![NRectExt(
                         NRect::new(0.0, -SPACE, SPACE * 10.0, SPACE_HALF), // TODO: How wide should barpause be?
-                        NRectType::Barpause(duration),
+                        NRectType::Barpause(duration, false),
                     )]
                 }
                 ComplexType::TwoBarpauses(duration_upper, duration_lower) => {
                     rects = vec![
                         NRectExt(
                             NRect::new(0.0, -SPACE * 2.0, SPACE * 10.0, SPACE_HALF), // TODO: How wide should barpause be?
-                            NRectType::Barpause(duration_upper),
+                            NRectType::Barpause(duration_upper, false),
                         ),
                         NRectExt(
                             NRect::new(0.0, SPACE * 2.0, SPACE * 10.0, SPACE_HALF), // TODO: How wide should barpause be?
-                            NRectType::Barpause(duration_lower),
+                            NRectType::Barpause(duration_lower, false),
                         ),
                     ]
                 }

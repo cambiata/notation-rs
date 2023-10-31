@@ -104,7 +104,11 @@ impl Bars {
                                     .collect::<Vec<_>>();
 
                                 let ritem = Rc::new(RefCell::new(RItem::new_from_nrects(
-                                    RItemType::Content,
+                                    RItemType::Complex(
+                                        partidx,
+                                        *complexidx,
+                                        complex.ctype.get_complex_type_light(),
+                                    ),
                                     item_nrects,
                                     complex.duration,
                                 )));
