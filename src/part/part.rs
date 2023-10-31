@@ -358,7 +358,7 @@ impl Part {
                         }
                     }
                     VoiceType::Barpause(_) => {
-                        dbg!("One voice: barpause");
+                        // dbg!("One voice: barpause");
                         complexes.push(Complex::new(ComplexType::OneBarpause(0), 0));
                     }
                 },
@@ -366,12 +366,12 @@ impl Part {
                     match [&v1.borrow().vtype, &v2.borrow().vtype] {
                         [VoiceType::Barpause(_), VoiceType::Barpause(_)] => {
                             //
-                            dbg!("Two voices: barpause, barpause");
+                            // dbg!("Two voices: barpause, barpause");
                             complexes.push(Complex::new(ComplexType::TwoBarpauses(0, 0), 0));
                         }
 
                         [VoiceType::Barpause(_), VoiceType::Notes(notes)] => {
-                            dbg!("Two voices: barpause, notes");
+                            // dbg!("Two voices: barpause, notes");
                             for note in notes.items.iter() {
                                 let complex = Complex::new(
                                     ComplexType::Lower(note.clone(), false),

@@ -471,10 +471,8 @@ impl RMatrix {
                             let bpx = point.0;
                             let bpy = point.1;
                             let width = itemx - bpx;
-
                             let pause_width = 1.3 * SPACE;
-                            let pause_x = -((width + pause_width) / 2.0) - SPACE;
-
+                            let pause_x = -((width + pause_width) / 2.0) - SPACE_HALF;
                             match ctype {
                                 // Upper barpause
                                 ComplexTypeLight::Lower | ComplexTypeLight::TwoBarpauses => {
