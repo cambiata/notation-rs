@@ -1196,16 +1196,19 @@ pub fn create_heads_and_dots_rectangles(
         let (level, place, head) = placement;
 
         let mut current_x: f32 = (place.as_f32() * note_width) + adjust_right;
+        let head_level = head.borrow().level;
 
         let rect: NRect = NRect::new(
             current_x,
-            *level as f32 * SPACE_HALF - SPACE_HALF,
+            head_level as f32 * SPACE_HALF - SPACE_HALF,
             note_width,
             SPACE,
         );
+        // dbg!(level, &head.borrow().level, &head.borrow().color);
+
         rects.push(NRectExt(
             rect,
-            NRectType::Head(*note_head_type, *note_shape),
+            NRectType::Head(*note_head_type, *note_shape, head.borrow().color.clone()),
         ));
 
         // extra head spacer to the right of head

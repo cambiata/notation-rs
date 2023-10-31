@@ -235,6 +235,28 @@ pub(crate) fn parse_line(s: &str) -> Option<HeadLine> {
     None
 }
 
+pub(crate) fn parse_color(s: &str) -> Option<NColor> {
+    if s.contains("CRed") {
+        return Some(NColor::Red);
+    }
+    if s.contains("CBlu") {
+        return Some(NColor::Blue);
+    }
+    if s.contains("CGre") {
+        return Some(NColor::Green);
+    }
+    if s.contains("COra") {
+        return Some(NColor::Orange);
+    }
+    if s.contains("CTom") {
+        return Some(NColor::Tomato);
+    }
+    if s.contains("CDod") {
+        return Some(NColor::Dodgerblue);
+    }
+    None
+}
+
 pub(crate) fn parse_articulation(s: &str) -> (String, NoteArticulation) {
     if s.contains("-.") {
         return (s.replace("=.", ""), NoteArticulation::TenutoStaccato);
@@ -267,7 +289,12 @@ pub fn rect_x(rect: &NRect, nrects: Vec<NRectExt>) -> f32 {
     0.0
 }
 
-pub fn chord_guess_width(chord_root: &ChordRoot, chord_flavour: &ChordFlavour, chord_color: &ChordColor, chord_bass: &ChordRoot) -> f32 {
+pub fn chord_guess_width(
+    chord_root: &ChordRoot,
+    chord_flavour: &ChordFlavour,
+    chord_color: &ChordColor,
+    chord_bass: &ChordRoot,
+) -> f32 {
     let mut width = 0.0;
 
     match chord_root {

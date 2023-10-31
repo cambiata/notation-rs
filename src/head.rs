@@ -45,6 +45,7 @@ pub struct Head {
     // calculated
     pub placement: HeadPlacement,
     pub articulation: HeadArticulation,
+    pub color: NColor,
 
     pub line: Option<HeadLine>,
     pub line_to: Option<HeadLineTo>,
@@ -78,10 +79,18 @@ impl Head {
             articulation: HeadArticulation::None,
             line: None,
             line_to: None,
+            color: NColor::Black,
         }
     }
 
-    pub fn new_with_attributes(level: i8, accidental: Option<Accidental>, tie: Option<TieFromType>, tie_to: Option<TieToType>, line: Option<HeadLine>) -> Self {
+    pub fn new_with_attributes(
+        level: i8,
+        accidental: Option<Accidental>,
+        tie: Option<TieFromType>,
+        tie_to: Option<TieToType>,
+        line: Option<HeadLine>,
+        color: Option<NColor>,
+    ) -> Self {
         Self {
             level,
             accidental,
@@ -91,6 +100,11 @@ impl Head {
             articulation: HeadArticulation::None,
             line: line,
             line_to: None,
+            color: if let Some(color) = color {
+                color
+            } else {
+                NColor::Black
+            },
         }
     }
 }
@@ -106,6 +120,7 @@ impl Default for Head {
             articulation: HeadArticulation::None,
             line: None,
             line_to: None,
+            color: NColor::Black,
         }
     }
 }
@@ -120,7 +135,10 @@ pub struct Heads {
 impl Heads {
     pub fn new(mut heads: Vec<Head>) -> Self {
         heads.sort_by_key(|item| item.level);
-        let heads: Vec<Rc<RefCell<Head>>> = heads.into_iter().map(|item| Rc::new(RefCell::new(item))).collect();
+        let heads: Vec<Rc<RefCell<Head>>> = heads
+            .into_iter()
+            .map(|item| Rc::new(RefCell::new(item)))
+            .collect();
         let top = heads[0].borrow().level;
         let bottom = heads[heads.len() - 1].borrow().level;
 
@@ -132,7 +150,10 @@ impl Heads {
     }
 
     pub fn levels_heads(&self) -> Vec<(i8, Rc<RefCell<Head>>)> {
-        self.heads.iter().map(|head| (head.borrow().level, head.clone())).collect()
+        self.heads
+            .iter()
+            .map(|head| (head.borrow().level, head.clone()))
+            .collect()
     }
 
     // pub fn levels_accidentals(&self) -> Vec<(i8, Accidental)> {
@@ -154,7 +175,10 @@ impl Heads {
         for head in &self.heads {
             let head = head.borrow();
             if head.accidental.is_some() {
-                result.push((head.level.clone(), head.accidental.as_ref().unwrap().clone()));
+                result.push((
+                    head.level.clone(),
+                    head.accidental.as_ref().unwrap().clone(),
+                ));
             }
         }
         result

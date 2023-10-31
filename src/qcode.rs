@@ -118,13 +118,18 @@ impl QCode {
                     for segment in &segments {
                         let level = crate::utils::parse_string_to_int(segment)?;
                         let accidental = crate::utils::parse_accidental(segment);
+                        let color = crate::utils::parse_color(segment);
                         let tie = crate::utils::parse_tie(segment);
                         let tie_to = crate::utils::parse_tie_to(segment);
-
                         let line = crate::utils::parse_line(segment);
-
-                        let head =
-                            Head::new_with_attributes(level as i8, accidental, tie, tie_to, line);
+                        let head = Head::new_with_attributes(
+                            level as i8,
+                            accidental,
+                            tie,
+                            tie_to,
+                            line,
+                            color,
+                        );
                         heads.push(head);
                     }
 

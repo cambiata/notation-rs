@@ -610,7 +610,7 @@ pub fn duration_equal(duration: &Duration) -> f32 {
 
 #[derive(Debug, PartialEq)]
 pub enum NRectType {
-    Head(HeadType, HeadShape),
+    Head(HeadType, HeadShape, NColor),
     Dotted(u8),
     Pause(PauseShape),
     Clef(Clef),
@@ -665,6 +665,7 @@ pub enum NColor {
     Gray,
     Black,
     White,
+    RGBA(u8, u8, u8, u8),
 }
 
 #[cfg(test)]
