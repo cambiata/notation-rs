@@ -803,7 +803,7 @@ impl RMatrix {
     }
 
     pub fn calculate_attachment_points(&self, item2note: &BTreeMap<usize, Rc<RefCell<Note>>>) {
-        const DRAW_POINTS: bool = true;
+        const DRAW_POINTS: bool = false;
         for row in self.rows.iter() {
             let row = row.borrow();
 
