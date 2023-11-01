@@ -803,7 +803,7 @@ impl RMatrix {
     }
 
     pub fn calculate_attachment_points(&self, item2note: &BTreeMap<usize, Rc<RefCell<Note>>>) {
-        const DRAW_POINTS: bool = false;
+        const DRAW_POINTS: bool = true;
         for row in self.rows.iter() {
             let row = row.borrow();
 
@@ -848,7 +848,7 @@ impl RMatrix {
                                     item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(
                                         NRectExt::new(
                                             point.to_rect(3.0),
-                                            NRectType::Dev(true, "Orange".to_string()),
+                                            NRectType::AttachmentPoint(true, NColor::Blue),
                                         ),
                                     )));
                                 }
@@ -888,7 +888,7 @@ impl RMatrix {
                                     item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(
                                         NRectExt::new(
                                             point.to_rect(3.0),
-                                            NRectType::Dev(true, "Orange".to_string()),
+                                            NRectType::AttachmentPoint(true, NColor::Red),
                                         ),
                                     )));
                                 }
@@ -1032,7 +1032,10 @@ impl RMatrix {
                                                 middle_item.nrects.as_mut().unwrap().push(Rc::new(
                                                     RefCell::new(NRectExt::new(
                                                         point.to_rect(3.0),
-                                                        NRectType::Dev(true, "Orange".to_string()),
+                                                        NRectType::AttachmentPoint(
+                                                            true,
+                                                            NColor::Purple,
+                                                        ),
                                                     )),
                                                 ));
                                             }
@@ -1069,7 +1072,7 @@ impl RMatrix {
                                     item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(
                                         NRectExt::new(
                                             point.to_rect(3.0),
-                                            NRectType::Dev(true, "Orange".to_string()),
+                                            NRectType::AttachmentPoint(true, NColor::Dodgerblue),
                                         ),
                                     )));
                                 }
@@ -1111,7 +1114,7 @@ impl RMatrix {
                                     item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(
                                         NRectExt::new(
                                             point.to_rect(3.0),
-                                            NRectType::Dev(true, "Orange".to_string()),
+                                            NRectType::Dev(true, "AttachmentPoint".to_string()),
                                         ),
                                     )));
                                 }
@@ -1138,6 +1141,7 @@ impl RMatrix {
                                 do_attachmentpoint_slurto_outer(&nid, stem_info, &item2note, false);
                             let tpoint_inner =
                                 do_attachmentpoint_slurto_inner(&nid, stem_info, &item2note, false);
+
                             if DRAW_POINTS {
                                 for point in [
                                     apoint_outer,
@@ -1150,7 +1154,7 @@ impl RMatrix {
                                     item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(
                                         NRectExt::new(
                                             point.to_rect(3.0),
-                                            NRectType::Dev(true, "Orange".to_string()),
+                                            NRectType::AttachmentPoint(true, NColor::Tomato),
                                         ),
                                     )));
                                 }
@@ -1263,6 +1267,7 @@ impl RMatrix {
                                             &item2note,
                                             true,
                                         );
+
                                         let fpoint_inner = do_attachmentpoint_slurfrom_inner(
                                             &middle_nid,
                                             &middle_stem_info_inner,
@@ -1293,7 +1298,10 @@ impl RMatrix {
                                                 middle_item.nrects.as_mut().unwrap().push(Rc::new(
                                                     RefCell::new(NRectExt::new(
                                                         point.to_rect(3.0),
-                                                        NRectType::Dev(true, "Orange".to_string()),
+                                                        NRectType::AttachmentPoint(
+                                                            true,
+                                                            NColor::Green,
+                                                        ),
                                                     )),
                                                 ));
                                             }
@@ -1331,7 +1339,7 @@ impl RMatrix {
                                     item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(
                                         NRectExt::new(
                                             point.to_rect(3.0),
-                                            NRectType::Dev(true, "Orange".to_string()),
+                                            NRectType::AttachmentPoint(true, NColor::Lime),
                                         ),
                                     )));
                                 }

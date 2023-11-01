@@ -9,6 +9,7 @@ pub struct RRow {
     pub y: f32,
     pub nrects: Vec<Rc<RefCell<NRectExt>>>,
 }
+
 impl RRow {
     pub fn new(items: Vec<Option<Rc<RefCell<RItem>>>>, distance_y: f32) -> Self {
         Self {

@@ -625,6 +625,7 @@ pub enum NRectType {
     DUMMY,
     Barline(BarlineType),
     Dev(bool, String),
+    AttachmentPoint(bool, NColor),
     Spacer(String),
     HelpLine,
     KeySignature(Key, Option<Clef>),
