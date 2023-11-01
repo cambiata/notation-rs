@@ -31,6 +31,18 @@ pub struct RItemNoteData {
     pub steminfo2: StemInfo,
     pub beamdata1: RItemBeam,
     pub beamdata2: RItemBeam,
+    pub attachments1: Option<RAttachments>,
+    pub attachments2: Option<RAttachments>,
+}
+
+#[derive(Debug, PartialEq)]
+pub struct RAttachments {
+    pub apoint_outer: NPoint,
+    pub apoint_inner: NPoint,
+    pub fpoint_outer: NPoint,
+    pub fpoint_inner: NPoint,
+    pub tpoint_outer: NPoint,
+    pub tpoint_inner: NPoint,
 }
 
 #[derive(Debug, PartialEq)]
@@ -73,6 +85,8 @@ impl RItem {
                 beamdata2: RItemBeam::None,
                 steminfo1: StemInfo::None,
                 steminfo2: StemInfo::None,
+                attachments1: None,
+                attachments2: None,
             },
             lines: vec![],
         }
@@ -107,6 +121,8 @@ impl RItem {
                 beamdata2: RItemBeam::None,
                 steminfo1: StemInfo::None,
                 steminfo2: StemInfo::None,
+                attachments1: None,
+                attachments2: None,
             },
             lines: vec![],
         }
@@ -146,6 +162,8 @@ impl RItem {
                 beamdata2: RItemBeam::None,
                 steminfo1: StemInfo::None,
                 steminfo2: StemInfo::None,
+                attachments1: None,
+                attachments2: None,
             },
             lines: vec![],
         }

@@ -853,6 +853,15 @@ impl RMatrix {
                                     )));
                                 }
                             }
+
+                            item.notedata.attachments1 = Some(RAttachments {
+                                apoint_outer,
+                                apoint_inner,
+                                fpoint_outer,
+                                fpoint_inner,
+                                tpoint_outer,
+                                tpoint_inner,
+                            });
                         }
                     }
 
@@ -893,6 +902,14 @@ impl RMatrix {
                                     )));
                                 }
                             }
+                            item.notedata.attachments1 = Some(RAttachments {
+                                apoint_outer,
+                                apoint_inner,
+                                fpoint_outer,
+                                fpoint_inner,
+                                tpoint_outer,
+                                tpoint_inner,
+                            });
                         }
                     }
 
@@ -1040,6 +1057,14 @@ impl RMatrix {
                                                 ));
                                             }
                                         }
+                                        item.notedata.attachments1 = Some(RAttachments {
+                                            apoint_outer,
+                                            apoint_inner,
+                                            fpoint_outer,
+                                            fpoint_inner,
+                                            tpoint_outer,
+                                            tpoint_inner,
+                                        });
                                     }
                                     _ => {}
                                 }
@@ -1077,6 +1102,14 @@ impl RMatrix {
                                     )));
                                 }
                             }
+                            item.notedata.attachments1 = Some(RAttachments {
+                                apoint_outer,
+                                apoint_inner,
+                                fpoint_outer,
+                                fpoint_inner,
+                                tpoint_outer,
+                                tpoint_inner,
+                            });
                         }
                     }
                     RItemBeam::None => {}
@@ -1119,6 +1152,14 @@ impl RMatrix {
                                     )));
                                 }
                             }
+                            item.notedata.attachments2 = Some(RAttachments {
+                                apoint_outer,
+                                apoint_inner,
+                                fpoint_outer,
+                                fpoint_inner,
+                                tpoint_outer,
+                                tpoint_inner,
+                            });
                         }
                     }
 
@@ -1159,6 +1200,14 @@ impl RMatrix {
                                     )));
                                 }
                             }
+                            item.notedata.attachments2 = Some(RAttachments {
+                                apoint_outer,
+                                apoint_inner,
+                                fpoint_outer,
+                                fpoint_inner,
+                                tpoint_outer,
+                                tpoint_inner,
+                            });
                         }
                     }
 
@@ -1306,6 +1355,14 @@ impl RMatrix {
                                                 ));
                                             }
                                         }
+                                        item.notedata.attachments2 = Some(RAttachments {
+                                            apoint_outer,
+                                            apoint_inner,
+                                            fpoint_outer,
+                                            fpoint_inner,
+                                            tpoint_outer,
+                                            tpoint_inner,
+                                        });
                                     }
                                     _ => {}
                                 }
@@ -1344,6 +1401,14 @@ impl RMatrix {
                                     )));
                                 }
                             }
+                            item.notedata.attachments2 = Some(RAttachments {
+                                apoint_outer,
+                                apoint_inner,
+                                fpoint_outer,
+                                fpoint_inner,
+                                tpoint_outer,
+                                tpoint_inner,
+                            });
                         }
                     }
                     RItemBeam::None => {}
