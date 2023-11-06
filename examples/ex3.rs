@@ -168,7 +168,8 @@ fn main() {
     // let bar_data =    QCode::bars(" 0 0 |bl | 0 0 % bp |bl | bp % 1 1 |bl| bp % bp |bl| bp |bl").unwrap();
     // let bar_data = QCode::bars("sp 10|clef G F |sp 30| #2,b0 0 / bp |bl|sp 30| bp % 2 nv8 3 nv16 4 3CRed / 0 0  |bl |sp 30| bp%bp /bp |bl").unwrap();
 
-    let bar_data = QCode::bars("|sp 30 | 0 nv8 1 nv16 2 3 |bl").unwrap();
+    // let bar_data = QCode::bars("|sp 30 | 0 nv8 1 nv16 2 3 |bl").unwrap();
+    let bar_data = QCode::bars("sp 10| clef - G F - |sp 30 |lyr: chd:F chd:Dm7 chd:G chd:7 / 1,3 1,3 2 3 % nv4 6 6 nv2 5,7 / -2 0 -3 4 /lyr: fun:S fun:Sp:7 fun:D fun:s:7 |bl |sp3|lyr: chd:C / nv1 4 % nv1 6,9 / nv1 1 /lyr: fun:T |bld").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
     bars.allotment_fn = ALLOTMENT_RELATIVE_FN;
@@ -185,7 +186,7 @@ fn main() {
     matrix.calculate_items_x_values();
     matrix.calculate_beamgroups();
     matrix.calculate_attachment_points(&bars.id1_map);
-    matrix.calculate_test();
+    // matrix.calculate_test();
     matrix.calculate_barpauses();
 
     matrix.calculate_row_spacing();
