@@ -40,18 +40,34 @@ pub enum ChordRoot {
     BFlat,
     BNatural,
     BSharp,
+    StepI,
+    StepII,
+    StepIII,
+    StepIV,
+    StepV,
+    StepVI,
+    StepVII,
 }
 impl ChordRoot {
-    pub fn get_char(self: ChordRoot) -> char {
+    pub fn get_chars(self: ChordRoot) -> Vec<char> {
         match self {
-            ChordRoot::None => ' ',
-            ChordRoot::CFlat | ChordRoot::CNatural | ChordRoot::CSharp => 'C',
-            ChordRoot::DFlat | ChordRoot::DNatural | ChordRoot::DSharp => 'D',
-            ChordRoot::EFlat | ChordRoot::ENatural | ChordRoot::ESharp => 'E',
-            ChordRoot::FFlat | ChordRoot::FNatural | ChordRoot::FSharp => 'F',
-            ChordRoot::GFlat | ChordRoot::GNatural | ChordRoot::GSharp => 'G',
-            ChordRoot::AFlat | ChordRoot::ANatural | ChordRoot::ASharp => 'A',
-            ChordRoot::BFlat | ChordRoot::BNatural | ChordRoot::BSharp => 'B',
+            ChordRoot::None => vec![],
+            ChordRoot::CFlat | ChordRoot::CNatural | ChordRoot::CSharp => vec!['C'],
+            ChordRoot::DFlat | ChordRoot::DNatural | ChordRoot::DSharp => vec!['D'],
+            ChordRoot::EFlat | ChordRoot::ENatural | ChordRoot::ESharp => vec!['E'],
+            ChordRoot::FFlat | ChordRoot::FNatural | ChordRoot::FSharp => vec!['F'],
+            ChordRoot::GFlat | ChordRoot::GNatural | ChordRoot::GSharp => vec!['G'],
+            ChordRoot::AFlat | ChordRoot::ANatural | ChordRoot::ASharp => vec!['A'],
+            ChordRoot::BFlat | ChordRoot::BNatural | ChordRoot::BSharp => vec!['B'],
+            ChordRoot::StepI => vec!['I'],
+            ChordRoot::StepII => vec!['I', 'I'],
+            ChordRoot::StepIII => vec!['I', 'I', 'I'],
+            ChordRoot::StepIV => vec!['I', 'V'],
+            ChordRoot::StepV => vec!['V'],
+            ChordRoot::StepVI => vec!['V', 'I'],
+            ChordRoot::StepVII => vec!['V', 'I', 'I'],
+
+            _ => vec!['x'],
         }
     }
 }

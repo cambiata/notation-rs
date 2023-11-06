@@ -146,6 +146,20 @@ fn parse_chord_root(r: &str) -> ChordRoot {
         return ChordRoot::ANatural;
     } else if r.contains("B") {
         return ChordRoot::BNatural;
+    } else if r.contains("III") {
+        return ChordRoot::StepIII;
+    } else if r.contains("VII") {
+        return ChordRoot::StepVII;
+    } else if r.contains("VI") {
+        return ChordRoot::StepVI;
+    } else if r.contains("IV") {
+        return ChordRoot::StepIV;
+    } else if r.contains("V") {
+        return ChordRoot::StepV;
+    } else if r.contains("II") {
+        return ChordRoot::StepII;
+    } else if r.contains("I") {
+        return ChordRoot::StepI;
     }
     ChordRoot::None
 }
@@ -323,6 +337,10 @@ pub fn chord_guess_width(chord_root: &ChordRoot, chord_flavour: &ChordFlavour, c
         ChordRoot::GNatural | ChordRoot::GFlat | ChordRoot::GSharp => width += 60.0,
         ChordRoot::ANatural | ChordRoot::AFlat | ChordRoot::ASharp => width += 55.0,
         ChordRoot::BNatural | ChordRoot::BFlat | ChordRoot::BSharp => width += 55.0,
+        ChordRoot::StepI => width += 55.0,
+        ChordRoot::StepII | ChordRoot::StepV => width += 70.0,
+        ChordRoot::StepIII | ChordRoot::StepIV | ChordRoot::StepVI => width += 90.0,
+        ChordRoot::StepVII => width += 110.0,
     };
 
     match chord_root {
@@ -378,6 +396,10 @@ pub fn chord_guess_width(chord_root: &ChordRoot, chord_flavour: &ChordFlavour, c
                 ChordRoot::GNatural | ChordRoot::GFlat | ChordRoot::GSharp => width += 60.0,
                 ChordRoot::ANatural | ChordRoot::AFlat | ChordRoot::ASharp => width += 55.0,
                 ChordRoot::BNatural | ChordRoot::BFlat | ChordRoot::BSharp => width += 55.0,
+                ChordRoot::StepI => width += 55.0,
+                ChordRoot::StepII | ChordRoot::StepV => width += 55.0,
+                ChordRoot::StepIII | ChordRoot::StepIV | ChordRoot::StepVI => width += 55.0,
+                ChordRoot::StepVII => width += 55.0,
             };
 
             match chord_bass {
@@ -394,7 +416,14 @@ pub fn chord_guess_width(chord_root: &ChordRoot, chord_flavour: &ChordFlavour, c
                 | ChordRoot::AFlat
                 | ChordRoot::ASharp
                 | ChordRoot::BFlat
-                | ChordRoot::BSharp => width += 30.0,
+                | ChordRoot::BSharp
+                | ChordRoot::StepI
+                | ChordRoot::StepII
+                | ChordRoot::StepIII
+                | ChordRoot::StepIV
+                | ChordRoot::StepV
+                | ChordRoot::StepVI
+                | ChordRoot::StepVII => width += 30.0,
                 _ => width += 0.0,
             };
         }
