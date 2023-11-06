@@ -25,7 +25,7 @@ pub const FUNCTION_FONT_SCALE: f32 = 0.08;
 pub const FUNCTION_FONT_FIGURE_SCALE: f32 = 0.04;
 
 pub const CHORD_FONT_SCALE: f32 = 0.08;
-pub const CHORD_FONT_FIGURE_SCALE: f32 = 0.06;
+pub const CHORD_FONT_FIGURE_SCALE: f32 = 0.05;
 pub const CHORD_FONT_ACCIDENTAL_SCALE: f32 = 0.07;
 pub const CHORD_MARGIN: f32 = SPACE * 1.0;
 
@@ -280,18 +280,13 @@ pub fn duration_from_str(s: &str) -> Result<Duration> {
         "16" => Ok(NV16),
         "16tri" => Ok(NV16TRI),
         "32" => Ok(NV32),
-        _ => Err(DurationError(format!(
-            "Can not convert string '{}' into usize Duration",
-            s
-        ))
-        .into()),
+        _ => Err(DurationError(format!("Can not convert string '{}' into usize Duration", s)).into()),
     }
 }
 
 pub fn duration_from(v: usize) -> Result<Duration> {
     match v {
-        NV1DOT | NV1 | NV2DOT | NV2 | NV4DOT | NV2TRI | NV4 | NV8DOT | NV4TRI | NV8 | NV16DOT
-        | NV8TRI | NV16 | NV16TRI | NV32 => Ok(v),
+        NV1DOT | NV1 | NV2DOT | NV2 | NV4DOT | NV2TRI | NV4 | NV8DOT | NV4TRI | NV8 | NV16DOT | NV8TRI | NV16 | NV16TRI | NV32 => Ok(v),
         _ => Err(DurationError(format!("Can not convert value {} to usize Duration", v)).into()),
     }
 }
@@ -379,12 +374,7 @@ impl NPoint {
         Self(x, y)
     }
     pub fn to_rect(&self, diameter: f32) -> NRect {
-        NRect(
-            self.0 - diameter,
-            self.1 - diameter,
-            2.0 * diameter,
-            2.0 * diameter,
-        )
+        NRect(self.0 - diameter, self.1 - diameter, 2.0 * diameter, 2.0 * diameter)
     }
 }
 
@@ -683,15 +673,9 @@ mod tests2 {
 
     #[test]
     fn overlap2() {
-        let lefts = NRects(vec![
-            NRect::new(0.0, 0.0, 10.0, 10.0),
-            NRect::new(0.0, 10.0, 10.0, 10.0),
-        ]);
+        let lefts = NRects(vec![NRect::new(0.0, 0.0, 10.0, 10.0), NRect::new(0.0, 10.0, 10.0, 10.0)]);
 
-        let rights = NRects(vec![
-            NRect::new(20.0, 0.0, 10.0, 10.0),
-            NRect::new(5.0, 10.0, 10.0, 10.0),
-        ]);
+        let rights = NRects(vec![NRect::new(20.0, 0.0, 10.0, 10.0), NRect::new(5.0, 10.0, 10.0, 10.0)]);
 
         let overlap_x = lefts.overlap_x(&rights);
         // dbg!(overlap_x);
@@ -712,10 +696,7 @@ mod tests {
         let overlap_y = upper.overlap_y(&lower);
         dbg!(overlap_y);
 
-        let uppers = vec![
-            NRect::new(0.0, 0.0, 10.0, 10.0),
-            NRect::new(0.0, 5.0, 10.0, 10.0),
-        ];
+        let uppers = vec![NRect::new(0.0, 0.0, 10.0, 10.0), NRect::new(0.0, 5.0, 10.0, 10.0)];
         let lowers = vec![NRect::new(0.0, 10.0, 10.0, 10.0)];
         let overlap_y = nrects_overlap_y(&uppers, &lowers);
         dbg!(overlap_y);

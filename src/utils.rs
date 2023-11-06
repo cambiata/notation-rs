@@ -278,6 +278,28 @@ pub(crate) fn parse_articulation(s: &str) -> (String, NoteArticulation) {
 }
 
 pub(crate) fn parse_symbol(s: &str) -> Option<(String, SymbolType)> {
+    if s.contains("2up") {
+        return Some((s.to_string(), SymbolType::ChordProgress2ndUp));
+    }
+
+    if s.contains("2down") {
+        return Some((s.to_string(), SymbolType::ChordProgress2ndDown));
+    }
+    if s.contains("3up") {
+        return Some((s.to_string(), SymbolType::ChordProgress3rdUp));
+    }
+
+    if s.contains("3down") {
+        return Some((s.to_string(), SymbolType::ChordProgress3rdDown));
+    }
+    if s.contains("5up") {
+        return Some((s.to_string(), SymbolType::ChordProgress5thUp));
+    }
+
+    if s.contains("5down") {
+        return Some((s.to_string(), SymbolType::ChordProgress5thDown));
+    }
+
     return Some((s.to_string(), SymbolType::Square(2.0)));
 }
 
@@ -289,18 +311,13 @@ pub fn rect_x(rect: &NRect, nrects: Vec<NRectExt>) -> f32 {
     0.0
 }
 
-pub fn chord_guess_width(
-    chord_root: &ChordRoot,
-    chord_flavour: &ChordFlavour,
-    chord_color: &ChordColor,
-    chord_bass: &ChordRoot,
-) -> f32 {
+pub fn chord_guess_width(chord_root: &ChordRoot, chord_flavour: &ChordFlavour, chord_color: &ChordColor, chord_bass: &ChordRoot) -> f32 {
     let mut width = 0.0;
 
     match chord_root {
         ChordRoot::None => {}
-        ChordRoot::CNatural | ChordRoot::CFlat | ChordRoot::CSharp => width += 50.0,
-        ChordRoot::DNatural | ChordRoot::DFlat | ChordRoot::DSharp => width += 60.0,
+        ChordRoot::CNatural | ChordRoot::CFlat | ChordRoot::CSharp => width += 60.0,
+        ChordRoot::DNatural | ChordRoot::DFlat | ChordRoot::DSharp => width += 70.0,
         ChordRoot::ENatural | ChordRoot::EFlat | ChordRoot::ESharp => width += 50.0,
         ChordRoot::FNatural | ChordRoot::FFlat | ChordRoot::FSharp => width += 50.0,
         ChordRoot::GNatural | ChordRoot::GFlat | ChordRoot::GSharp => width += 60.0,
@@ -322,13 +339,13 @@ pub fn chord_guess_width(
         | ChordRoot::AFlat
         | ChordRoot::ASharp
         | ChordRoot::BFlat
-        | ChordRoot::BSharp => width += 30.0,
+        | ChordRoot::BSharp => width += 25.0,
         _ => width += 0.0,
     };
 
     match chord_flavour {
         ChordFlavour::Minor => {
-            width += 80.0;
+            width += 60.0;
         }
         _ => {}
     }
@@ -340,7 +357,7 @@ pub fn chord_guess_width(
         ChordColor::Five => width += 25.0,
         ChordColor::PlusFive => width += 25.0,
         ChordColor::Six => width += 25.0,
-        ChordColor::Seven => width += 25.0,
+        ChordColor::Seven => width += 30.0,
         ChordColor::Nine => width += 25.0,
         ChordColor::MinusNine => width += 35.0,
         ChordColor::PlusNine => width += 25.0,
