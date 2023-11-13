@@ -169,9 +169,11 @@ fn main() {
     // let bar_data = QCode::bars("sp 10|clef G F |sp 30| #2,b0 0 / bp |bl|sp 30| bp % 2 nv8 3 nv16 4 3CRed / 0 0  |bl |sp 30| bp%bp /bp |bl").unwrap();
 
     // let bar_data = QCode::bars("sp 10| clef - G F - |sp 30 |lyr: chd:F chd:Dm7 chd:G chd:7 / 1,3 1,3 2 3 % nv4 6 6 nv2 5,7 / -2 0 -3 4 /lyr: fun:S fun:Sp:7 fun:D fun:s:7 |bl |sp3|lyr: chd:C / nv1 4 % nv1 6,9 / nv1 1 /lyr: fun:T |bld").unwrap();
-    let bar_data = QCode::bars("nv8 chd:C sym:2up chd:Cm7 sym:2down sym:3up sym:3down sym:5up sym:5down |bl").unwrap();
-    let bar_data = QCode::bars("lyr: nv8 chd:IIm sym:5up chd:G7 sym:5down chd:C chd:G7 / 0 0 0 0").unwrap();
+    // let bar_data = QCode::bars("nv8 chd:C sym:2up chd:Cm7 sym:2down sym:3up sym:3down sym:5up sym:5down |bl").unwrap();
+    // let bar_data = QCode::bars("lyr: nv8 chd:IIm sym:5up chd:G7 sym:5down chd:C chd:G7 / 0 0 0 0").unwrap();
     let bar_data = QCode::bars("lyr: chd:I:II chd:Im7 chd:II chd:IIm chd:III chd:IV chd:V chd:VI chd:VII chd:I7 chd:V7 chd:V7:V / 0 0 0 0").unwrap();
+
+    // let bar_data = QCode::bars("0 0 |bli").unwrap();
 
     let (bartemplate, mut bars) = bar_data;
     bars.allotment_fn = ALLOTMENT_RELATIVE_FN;

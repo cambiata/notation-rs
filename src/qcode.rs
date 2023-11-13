@@ -37,17 +37,10 @@ impl QCode {
 
                     let level: i8 = subsegments.get(0).unwrap_or(&"").parse().unwrap_or(0);
 
-                    let figure_char: char = if subsegments.len() > 1 {
-                        subsegments[1].chars().next().unwrap_or('0')
-                    } else {
-                        '0'
-                    };
+                    let figure_char: char = if subsegments.len() > 1 { subsegments[1].chars().next().unwrap_or('0') } else { '0' };
                     dbg!(figure_char);
 
-                    let n = Note::new(
-                        NoteType::Tpl(figure_char, TplOctave::Mid, TplAccidental::Neutral, level),
-                        cur_val.unwrap_or(NV4),
-                    );
+                    let n = Note::new(NoteType::Tpl(figure_char, TplOctave::Mid, TplAccidental::Neutral, level), cur_val.unwrap_or(NV4));
                     notes.push(n);
                 }
 
@@ -57,16 +50,7 @@ impl QCode {
                     let mut s = &segment[4..];
                     let func_pars = crate::utils::parse_function(s).unwrap();
 
-                    let n = Note::new(
-                        NoteType::Function(
-                            func_pars.0,
-                            func_pars.1,
-                            func_pars.2,
-                            func_pars.3,
-                            func_pars.4,
-                        ),
-                        cur_val.unwrap_or(NV4),
-                    );
+                    let n = Note::new(NoteType::Function(func_pars.0, func_pars.1, func_pars.2, func_pars.3, func_pars.4), cur_val.unwrap_or(NV4));
                     notes.push(n);
                 }
 
@@ -76,15 +60,7 @@ impl QCode {
                     let mut s = &segment[4..];
                     let chord_pars = crate::utils::parse_chord(s).unwrap();
 
-                    let n = Note::new(
-                        NoteType::ChordSymbol(
-                            chord_pars.0,
-                            chord_pars.1,
-                            chord_pars.2,
-                            chord_pars.3,
-                        ),
-                        cur_val.unwrap_or(NV4),
-                    );
+                    let n = Note::new(NoteType::ChordSymbol(chord_pars.0, chord_pars.1, chord_pars.2, chord_pars.3), cur_val.unwrap_or(NV4));
                     notes.push(n);
                 }
 
@@ -122,19 +98,11 @@ impl QCode {
                         let tie = crate::utils::parse_tie(segment);
                         let tie_to = crate::utils::parse_tie_to(segment);
                         let line = crate::utils::parse_line(segment);
-                        let head = Head::new_with_attributes(
-                            level as i8,
-                            accidental,
-                            tie,
-                            tie_to,
-                            line,
-                            color,
-                        );
+                        let head = Head::new_with_attributes(level as i8, accidental, tie, tie_to, line, color);
                         heads.push(head);
                     }
 
-                    let mut n =
-                        Note::new(NoteType::Heads(Heads::new(heads)), cur_val.unwrap_or(NV4));
+                    let mut n = Note::new(NoteType::Heads(Heads::new(heads)), cur_val.unwrap_or(NV4));
                     n.articulation = articulation;
 
                     notes.push(n);
@@ -162,11 +130,7 @@ impl QCode {
                 }
             }
 
-            let barpause_value: Option<Duration> = if barpause_value == 0 {
-                None
-            } else {
-                Some(barpause_value)
-            };
+            let barpause_value: Option<Duration> = if barpause_value == 0 { None } else { Some(barpause_value) };
 
             VoiceType::Barpause(barpause_value)
         } else {
@@ -195,18 +159,12 @@ impl QCode {
             2 => {
                 let voice1 = QCode::voice(segments[0])?;
                 let voice2 = QCode::voice(segments[1])?;
-                Ok(Voices::Two(
-                    Rc::new(RefCell::new(voice1)),
-                    Rc::new(RefCell::new(voice2)),
-                ))
+                Ok(Voices::Two(Rc::new(RefCell::new(voice1)), Rc::new(RefCell::new(voice2))))
             }
             3 => {
                 let voice1 = QCode::voice(segments[1])?;
                 let voice2 = QCode::voice(segments[2])?;
-                Ok(Voices::Two(
-                    Rc::new(RefCell::new(voice1)),
-                    Rc::new(RefCell::new(voice2)),
-                ))
+                Ok(Voices::Two(Rc::new(RefCell::new(voice1)), Rc::new(RefCell::new(voice2))))
             }
             _ => Err(Generic(format!("too many voices in code: {}", nr_of_voices)).into()),
         }
@@ -266,11 +224,7 @@ impl QCode {
 
             if let Some(first_bar_template) = &first_bar_template {
                 if bartemplate.0.len() > 0 && bartemplate != *first_bar_template {
-                    return Err(Generic(format!(
-                        "bar template mismatch: {:?} != {:?}",
-                        bartemplate, first_bar_template
-                    ))
-                    .into());
+                    return Err(Generic(format!("bar template mismatch: {:?} != {:?}", bartemplate, first_bar_template)).into());
                 }
             } else {
                 if !(bartemplate.0.is_empty()) {
@@ -299,19 +253,16 @@ impl QCode {
         code = code.trim();
 
         if code.starts_with("bld") {
-            let bar = Bar::new(BarType::NonContent(NonContentType::Barline(
-                BarlineType::Double,
-            )));
+            let bar = Bar::new(BarType::NonContent(NonContentType::Barline(BarlineType::Double)));
             return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("blt") {
-            let bar = Bar::new(BarType::NonContent(NonContentType::Barline(
-                BarlineType::FraseTick,
-            )));
+            let bar = Bar::new(BarType::NonContent(NonContentType::Barline(BarlineType::FraseTick)));
+            return Ok((BarTemplate(vec![]), bar));
+        } else if code.starts_with("bli") {
+            let bar = Bar::new(BarType::NonContent(NonContentType::Barline(BarlineType::Invisible)));
             return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("bl") {
-            let bar = Bar::new(BarType::NonContent(NonContentType::Barline(
-                BarlineType::Single,
-            )));
+            let bar = Bar::new(BarType::NonContent(NonContentType::Barline(BarlineType::Single)));
             return Ok((BarTemplate(vec![]), bar));
         } else if code.starts_with("vl") {
             let bar = Bar::new(BarType::NonContent(NonContentType::VerticalLine));

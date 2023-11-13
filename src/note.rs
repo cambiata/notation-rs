@@ -66,8 +66,7 @@ impl ChordRoot {
             ChordRoot::StepV => vec!['V'],
             ChordRoot::StepVI => vec!['V', 'I'],
             ChordRoot::StepVII => vec!['V', 'I', 'I'],
-
-            _ => vec!['x'],
+            // _ => vec!['x'],
         }
     }
 }

@@ -59,9 +59,7 @@ impl Bars {
                         let mut complex_positions: BTreeMap<usize, usize> = BTreeMap::new();
 
                         let mut part = part.borrow_mut();
-                        for (complexidx, complex) in
-                            part.complexes.as_ref().unwrap().iter().enumerate()
-                        {
+                        for (complexidx, complex) in part.complexes.as_ref().unwrap().iter().enumerate() {
                             let mut complex = complex.borrow_mut();
                             positions.push(complex.position);
                             complex_positions.insert(complex.position, complexidx);
@@ -75,10 +73,7 @@ impl Bars {
 
                     let mut positions2 = positions.clone();
                     positions2.push(duration);
-                    let durations = positions2
-                        .windows(2)
-                        .map(|w| w[1] - w[0])
-                        .collect::<Vec<_>>();
+                    let durations = positions2.windows(2).map(|w| w[1] - w[0]).collect::<Vec<_>>();
 
                     for (posidx, position) in positions.iter().enumerate() {
                         let mut colitems = vec![];
@@ -91,24 +86,12 @@ impl Bars {
 
                             if let Some(complexidx) = complexidx {
                                 let part = part.borrow();
-                                let mut complex =
-                                    part.complexes.as_ref().expect("This complex should exist!")
-                                        [*complexidx]
-                                        .borrow_mut();
-                                let item_rects: Vec<NRect> =
-                                    complex.rects.iter().map(|nrect| nrect.borrow().0).collect();
-                                let item_nrects = complex
-                                    .rects
-                                    .iter()
-                                    .map(|nrect| nrect.clone())
-                                    .collect::<Vec<_>>();
+                                let mut complex = part.complexes.as_ref().expect("This complex should exist!")[*complexidx].borrow_mut();
+                                let item_rects: Vec<NRect> = complex.rects.iter().map(|nrect| nrect.borrow().0).collect();
+                                let item_nrects = complex.rects.iter().map(|nrect| nrect.clone()).collect::<Vec<_>>();
 
                                 let ritem = Rc::new(RefCell::new(RItem::new_from_nrects(
-                                    RItemType::Complex(
-                                        partidx,
-                                        *complexidx,
-                                        complex.ctype.get_complex_type_light(),
-                                    ),
+                                    RItemType::Complex(partidx, *complexidx, complex.ctype.get_complex_type_light()),
                                     item_nrects,
                                     complex.duration,
                                 )));
@@ -121,8 +104,7 @@ impl Bars {
                             colitems.push(item);
                         }
 
-                        let rcol: RCol =
-                            RCol::new(colitems, colduration, Some(bar.position + position));
+                        let rcol: RCol = RCol::new(colitems, colduration, Some(bar.position + position));
                         matrix_cols.push(Rc::new(RefCell::new(rcol)));
                     }
                 }
@@ -133,12 +115,8 @@ impl Bars {
                         let mut colitems = vec![];
                         for parttemplate in bartemplate.0.iter() {
                             let (space_above, space_below) = match parttemplate {
-                                PartTemplate::Music => {
-                                    (VERTICAL_SPACE_ABOVE_MUSIC, VERTICAL_SPACE_BELOW_NOMUSIC)
-                                }
-                                PartTemplate::Nonmusic => {
-                                    (VERTICAL_SPACE_ABOVE_NONMUSIC, VERTICAL_SPACE_BELOW_NONMUSIC)
-                                }
+                                PartTemplate::Music => (VERTICAL_SPACE_ABOVE_MUSIC, VERTICAL_SPACE_BELOW_NOMUSIC),
+                                PartTemplate::Nonmusic => (VERTICAL_SPACE_ABOVE_NONMUSIC, VERTICAL_SPACE_BELOW_NONMUSIC),
                             };
 
                             let item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
@@ -182,13 +160,15 @@ impl Bars {
                                                 NRectType::Barline(btype.clone()),
                                             )))]
                                         }
+                                        BarlineType::Invisible => {
+                                            vec![Rc::new(RefCell::new(NRectExt::new(
+                                                NRect::new(0., -50., BARLINE_WIDTH_SINGLE, 100.),
+                                                NRectType::Barline(btype.clone()),
+                                            )))]
+                                        }
                                     };
 
-                                    Some(Rc::new(RefCell::new(RItem::new_from_nrects(
-                                        RItemType::Barline,
-                                        rects,
-                                        0,
-                                    ))))
+                                    Some(Rc::new(RefCell::new(RItem::new_from_nrects(RItemType::Barline, rects, 0))))
                                 }
                                 PartTemplate::Nonmusic => None,
                             });
@@ -200,16 +180,14 @@ impl Bars {
                         let mut colitems = vec![];
                         for parttemplate in bartemplate.0.iter() {
                             colitems.push(match parttemplate {
-                                PartTemplate::Music => {
-                                    Some(Rc::new(RefCell::new(RItem::new_from_nrects(
-                                        RItemType::Space,
-                                        vec![Rc::new(RefCell::new(NRectExt::new(
-                                            NRect::new(0., -height / 2.0, *width, *height),
-                                            NRectType::WIP("spacer".to_string()),
-                                        )))],
-                                        0,
-                                    ))))
-                                }
+                                PartTemplate::Music => Some(Rc::new(RefCell::new(RItem::new_from_nrects(
+                                    RItemType::Space,
+                                    vec![Rc::new(RefCell::new(NRectExt::new(
+                                        NRect::new(0., -height / 2.0, *width, *height),
+                                        NRectType::WIP("spacer".to_string()),
+                                    )))],
+                                    0,
+                                )))),
                                 PartTemplate::Nonmusic => None,
                             });
                         }
@@ -234,10 +212,7 @@ impl Bars {
 
                                         item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
                                             RItemType::Clef,
-                                            vec![Rc::new(RefCell::new(NRectExt::new(
-                                                NRect::new(0., y, 74., h),
-                                                NRectType::Clef(clef.clone()),
-                                            )))],
+                                            vec![Rc::new(RefCell::new(NRectExt::new(NRect::new(0., y, 74., h), NRectType::Clef(clef.clone()))))],
                                             0,
                                         ))))
                                     }
@@ -245,10 +220,7 @@ impl Bars {
                                         //item_rects.push(NRect::new(0., -5.0, 10., 10.));
                                         item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
                                             RItemType::Other,
-                                            vec![Rc::new(RefCell::new(NRectExt::new(
-                                                NRect::new(0., -5.0, 10., 10.),
-                                                NRectType::WIP("no clef".to_string()),
-                                            )))],
+                                            vec![Rc::new(RefCell::new(NRectExt::new(NRect::new(0., -5.0, 10., 10.), NRectType::WIP("no clef".to_string()))))],
                                             0,
                                         ))))
                                     }
@@ -280,12 +252,7 @@ impl Bars {
                                                     Clef::C => SPACE_HALF,
                                                 };
                                                 nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                    NRect::new(
-                                                        x,
-                                                        -SPACE * 3.5 + clef_y,
-                                                        *n as f32 * ACCIDENTAL_WIDTH_SHARP,
-                                                        6.0 * SPACE,
-                                                    ),
+                                                    NRect::new(x, -SPACE * 3.5 + clef_y, *n as f32 * ACCIDENTAL_WIDTH_SHARP, 6.0 * SPACE),
                                                     NRectType::KeySignature(key.clone(), None),
                                                 ))));
                                             }
@@ -298,12 +265,7 @@ impl Bars {
                                                 };
 
                                                 nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                                    NRect::new(
-                                                        x,
-                                                        -SPACE * 3.5 + clef_y,
-                                                        *n as f32 * ACCIDENTAL_WIDTH_FLAT,
-                                                        6.0 * SPACE,
-                                                    ),
+                                                    NRect::new(x, -SPACE * 3.5 + clef_y, *n as f32 * ACCIDENTAL_WIDTH_FLAT, 6.0 * SPACE),
                                                     NRectType::KeySignature(key.clone(), None),
                                                 ))));
                                             }
@@ -314,19 +276,12 @@ impl Bars {
                                         }
                                     }
                                     None => {
-                                        let nrect = Rc::new(RefCell::new(NRectExt::new(
-                                            NRect::new(0., -5.0, 10., 10.),
-                                            NRectType::WIP("no key".to_string()),
-                                        )));
+                                        let nrect = Rc::new(RefCell::new(NRectExt::new(NRect::new(0., -5.0, 10., 10.), NRectType::WIP("no key".to_string()))));
                                         nrects.push(nrect);
                                     }
                                 }
 
-                                item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
-                                    RItemType::Key,
-                                    nrects,
-                                    0,
-                                ))));
+                                item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(RItemType::Key, nrects, 0))));
                             } else {
                             }
                             ritems.push(item);
@@ -345,29 +300,17 @@ impl Bars {
                                     Some(time) => {
                                         //
                                         nrects.push(Rc::new(RefCell::new(NRectExt::new(
-                                            NRect::new(
-                                                0.0,
-                                                -SPACE * 3.0,
-                                                TIME_SIGNATURE_WIDTH,
-                                                6.0 * SPACE,
-                                            ),
+                                            NRect::new(0.0, -SPACE * 3.0, TIME_SIGNATURE_WIDTH, 6.0 * SPACE),
                                             NRectType::TimeSignature(time.clone()),
                                         ))));
                                     }
                                     None => {
-                                        let nrect = Rc::new(RefCell::new(NRectExt::new(
-                                            NRect::new(0., -5.0, 10., 10.),
-                                            NRectType::WIP("no key".to_string()),
-                                        )));
+                                        let nrect = Rc::new(RefCell::new(NRectExt::new(NRect::new(0., -5.0, 10., 10.), NRectType::WIP("no key".to_string()))));
                                         nrects.push(nrect);
                                     }
                                 }
 
-                                item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(
-                                    RItemType::Time,
-                                    nrects,
-                                    0,
-                                ))));
+                                item = Some(Rc::new(RefCell::new(RItem::new_from_nrects(RItemType::Time, nrects, 0))));
                             } else {
                             }
                             ritems.push(item);
@@ -405,10 +348,7 @@ impl Bars {
                 BarType::Standard(ref parts) => {
                     for part in parts {
                         let part = part.borrow();
-                        let complexes = part
-                            .complexes
-                            .as_ref()
-                            .expect("Part should have complexes!");
+                        let complexes = part.complexes.as_ref().expect("Part should have complexes!");
 
                         let mut note_current_beamgroup_id: usize = 0;
                         let mut note_current_beamgroup_id1x: usize = 0;
@@ -422,8 +362,7 @@ impl Bars {
                                 let mut item = item.borrow_mut();
 
                                 let note = match &complex.ctype {
-                                    ComplexType::Single(ref note, _)
-                                    | ComplexType::Upper(ref note, _) => Some(note),
+                                    ComplexType::Single(ref note, _) | ComplexType::Upper(ref note, _) => Some(note),
                                     ComplexType::Two(ref note, _, _) => Some(note),
                                     _ => None,
                                 };
@@ -444,11 +383,7 @@ impl Bars {
                                 if let Some(note) = note {
                                     let note = note.borrow();
                                     if note.is_heads() {
-                                        let beamgroup_ref = note
-                                            .beamgroup
-                                            .as_ref()
-                                            .expect("Single note should have beamgroup!")
-                                            .clone();
+                                        let beamgroup_ref = note.beamgroup.as_ref().expect("Single note should have beamgroup!").clone();
                                         let beamgroup = beamgroup_ref.borrow();
                                         if beamgroup.id != note_current_beamgroup_id {
                                             note_current_beamgroup_id = beamgroup.id;
@@ -494,13 +429,10 @@ impl Bars {
                                                 lower_voice: false,
                                             };
 
-                                            if note_current_beamgroup_id1x
-                                                < beamgroup.notes.len() - 1
-                                            {
+                                            if note_current_beamgroup_id1x < beamgroup.notes.len() - 1 {
                                                 item.notedata.beamdata1 = RItemBeam::Middle(data);
                                             } else {
-                                                data.note_durations =
-                                                    Some(beamgroup.note_durations.clone());
+                                                data.note_durations = Some(beamgroup.note_durations.clone());
                                                 item.notedata.beamdata1 = RItemBeam::End(data);
                                             }
                                         }
@@ -512,11 +444,7 @@ impl Bars {
                                 if let Some(note2) = note2 {
                                     let note2 = note2.borrow();
                                     if note2.is_heads() {
-                                        let beamgroup_ref = note2
-                                            .beamgroup
-                                            .as_ref()
-                                            .expect("Lower note should have beamgroup!")
-                                            .clone();
+                                        let beamgroup_ref = note2.beamgroup.as_ref().expect("Lower note should have beamgroup!").clone();
                                         let beamgroup = beamgroup_ref.borrow();
                                         if beamgroup.id != note2_current_beamgroup_id {
                                             note2_current_beamgroup_id = beamgroup.id;
@@ -561,13 +489,10 @@ impl Bars {
                                             };
 
                                             note2_current_beamgroup_id1x += 1;
-                                            if note2_current_beamgroup_id1x
-                                                < beamgroup.notes.len() - 1
-                                            {
+                                            if note2_current_beamgroup_id1x < beamgroup.notes.len() - 1 {
                                                 item.notedata.beamdata2 = RItemBeam::Middle(data);
                                             } else {
-                                                data.note_durations =
-                                                    Some(beamgroup.note_durations.clone());
+                                                data.note_durations = Some(beamgroup.note_durations.clone());
                                                 item.notedata.beamdata2 = RItemBeam::End(data);
                                             }
                                         }
@@ -589,19 +514,14 @@ impl Bars {
                 BarType::Standard(ref parts) => {
                     for part in parts {
                         let part = part.borrow();
-                        let complexes: &Vec<Rc<RefCell<Complex>>> = part
-                            .complexes
-                            .as_ref()
-                            .expect("Part should have complexes!");
+                        let complexes: &Vec<Rc<RefCell<Complex>>> = part.complexes.as_ref().expect("Part should have complexes!");
                         for (complexidx, complex) in complexes.iter().enumerate() {
                             let complex = complex.borrow();
                             if let Some(item) = &complex.matrix_item {
                                 let mut item: RefMut<RItem> = item.borrow_mut();
                                 println!("complexidx:{}", complexidx);
                                 match &complex.ctype {
-                                    ComplexType::Single(note, _)
-                                    | ComplexType::Upper(note, _)
-                                    | ComplexType::Lower(note, _) => {
+                                    ComplexType::Single(note, _) | ComplexType::Upper(note, _) | ComplexType::Lower(note, _) => {
                                         let note = note.borrow();
                                         if note.is_heads() {
                                             let (head_width, adjust_x) = note.adjust_x.unwrap();
@@ -649,10 +569,7 @@ impl Bars {
                 BarType::Standard(ref parts) => {
                     for part in parts {
                         let part = part.borrow();
-                        let complexes: &Vec<Rc<RefCell<Complex>>> = part
-                            .complexes
-                            .as_ref()
-                            .expect("Part should have complexes!");
+                        let complexes: &Vec<Rc<RefCell<Complex>>> = part.complexes.as_ref().expect("Part should have complexes!");
 
                         for complex in complexes {
                             let complex = complex.borrow();
@@ -663,9 +580,7 @@ impl Bars {
                                 match &complex.ctype {
                                     ComplexType::OneBarpause(_) => {}
                                     ComplexType::TwoBarpauses(_, _) => {}
-                                    ComplexType::Single(note, _)
-                                    | ComplexType::Upper(note, _)
-                                    | ComplexType::Lower(note, _) => {
+                                    ComplexType::Single(note, _) | ComplexType::Upper(note, _) | ComplexType::Lower(note, _) => {
                                         let note = note.borrow();
                                         if note.is_heads() {
                                             let note_direction = note.direction.unwrap();
@@ -726,52 +641,25 @@ impl Bars {
                                                     ComplexType::TwoBarpauses(_, _) => todo!(),
                                                 };
 
-                                                let rect: NRect = NRect::new(
-                                                    adjust_x + head_width,
-                                                    0.0 + tie.level as f32 * SPACE_HALF
-                                                        - TIE_SPACE_HALF,
-                                                    TIE_FROM_WIDTH,
-                                                    TIE_SPACE,
-                                                );
+                                                let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_FROM_WIDTH, TIE_SPACE);
                                                 let nrects = item.nrects.as_mut();
                                                 if nrects.is_none() {
                                                     item.nrects = Some(vec![]);
                                                 }
-                                                item.nrects.as_mut().unwrap().push(Rc::new(
-                                                    RefCell::new(NRectExt(
-                                                        rect,
-                                                        NRectType::TieFrom(
-                                                            note.id,
-                                                            tie.level,
-                                                            tie.ttype.clone(),
-                                                            note.duration,
-                                                            note_direction,
-                                                            tie_direction,
-                                                            tie_placement,
-                                                        ),
-                                                    )),
-                                                ));
+                                                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(
+                                                    rect,
+                                                    NRectType::TieFrom(note.id, tie.level, tie.ttype.clone(), note.duration, note_direction, tie_direction, tie_placement),
+                                                ))));
                                                 tieidx += 1;
                                             }
 
                                             for tie_to in &note.ties_to {
-                                                let rect: NRect = NRect::new(
-                                                    -TIE_TO_WIDTH,
-                                                    0.0 + tie_to.level as f32 * SPACE_HALF
-                                                        - TIE_SPACE_HALF,
-                                                    TIE_TO_WIDTH,
-                                                    TIE_SPACE,
-                                                );
+                                                let rect: NRect = NRect::new(-TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_TO_WIDTH, TIE_SPACE);
                                                 let nrects = item.nrects.as_mut();
                                                 if nrects.is_none() {
                                                     item.nrects = Some(vec![]);
                                                 }
-                                                item.nrects.as_mut().unwrap().push(Rc::new(
-                                                    RefCell::new(NRectExt(
-                                                        rect,
-                                                        NRectType::TieTo(tie_to.ttype.clone()),
-                                                    )),
-                                                ));
+                                                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(rect, NRectType::TieTo(tie_to.ttype.clone())))));
                                             }
                                         }
                                         //
@@ -787,57 +675,26 @@ impl Bars {
                                             let ties_count = &note.ties.len();
                                             let mut tieidx = 0;
                                             for tie in &note.ties {
-                                                let rect: NRect = NRect::new(
-                                                    adjust_x + head_width,
-                                                    0.0 + tie.level as f32 * SPACE_HALF
-                                                        - TIE_SPACE_HALF,
-                                                    TIE_FROM_WIDTH,
-                                                    TIE_SPACE,
-                                                );
+                                                let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_FROM_WIDTH, TIE_SPACE);
                                                 let nrects = item.nrects.as_mut();
                                                 if nrects.is_none() {
                                                     item.nrects = Some(vec![]);
                                                 }
                                                 let tie_direction = DirUD::Up;
-                                                let tie_placement = if tieidx == 0 {
-                                                    TiePlacement::Top
-                                                } else {
-                                                    TiePlacement::Mid
-                                                };
-                                                item.nrects.as_mut().unwrap().push(Rc::new(
-                                                    RefCell::new(NRectExt(
-                                                        rect,
-                                                        NRectType::TieFrom(
-                                                            note.id,
-                                                            tie.level,
-                                                            tie.ttype.clone(),
-                                                            note.duration,
-                                                            note_direction,
-                                                            tie_direction,
-                                                            tie_placement,
-                                                        ),
-                                                    )),
-                                                ));
+                                                let tie_placement = if tieidx == 0 { TiePlacement::Top } else { TiePlacement::Mid };
+                                                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(
+                                                    rect,
+                                                    NRectType::TieFrom(note.id, tie.level, tie.ttype.clone(), note.duration, note_direction, tie_direction, tie_placement),
+                                                ))));
                                             }
 
                                             for tie_to in &note.ties_to {
-                                                let rect: NRect = NRect::new(
-                                                    adjust_x - TIE_TO_WIDTH,
-                                                    0.0 + tie_to.level as f32 * SPACE_HALF
-                                                        - TIE_SPACE_HALF,
-                                                    TIE_TO_WIDTH,
-                                                    TIE_SPACE,
-                                                );
+                                                let rect: NRect = NRect::new(adjust_x - TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_TO_WIDTH, TIE_SPACE);
                                                 let nrects = item.nrects.as_mut();
                                                 if nrects.is_none() {
                                                     item.nrects = Some(vec![]);
                                                 }
-                                                item.nrects.as_mut().unwrap().push(Rc::new(
-                                                    RefCell::new(NRectExt(
-                                                        rect,
-                                                        NRectType::TieTo(tie_to.ttype.clone()),
-                                                    )),
-                                                ));
+                                                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(rect, NRectType::TieTo(tie_to.ttype.clone())))));
                                             }
                                         };
 
@@ -850,59 +707,28 @@ impl Bars {
                                             let ties_count = &note2.ties.len();
                                             let mut tieidx = 0;
                                             for tie in &note2.ties {
-                                                let rect: NRect = NRect::new(
-                                                    adjust_x + head_width,
-                                                    0.0 + tie.level as f32 * SPACE_HALF
-                                                        - TIE_SPACE_HALF,
-                                                    TIE_FROM_WIDTH,
-                                                    TIE_SPACE,
-                                                );
+                                                let rect: NRect = NRect::new(adjust_x + head_width, 0.0 + tie.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_FROM_WIDTH, TIE_SPACE);
                                                 let nrects = item.nrects.as_mut();
                                                 if nrects.is_none() {
                                                     item.nrects = Some(vec![]);
                                                 }
 
                                                 let tie_direction = DirUD::Down;
-                                                let tie_placement = if tieidx == ties_count - 1 {
-                                                    TiePlacement::Bottom
-                                                } else {
-                                                    TiePlacement::Mid
-                                                };
+                                                let tie_placement = if tieidx == ties_count - 1 { TiePlacement::Bottom } else { TiePlacement::Mid };
 
-                                                item.nrects.as_mut().unwrap().push(Rc::new(
-                                                    RefCell::new(NRectExt(
-                                                        rect,
-                                                        NRectType::TieFrom(
-                                                            note2.id,
-                                                            tie.level,
-                                                            tie.ttype.clone(),
-                                                            note.duration,
-                                                            note_direction,
-                                                            tie_direction,
-                                                            tie_placement,
-                                                        ),
-                                                    )),
-                                                ));
+                                                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(
+                                                    rect,
+                                                    NRectType::TieFrom(note2.id, tie.level, tie.ttype.clone(), note.duration, note_direction, tie_direction, tie_placement),
+                                                ))));
                                             }
 
                                             for tie_to in &note2.ties_to {
-                                                let rect: NRect = NRect::new(
-                                                    adjust_x + -TIE_TO_WIDTH,
-                                                    0.0 + tie_to.level as f32 * SPACE_HALF
-                                                        - TIE_SPACE_HALF,
-                                                    TIE_TO_WIDTH,
-                                                    TIE_SPACE,
-                                                );
+                                                let rect: NRect = NRect::new(adjust_x + -TIE_TO_WIDTH, 0.0 + tie_to.level as f32 * SPACE_HALF - TIE_SPACE_HALF, TIE_TO_WIDTH, TIE_SPACE);
                                                 let nrects = item.nrects.as_mut();
                                                 if nrects.is_none() {
                                                     item.nrects = Some(vec![]);
                                                 }
-                                                item.nrects.as_mut().unwrap().push(Rc::new(
-                                                    RefCell::new(NRectExt(
-                                                        rect,
-                                                        NRectType::TieTo(tie_to.ttype.clone()),
-                                                    )),
-                                                ));
+                                                item.nrects.as_mut().unwrap().push(Rc::new(RefCell::new(NRectExt(rect, NRectType::TieTo(tie_to.ttype.clone())))));
                                             }
                                         };
                                     }
@@ -970,57 +796,29 @@ impl Bars {
 
                                             match voice.vtype {
                                                 VoiceType::Notes(ref notes) => {
-                                                    for (noteidx, note) in
-                                                        notes.items.iter().enumerate()
-                                                    {
-                                                        let part_voice_current_id = part_voice_id
-                                                            + *chunk_indexes
-                                                                .get(&part_voice_id)
-                                                                .unwrap();
+                                                    for (noteidx, note) in notes.items.iter().enumerate() {
+                                                        let part_voice_current_id = part_voice_id + *chunk_indexes.get(&part_voice_id).unwrap();
 
                                                         let note_ = note.borrow();
                                                         if !note_.is_pause() {
                                                             // println!("Note {part_voice_id}/{part_voice_current_id}: {partidx}:{}", 0);
 
-                                                            if !chunk_notes.contains_key(
-                                                                &part_voice_current_id,
-                                                            ) {
-                                                                chunk_notes.insert(
-                                                                    part_voice_current_id,
-                                                                    vec![note.clone()],
-                                                                );
+                                                            if !chunk_notes.contains_key(&part_voice_current_id) {
+                                                                chunk_notes.insert(part_voice_current_id, vec![note.clone()]);
                                                             } else {
-                                                                chunk_notes
-                                                                    .get_mut(&part_voice_current_id)
-                                                                    .unwrap()
-                                                                    .push(note.clone());
+                                                                chunk_notes.get_mut(&part_voice_current_id).unwrap().push(note.clone());
                                                             }
                                                         } else {
                                                             // println!("Note {part_voice_id} not heads! - increase chunk_indexe");
-                                                            chunk_indexes.insert(
-                                                                part_voice_id,
-                                                                chunk_indexes
-                                                                    .get(&part_voice_id)
-                                                                    .unwrap()
-                                                                    + 1,
-                                                            );
+                                                            chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
                                                         }
                                                     }
                                                 }
                                                 _ => {
                                                     // println!("{partidx}:{} Not VoiceType::Notes", 0);
-                                                    chunk_indexes.insert(
-                                                        part_voice_id,
-                                                        chunk_indexes.get(&part_voice_id).unwrap()
-                                                            + 1,
-                                                    );
-                                                    let part_voice2_id =
-                                                        (partidx + 1) * 1_000_000 + 1_000;
-                                                    chunk_indexes.insert(
-                                                        part_voice2_id,
-                                                        chunk_indexes.get(&part_voice2_id).unwrap()
-                                                            + 1,
-                                                    );
+                                                    chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
+                                                    let part_voice2_id = (partidx + 1) * 1_000_000 + 1_000;
+                                                    chunk_indexes.insert(part_voice2_id, chunk_indexes.get(&part_voice2_id).unwrap() + 1);
                                                 }
                                             }
                                         }
@@ -1033,48 +831,25 @@ impl Bars {
 
                                             match upper.vtype {
                                                 VoiceType::Notes(ref notes) => {
-                                                    for (noteidx, note) in
-                                                        notes.items.iter().enumerate()
-                                                    {
+                                                    for (noteidx, note) in notes.items.iter().enumerate() {
                                                         let note_ = note.borrow_mut();
-                                                        let part_voice_current_id = part_voice_id
-                                                            + *chunk_indexes
-                                                                .get(&part_voice_id)
-                                                                .unwrap();
+                                                        let part_voice_current_id = part_voice_id + *chunk_indexes.get(&part_voice_id).unwrap();
                                                         if !note_.is_pause() {
                                                             // println!("Note {part_voice_id}/{part_voice_current_id}: {partidx}:{}", 0);
-                                                            if !chunk_notes.contains_key(
-                                                                &part_voice_current_id,
-                                                            ) {
-                                                                chunk_notes.insert(
-                                                                    part_voice_current_id,
-                                                                    vec![note.clone()],
-                                                                );
+                                                            if !chunk_notes.contains_key(&part_voice_current_id) {
+                                                                chunk_notes.insert(part_voice_current_id, vec![note.clone()]);
                                                             } else {
-                                                                chunk_notes
-                                                                    .get_mut(&part_voice_current_id)
-                                                                    .unwrap()
-                                                                    .push(note.clone());
+                                                                chunk_notes.get_mut(&part_voice_current_id).unwrap().push(note.clone());
                                                             }
                                                         } else {
                                                             // println!("Note not heads!");
-                                                            chunk_indexes.insert(
-                                                                part_voice_id,
-                                                                chunk_indexes
-                                                                    .get(&part_voice_id)
-                                                                    .unwrap()
-                                                                    + 1,
-                                                            );
+                                                            chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
                                                         }
                                                     }
                                                 }
                                                 _ => {
                                                     // println!("{partidx}:{} Not VoiceType::Notes", 0);
-                                                    chunk_indexes.insert(
-                                                        part_voice_id,
-                                                        chunk_indexes.get(&part_voice_id).unwrap()
-                                                            + 1,
-                                                    );
+                                                    chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
                                                 }
                                             }
 
@@ -1086,48 +861,25 @@ impl Bars {
 
                                             match lower.vtype {
                                                 VoiceType::Notes(ref notes) => {
-                                                    for (noteidx, note) in
-                                                        notes.items.iter().enumerate()
-                                                    {
+                                                    for (noteidx, note) in notes.items.iter().enumerate() {
                                                         let note_ = note.borrow_mut();
-                                                        let part_voice_current_id = part_voice_id
-                                                            + *chunk_indexes
-                                                                .get(&part_voice_id)
-                                                                .unwrap();
+                                                        let part_voice_current_id = part_voice_id + *chunk_indexes.get(&part_voice_id).unwrap();
                                                         if !note_.is_pause() {
                                                             // println!("Note {part_voice_id}/{part_voice_current_id}: {partidx}:{}", 1);
-                                                            if !chunk_notes.contains_key(
-                                                                &part_voice_current_id,
-                                                            ) {
-                                                                chunk_notes.insert(
-                                                                    part_voice_current_id,
-                                                                    vec![note.clone()],
-                                                                );
+                                                            if !chunk_notes.contains_key(&part_voice_current_id) {
+                                                                chunk_notes.insert(part_voice_current_id, vec![note.clone()]);
                                                             } else {
-                                                                chunk_notes
-                                                                    .get_mut(&part_voice_current_id)
-                                                                    .unwrap()
-                                                                    .push(note.clone());
+                                                                chunk_notes.get_mut(&part_voice_current_id).unwrap().push(note.clone());
                                                             }
                                                         } else {
                                                             // println!("Note {part_voice_id} not heads!");
-                                                            chunk_indexes.insert(
-                                                                part_voice_id,
-                                                                chunk_indexes
-                                                                    .get(&part_voice_id)
-                                                                    .unwrap()
-                                                                    + 1,
-                                                            );
+                                                            chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
                                                         }
                                                     }
                                                 }
                                                 _ => {
                                                     // println!("{partidx}:{} Not VoiceType::Notes", 1);
-                                                    chunk_indexes.insert(
-                                                        part_voice_id,
-                                                        chunk_indexes.get(&part_voice_id).unwrap()
-                                                            + 1,
-                                                    );
+                                                    chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
                                                 }
                                             }
                                             //
@@ -1149,15 +901,9 @@ impl Bars {
                 BarType::MultiRest(_) => {
                     for partidx in 0..parts_count {
                         let part_voice_id = (partidx + 1) * 1_000_000;
-                        chunk_indexes.insert(
-                            part_voice_id,
-                            chunk_indexes.get(&part_voice_id).unwrap() + 1,
-                        );
+                        chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
                         let part_voice_id = (partidx + 1) * 1_000_000 + 1_000;
-                        chunk_indexes.insert(
-                            part_voice_id,
-                            chunk_indexes.get(&part_voice_id).unwrap() + 1,
-                        );
+                        chunk_indexes.insert(part_voice_id, chunk_indexes.get(&part_voice_id).unwrap() + 1);
                     }
                 }
 

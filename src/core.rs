@@ -189,6 +189,7 @@ pub enum BarlineType {
     RepeatFrom,
     RepeatToAndFrom,
     FraseTick,
+    Invisible,
 }
 
 //============================================================
